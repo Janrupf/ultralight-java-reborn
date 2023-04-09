@@ -33,7 +33,7 @@ public class PlatformEnvironmentOptionContainer {
      * @throws IllegalStateException if the container is already frozen
      */
     public void addOption(PlatformEnvironmentOption<?> option) {
-        if(frozen) {
+        if (frozen) {
             throw new IllegalStateException("Cannot add options to a frozen container");
         }
 
@@ -44,6 +44,14 @@ public class PlatformEnvironmentOptionContainer {
      * Freezes the container and prevents further options from being added.
      */
     public void freeze() {
+        // Prepare all options before freezing the container
+        for (PlatformEnvironmentOption<?> option : options.values()) {
+            Object value = option.getValue();
+            if (value instanceof PlatformEnvironmentOption.PreparationHook) {
+                ((PlatformEnvironmentOption.PreparationHook) value).prepare();
+            }
+        }
+
         frozen = true;
     }
 
@@ -57,15 +65,44 @@ public class PlatformEnvironmentOptionContainer {
     }
 
     /**
+     * Determines whether the container contains an option with the given registration key.
+     *
+     * @param registrationKey the key used to register the option
+     * @return true if the container contains an option with the given key, false otherwise
+     */
+    public boolean has(Class<?> registrationKey) {
+        return options.containsKey(registrationKey);
+    }
+
+    /**
+     * Retrieves an option from the container and marks it as used.
+     * If the option does not exist, an exception is thrown.
+     *
+     * @param registrationKey the key used to register the option
+     * @param <T>             the type of the option
+     * @return the registered option
+     * @throws IllegalStateException if the option is not present
+     */
+    public <T> T require(Class<T> registrationKey) {
+        T option = use(registrationKey);
+
+        if (option == null) {
+            throw new IllegalStateException("Required option " + registrationKey.getName() + " is not present");
+        }
+
+        return option;
+    }
+
+    /**
      * Retrieves an option from the container and marks it as used, if it exists.
      *
      * @param registrationKey the key used to register the option
+     * @param <T>             the type of the option
      * @return the registered option, or null, if no option with the given key was registered
-     * @param <T> the type of the option
      */
     public <T> T use(Class<T> registrationKey) {
         PlatformEnvironmentOption<?> option = options.get(registrationKey);
-        if(option == null) {
+        if (option == null) {
             return null;
         }
 

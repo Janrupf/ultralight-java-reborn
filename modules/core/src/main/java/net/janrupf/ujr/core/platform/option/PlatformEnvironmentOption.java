@@ -74,4 +74,16 @@ public class PlatformEnvironmentOption<T> {
     public T getValue() {
         return value;
     }
+
+    /**
+     * Can be implemented by values passed to the platform environment to allow them to perform some preparation
+     * shortly before the environment providers are loaded and activated.
+     */
+    public interface PreparationHook {
+        /**
+         * Called shortly before the platform environment is activated. This allows the options
+         * to set default values if they have not been overwritten.
+         */
+        void prepare();
+    }
 }
