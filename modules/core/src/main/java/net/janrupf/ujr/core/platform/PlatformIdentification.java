@@ -43,7 +43,7 @@ public class PlatformIdentification {
      */
     public static PlatformIdentification detect() {
         String osName = System.getProperty("os.name").toLowerCase();
-        String osArch = System.getProperty("os.arch").toLowerCase();
+        String osArch = remapOsArch(System.getProperty("os.arch").toLowerCase());
 
         if (osName.contains("win")) {
             return new PlatformIdentification("windows", osArch);
@@ -56,6 +56,24 @@ public class PlatformIdentification {
         } else {
             // Fallback, this will probably not work
             return new PlatformIdentification(osName, osArch);
+        }
+    }
+
+    /**
+     * Helper function to remap the os.arch property to the values used by the bundled natives.
+     *
+     * @param input the input value
+     * @return the remapped value
+     */
+    private static String remapOsArch(String input) {
+        switch (input) {
+            case "amd64":
+            case "x86_64":
+                return "x64";
+            case "i386":
+                return "x86";
+            default:
+                return input;
         }
     }
 }

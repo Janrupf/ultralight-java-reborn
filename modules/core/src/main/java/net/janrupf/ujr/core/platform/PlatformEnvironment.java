@@ -1,6 +1,8 @@
 package net.janrupf.ujr.core.platform;
 
+import net.janrupf.ujr.core.platform.option.PlatformEnvironmentOption;
 import net.janrupf.ujr.core.platform.option.PlatformEnvironmentOptionContainer;
+import net.janrupf.ujr.core.platform.option.std.CommonPlatformOptions;
 import net.janrupf.ujr.core.platform.provider.PlatformEnvironmentProvider;
 import net.janrupf.ujr.core.platform.provider.PlatformEnvironmentProviderFactory;
 
@@ -48,6 +50,11 @@ public class PlatformEnvironment {
             throws UnsupportedPlatformEnvironmentException, InvalidPlatformEnvironmentException {
         Objects.requireNonNull(options, "options must not be null");
 
+        if (!options.has(CommonPlatformOptions.class)) {
+            // Add the common options if they are not already present
+            options.addOption(new PlatformEnvironmentOption<>(CommonPlatformOptions.class, new CommonPlatformOptions()));
+        }
+
         // No further modifications to the options are allowed
         options.freeze();
 
@@ -91,6 +98,13 @@ public class PlatformEnvironment {
             PlatformEnvironmentOptionContainer options
     ) throws UnsupportedPlatformEnvironmentException, InvalidPlatformEnvironmentException {
         Objects.requireNonNull(options, "options must not be null");
+
+        if (!options.has(CommonPlatformOptions.class)) {
+            // Add the common options if they are not already present
+            options.addOption(new PlatformEnvironmentOption<>(CommonPlatformOptions.class, new CommonPlatformOptions()));
+        }
+
+        options.freeze();
 
         // Load NOW
         provider.performLoading();
