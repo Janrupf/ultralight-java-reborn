@@ -2,12 +2,11 @@ package net.janrupf.ujr.platform.jni.bundled;
 
 import net.janrupf.ujr.core.exception.UltralightJavaRebornRuntimeException;
 import net.janrupf.ujr.core.platform.PlatformIdentification;
+import net.janrupf.ujr.core.platform.UnsupportedPlatformEnvironmentException;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URL;
 import java.util.*;
 
@@ -34,6 +33,23 @@ public class BundledNatives {
 
     private String platformKey(PlatformIdentification identification) {
         return identification.getName().toLowerCase() + "-" + identification.getArch().toLowerCase();
+    }
+
+    /**
+     * Retrieves the bundled natives for the given platform.
+     *
+     * @param identification the platform identification
+     * @return the bundled natives for the given platform
+     */
+    public List<HashedNative> getNatives(PlatformIdentification identification) {
+        String platformKey = platformKey(identification);
+        List<HashedNative> natives = bundled.get(platformKey);
+
+        if (natives == null) {
+            throw new UnsupportedPlatformEnvironmentException("No bundled natives for platform " + platformKey);
+        }
+
+        return natives;
     }
 
     /**

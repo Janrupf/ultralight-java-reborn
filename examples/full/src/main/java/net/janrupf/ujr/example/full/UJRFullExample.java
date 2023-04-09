@@ -34,5 +34,8 @@ public class UJRFullExample {
         // Now that the environment is loaded, we can create the actual library instance
         // and start using it.
         UltralightJavaReborn ujr = new UltralightJavaReborn(environment);
+
+        // After we are done using the library, we should tell it to perform cleanup
+        ujr.cleanup();
     }
 }

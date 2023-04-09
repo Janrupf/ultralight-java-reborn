@@ -7,6 +7,7 @@ import net.janrupf.ujr.core.platform.option.PlatformEnvironmentOption;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * A collection of standard platform options.
@@ -97,8 +98,27 @@ public final class CommonPlatformOptions implements PlatformEnvironmentOption.Pr
     @Override
     public void prepare() {
         if (this.temporaryDirectory == null) {
+            String tempDirectory = System.getProperty("java.io.tmpdir");
+            if (tempDirectory != null) {
+                // Prefer using java.io.tmpdir if it is set, as this will (probably) yield
+                // a consistent directory for each application run. This can be useful on
+                // systems like windows, where a full cleanup of the temporary directory
+                // on application shutdown may not be possible (due to file locks).
+                this.temporaryDirectory = Paths.get(tempDirectory).resolve("ultralight-java-reborn");
+
+                try {
+                    Files.createDirectories(this.temporaryDirectory);
+                } catch (IOException e) {
+                    // Ignore, we'll try the alternative below
+                    this.temporaryDirectory = null;
+                }
+            }
+        }
+
+        if (this.temporaryDirectory == null) {
+            // Previous attempt failed, try to create a temporary directory using NIO
             try {
-                this.temporaryDirectory = Files.createTempDirectory("ujr");
+                this.temporaryDirectory = Files.createTempDirectory("ultralight-java-reborn");
             } catch (IOException e) {
                 throw new UltralightJavaRebornRuntimeException("Failed to create temporary directory", e);
             }

@@ -5,7 +5,7 @@ import net.janrupf.ujr.core.platform.PlatformEnvironment;
 /**
  * Main entry point for the Ultralight Java Reborn library.
  */
-public class UltralightJavaReborn {
+public class UltralightJavaReborn implements AutoCloseable {
     private final PlatformEnvironment platformEnvironment;
 
     /**
@@ -18,5 +18,14 @@ public class UltralightJavaReborn {
      */
     public UltralightJavaReborn(PlatformEnvironment platformEnvironment) {
         this.platformEnvironment = platformEnvironment;
+    }
+
+    public void cleanup() {
+        close();
+    }
+
+    @Override
+    public void close() {
+        this.platformEnvironment.cleanup();
     }
 }

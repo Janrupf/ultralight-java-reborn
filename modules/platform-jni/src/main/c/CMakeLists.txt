@@ -25,12 +25,12 @@ include(cmake/Ultralight.cmake)
 set(UJR_SOURCES
         src/ujr.cpp)
 
-add_library(ujr-jni SHARED ${UJR_SOURCES})
-target_link_directories(ujr-jni PRIVATE ${UJR_JNI_HEADER_DIR})
+add_library(ultralight-java-reborn SHARED ${UJR_SOURCES})
+target_link_directories(ultralight-java-reborn PRIVATE ${UJR_JNI_HEADER_DIR})
 
 ############################
 # Add install instructions #
 ############################
-install(TARGETS ujr-jni
+install(TARGETS ultralight-java-reborn
         RUNTIME
         DESTINATION bin)

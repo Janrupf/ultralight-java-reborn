@@ -150,4 +150,14 @@ public class PlatformEnvironment {
 
         return api;
     }
+
+    /**
+     * Instructs the provider to delete temporary files and perform other resource cleanup.
+     * <p>
+     * Please note that the cleanup operation may silently fail if the provider does not support
+     * it or if it is not possible to perform the cleanup due to OS limitations.
+     */
+    public void cleanup() {
+        provider.cleanup();
+    }
 }
