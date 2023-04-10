@@ -12,7 +12,8 @@ application {
 
 dependencies {
     implementation(project(":modules:ultralight-java-reborn-core"))
-    implementation(project(":modules:ultralight-java-reborn-platform-jni"))
+    implementation(project(":modules:ultralight-java-reborn-api"))
+    runtimeOnly(project(":modules:ultralight-java-reborn-platform-jni"))
 
     // Only used in the example, not required for Ultralight Java Reborn
     implementation(platform("org.apache.logging.log4j:log4j-core:2.20.0"))

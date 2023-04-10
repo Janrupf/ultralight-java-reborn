@@ -2,7 +2,7 @@
 # CMake setup #
 ###############
 cmake_minimum_required(VERSION 3.26)
-project(ujr)
+project(ultralight-java-reborn)
 
 #####################
 # Set CMake options #
@@ -19,14 +19,20 @@ endif()
 ###########################
 include(cmake/Ultralight.cmake)
 
+find_package(JNI REQUIRED)
+if (NOT JNI_FOUND)
+    message(SEND_ERROR "JNI could not be found")
+endif()
+
 #####################
 # Add CMake targets #
 #####################
 set(UJR_SOURCES
-        src/ujr.cpp)
+        src/platform_provider.cpp)
 
 add_library(ultralight-java-reborn SHARED ${UJR_SOURCES})
-target_link_directories(ultralight-java-reborn PRIVATE ${UJR_JNI_HEADER_DIR})
+target_include_directories(ultralight-java-reborn PRIVATE ${UJR_JNI_HEADER_DIR})
+target_link_libraries(ultralight-java-reborn PRIVATE ultralight JNI::JNI)
 
 ############################
 # Add install instructions #

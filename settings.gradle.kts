@@ -20,5 +20,6 @@ fun addModule(name: String) {
 
 addExample("full")
 
+addModule("api")
 addModule("core")
 addModule("platform-jni")

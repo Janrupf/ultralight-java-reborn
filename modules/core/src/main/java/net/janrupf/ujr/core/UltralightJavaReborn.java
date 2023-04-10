@@ -94,6 +94,15 @@ public class UltralightJavaReborn implements AutoCloseable {
         }
     }
 
+    /**
+     * Retrieves the platform environment backing this Ultralight Java Reborn instance.
+     *
+     * @return the platform environment backing this instance
+     */
+    public PlatformEnvironment getPlatformEnvironment() {
+        return platformEnvironment;
+    }
+
     @Override
     public void close() {
         this.platformEnvironment.cleanup();

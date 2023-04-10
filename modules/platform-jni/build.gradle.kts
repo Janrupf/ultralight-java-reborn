@@ -161,6 +161,8 @@ if (!disableNativeBuild) {
     }
 
     gradle.afterProject {
+        val javaHome = tasks.getByName<JavaCompile>("compileJava").javaCompiler.get().metadata.installationPath
+
         // Run CMake after project evaluation and configuration has finished
         exec {
             executable = cmake.toString()
@@ -168,6 +170,7 @@ if (!disableNativeBuild) {
                     "-S", cmakeSource,
                     "-B", cmakeBinaryDir,
                     "-DUJR_JNI_HEADER_DIR=${tasks.getByName<JavaCompile>("compileJava").options.headerOutputDirectory.get()}",
+                    "-DJAVA_HOME=$javaHome",
             )
         }
     }

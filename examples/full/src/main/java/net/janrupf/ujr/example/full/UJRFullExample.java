@@ -1,7 +1,10 @@
 package net.janrupf.ujr.example.full;
 
+import net.janrupf.ujr.api.UltralightPlatform;
 import net.janrupf.ujr.core.UltralightJavaReborn;
 import net.janrupf.ujr.core.platform.PlatformEnvironment;
+import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
+import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,7 +44,12 @@ public class UJRFullExample {
         ujr.activate();
         logger.info("Ultralight Java Reborn has been activated on the thread {}!", Thread.currentThread().getName());
 
+        // We can now start using the API implementation which is implemented on top of the lower
+        // level platform abstraction.
+        UltralightPlatform platform = UltralightPlatform.instance();
+
         // After we are done using the library, we should tell it to perform cleanup
         ujr.cleanup();
+        logger.info("Cleanup finished!");
     }
 }
