@@ -11,7 +11,7 @@ public class UJRFullExample {
         logger.info("Starting Ultralight Java Reborn full example...");
 
         // Ultralight Java Reborn uses the concept of platform environments to abstract
-        // away the loading and management of the native API's. Our examples depends on
+        // away the loading and management of the native API's. Our examples depend on
         // the JNI platform environment, which is provided by the platform-jni module.
         //
         // The platform-jni module provides a bundled version of the Ultralight library
@@ -34,6 +34,12 @@ public class UJRFullExample {
         // Now that the environment is loaded, we can create the actual library instance
         // and start using it.
         UltralightJavaReborn ujr = new UltralightJavaReborn(environment);
+
+        // Ultralight itself is not thread-safe, so we need to make sure that we only use it
+        // from a single thread. This is why we need to activate the current thread as the
+        // Ultralight Java Reborn thread.
+        ujr.activate();
+        logger.info("Ultralight Java Reborn has been activated on the thread {}!", Thread.currentThread().getName());
 
         // After we are done using the library, we should tell it to perform cleanup
         ujr.cleanup();
