@@ -98,15 +98,19 @@ ForEachMacros:
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '"ujr/.*"'
-    Priority: 5
+    Priority: 10
     SortPriority: 40
     CaseSensitive: false
   - Regex: '<.*.h>'
-    Priority: 2
+    Priority: 5
     SortPriority: 1
     CaseSensitive: false
+  - Regex: '<.*>'
+    Priority: 3
+    SortPriority: 2
+    CaseSensitive: false
   - Regex: '.*'
-    Priority: 1
+    Priority: 0
     SortPriority: 1
     CaseSensitive: false
 IncludeIsMainRegex: '(Test)?$'
