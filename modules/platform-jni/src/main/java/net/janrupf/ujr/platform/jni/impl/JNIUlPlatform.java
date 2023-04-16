@@ -2,12 +2,12 @@ package net.janrupf.ujr.platform.jni.impl;
 
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.config.UlConfig;
+import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 
-import java.lang.annotation.Native;
 import java.util.Objects;
 
 public class JNIUlPlatform implements UlPlatform {
-    @Native
+    @NativeAccess
     private final long handle;
 
     JNIUlPlatform(long handle) {

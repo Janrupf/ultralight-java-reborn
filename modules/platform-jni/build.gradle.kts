@@ -54,6 +54,7 @@ fun calculateFileHash(file: Path): ByteArray = MessageDigest.getInstance("SHA-25
 
 dependencies {
     compileOnlyApi(project(":modules:ultralight-java-reborn-core"))
+    annotationProcessor(project(":modules:ultralight-java-reborn-native-ap"))
 }
 
 // Sometimes we want to disable the native build, for example when cross-compiling
@@ -72,6 +73,7 @@ if (!disableNativeBuild) {
     val compactedDir = nativeDir.resolve("compacted")
 
     val buildNativeTask = tasks.register<Exec>("buildNative") {
+        mustRunAfter("compileJava")
         executable = cmake.toString()
         args = listOf(
                 "--build", cmakeBinaryDir,

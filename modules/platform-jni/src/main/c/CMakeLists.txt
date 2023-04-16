@@ -34,6 +34,7 @@ set(UJR_SOURCES
         src/util/JniExceptionCheck.cpp
         src/util/JniMethod.cpp
 
+        src/Platform.cpp
         src/PlatformProvider.cpp
         src/UJRLibrary.cpp)
 

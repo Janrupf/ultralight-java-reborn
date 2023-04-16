@@ -41,6 +41,31 @@ namespace ujr {
         DEFINE_JNI_FIELD_ACCESSOR(jobject, Object);
 
 #undef DEFINE_JNI_FIELD_ACCESSOR
+
+#define DEFINE_JNI_OBJECT_FIELD_ACCESSOR(j_type)                                                                       \
+    template<> struct JniFieldAccessor<j_type> {                                                                       \
+        static j_type get(const JniEnv &env, jobject obj, jfieldID field) {                                            \
+            return reinterpret_cast<j_type>(env->GetObjectField(obj, field));                                          \
+        }                                                                                                              \
+                                                                                                                       \
+        static void set(const JniEnv &env, jobject obj, jfieldID field, j_type value) {                                \
+            env->SetObjectField(obj, field, value);                                                                    \
+        }                                                                                                              \
+                                                                                                                       \
+        static j_type get_static(const JniEnv &env, jclass clazz, jfieldID field) {                                    \
+            return reinterpret_cast<j_type>(env->GetStaticObjectField(clazz, field));                                  \
+        }                                                                                                              \
+                                                                                                                       \
+        static void set_static(const JniEnv &env, jclass clazz, jfieldID field, j_type value) {                        \
+            env->SetStaticObjectField(clazz, field, value);                                                            \
+        }                                                                                                              \
+    }
+
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jstring);
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jclass);
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jthrowable);
+
+#undef DEFINE_JNI_OBJECT_FIELD_ACCESSOR
     } // namespace _internal
 
     /**
@@ -206,3 +231,6 @@ namespace ujr {
         }
     };
 } // namespace ujr
+
+#define DECLARE_JNI_INSTANCE_FIELD(clazz, member_name, type, decl)                                                     \
+    static ::ujr::JniInstanceField<decltype(clazz), member_name, type> decl(clazz)

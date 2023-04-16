@@ -30,7 +30,6 @@ namespace ujr {
     template<typename T>
     concept IsJniType = std::is_void_v<T> || requires(T t) {
         typename JniType<T>::Type;
-        typename JniType<T>::LocalRefType;
 
         // This probably requires some explanation. The idea is that we want to
         // make sure that the JniType<T>::Name is a valid JniClassName. We do that by

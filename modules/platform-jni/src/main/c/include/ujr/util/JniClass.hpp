@@ -128,3 +128,6 @@ namespace ujr {
         = requires(T t) { []<JniClassName Name, typename ObjectType>(const JniClass<Name, ObjectType> &clazz) {}(t); };
 
 } // namespace ujr
+
+#define DECLARE_JNI_CLASS(name, object_type, decl) static ::ujr::JniClass<name, object_type> decl
+#define DECLARE_OBJECT_JNI_CLASS(name, decl) DECLARE_JNI_CLASS(name, jobject, decl)

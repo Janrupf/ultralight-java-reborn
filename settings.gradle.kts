@@ -22,4 +22,5 @@ addExample("full")
 
 addModule("api")
 addModule("core")
+addModule("native-ap")
 addModule("platform-jni")

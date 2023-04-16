@@ -2,7 +2,10 @@ package net.janrupf.ujr.platform.jni.impl;
 
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
+import net.janrupf.ujr.core.platform.abstraction.config.UlConfig;
+import net.janrupf.ujr.platform.jni.ffi.NativeAccessOther;
 
+@NativeAccessOther(UlConfig.class) // We need native access to instances of UlConfig
 public class JNIUlPlatformProvider implements UlPlatformProvider {
     private JNIUlPlatform platform;
 
