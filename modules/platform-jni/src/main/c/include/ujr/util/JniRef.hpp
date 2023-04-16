@@ -127,7 +127,13 @@ namespace ujr {
     public:
         ~JniWeakRef() final {
             if (this->ref != nullptr) {
-                JniEnv::from_thread()->DeleteWeakGlobalRef(this->ref);
+                auto env = JniEnv::from_thread();
+
+                // For weak reference we allow the environment to not exist,
+                // because the JVM may be shutting down.
+                if (env.is_valid()) {
+                    env->DeleteWeakGlobalRef(this->ref);
+                }
             }
         }
 

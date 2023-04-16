@@ -91,4 +91,8 @@ namespace ujr {
         // Rethrow the exception
         throw JniException(std::variant<JniLocalRef<jthrowable>, std::exception_ptr>(std::move(exception)));
     }
+
+    JniException JniException::from_cpp(std::exception_ptr exception) {
+        return JniException(std::variant<JniLocalRef<jthrowable>, std::exception_ptr>(std::move(exception)));
+    }
 } // namespace ujr

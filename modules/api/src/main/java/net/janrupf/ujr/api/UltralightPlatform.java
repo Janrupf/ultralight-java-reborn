@@ -2,6 +2,7 @@ package net.janrupf.ujr.api;
 
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
+import net.janrupf.ujr.core.platform.abstraction.config.UlConfig;
 import net.janrupf.ujr.core.util.ApiProvider;
 
 public class UltralightPlatform {
@@ -42,5 +43,15 @@ public class UltralightPlatform {
      */
     private UltralightPlatform(UlPlatform platform) {
         this.platform = platform;
+    }
+
+    /**
+     * Sets the configuration for the platform.
+     *
+     * @param config the configuration
+     * @throws IllegalArgumentException if the configuration is invalid
+     */
+    public void setConfig(UlConfig config) {
+        platform.setConfig(config);
     }
 }

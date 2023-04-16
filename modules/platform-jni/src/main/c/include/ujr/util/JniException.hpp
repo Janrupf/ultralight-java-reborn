@@ -55,5 +55,13 @@ namespace ujr {
          * @param exception the exception to throw
          */
         [[noreturn]] static void throw_java_as_cpp(JniLocalRef<jthrowable> exception);
+
+        /**
+         * Constructs a JNI exception from a C++ exception.
+         *
+         * @param exception the C++ exception to construct the JNI exception from
+         * @return the JNI exception
+         */
+        [[nodiscard]] static JniException from_cpp(std::exception_ptr exception);
     };
 } // namespace ujr

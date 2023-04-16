@@ -12,4 +12,6 @@ extern "C" [[maybe_unused]] jint JNI_OnLoad(JavaVM *vm, void *) {
     return JNI_VERSION_1_8;
 }
 
-extern "C" [[maybe_unused]] void JNI_OnUnload(JavaVM *, void *) { ujr::JniEnv::deinit(); }
+extern "C" [[maybe_unused]] void JNI_OnUnload(JavaVM *, void *) {
+    ujr::JniEnv::deinit();
+}

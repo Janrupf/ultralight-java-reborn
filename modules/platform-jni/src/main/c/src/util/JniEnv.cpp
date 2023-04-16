@@ -44,7 +44,12 @@ namespace ujr {
         if (result == JNI_EDETACHED) {
             if (auto_attach) {
                 // Automatically attach the thread to the JVM
-                jvm->AttachCurrentThread(reinterpret_cast<void **>(&env), nullptr);
+                result = jvm->AttachCurrentThread(reinterpret_cast<void **>(&env), nullptr);
+
+                if (result != JNI_OK) {
+                    // JVM is probably shutting down, return an invalid environment
+                    return std::move(JniEnv(nullptr));
+                }
             } else {
                 // Not attached and not allowed to attach, return an invalid environment
                 return std::move(JniEnv(nullptr));
