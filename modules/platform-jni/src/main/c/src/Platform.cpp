@@ -1,5 +1,6 @@
 #include "net_janrupf_ujr_core_platform_abstraction_config_UlConfig_native_access.hpp"
 #include "net_janrupf_ujr_core_platform_abstraction_config_UlFaceWinding_native_access.hpp"
+#include "net_janrupf_ujr_core_platform_abstraction_config_UlFontHinting_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform.h"
 
 #include <Ultralight/platform/Config.h>
@@ -11,6 +12,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::UlConfig;
         using ujr::native_access::UlFaceWinding;
+        using ujr::native_access::UlFontHinting;
 
         // Check that the config object is not null
         env.wrap_argument(config).require_non_null_argument("config");
@@ -30,7 +32,20 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env
         } else if (face_winding == UlFaceWinding::COUNTER_CLOCKWISE.get(env)) {
             native_config.face_winding = ultralight::FaceWinding::CounterClockwise;
         } else {
-            throw std::runtime_error("Invalid face winding");
+            throw std::runtime_error("Unexpected face winding value");
+        }
+
+        auto font_hinting = UlConfig::FONT_HINTING.get(env, config).require_non_null_argument("config.fontHinting");
+        if (font_hinting == UlFontHinting::SMOOTH.get(env)) {
+            native_config.font_hinting = ultralight::FontHinting::Smooth;
+        } else if (font_hinting == UlFontHinting::NORMAL.get(env)) {
+            native_config.font_hinting = ultralight::FontHinting::Normal;
+        } else if (font_hinting == UlFontHinting::MONOCHROME.get(env)) {
+            native_config.font_hinting = ultralight::FontHinting::Monochrome;
+        } else if (font_hinting == UlFontHinting::NONE.get(env)) {
+            native_config.font_hinting = ultralight::FontHinting::None;
+        } else {
+            throw std::runtime_error("Unexpected font hinting value");
         }
     });
 }

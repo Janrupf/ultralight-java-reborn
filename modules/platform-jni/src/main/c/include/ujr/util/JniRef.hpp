@@ -27,14 +27,13 @@ namespace ujr {
     template<typename T>
         requires IsJniType<T>
     class JniRef {
-        template <typename O>
-        friend class JniLocalRef;
+        template<typename O> friend class JniLocalRef;
 
     public:
         /**
          * The C++ JNI type of the object this reference represents.
          */
-        using AsJniType = JniType<T>::Type;
+        using AsJniType = typename JniType<T>::Type;
 
         /**
          * The JNI binary name of the object class this reference presents.
@@ -42,14 +41,14 @@ namespace ujr {
         static constexpr JniClassName AsJniName = JniType<T>::Name;
 
     protected:
-        JniType<T>::Type ref;
+        typename JniType<T>::Type ref;
 
         /**
          * Creates a new JNI reference.
          *
          * @param ref the JNI reference
          */
-        explicit JniRef(JniType<T>::Type ref)
+        explicit JniRef(typename JniType<T>::Type ref)
             : ref(ref) {}
 
     public:
@@ -107,7 +106,6 @@ namespace ujr {
             return this->ref == other.ref || env->IsSameObject(this->ref, other.ref);
         }
 
-
         /**
          * Compares this reference to another reference.
          *
@@ -121,22 +119,13 @@ namespace ujr {
         }
 
         /**
-         * Compares this reference to another reference.
-         *
-         * @tparam O the type of the other reference
-         * @param other the other reference
-         * @return true if the references are equal (refer to the same object!), false otherwise
-         */
-        template<typename O = T> bool operator==(const JniLocalRef<O> &other) const { return ref_equals(other); }
-
-        /**
          * Clones this reference as a weak reference.
          *
          * @param target_env the environment to clone the reference in
          * @return the cloned weak reference
          */
         JniWeakRef<T> clone_as_weak(JniEnv target_env) const {
-            auto weak = reinterpret_cast<JniType<T>::Type>(target_env->NewWeakGlobalRef(this->ref));
+            auto weak = reinterpret_cast<typename JniType<T>::Type>(target_env->NewWeakGlobalRef(this->ref));
             JniExceptionCheck::throw_if_pending(target_env);
 
             return std::move(JniWeakRef<T>::wrap(std::move(target_env), weak));
@@ -149,7 +138,7 @@ namespace ujr {
          * @return the cloned strong local reference
          */
         JniLocalRef<T> clone_as_local(JniEnv target_env) const {
-            auto local = reinterpret_cast<JniType<T>::Type>(target_env->NewLocalRef(this->ref));
+            auto local = reinterpret_cast<typename JniType<T>::Type>(target_env->NewLocalRef(this->ref));
             JniExceptionCheck::throw_if_pending(target_env);
 
             return std::move(JniLocalRef<T>::wrap(std::move(target_env), local));
@@ -162,7 +151,7 @@ namespace ujr {
          * @return the cloned strong global reference
          */
         JniGlobalRef<T> clone_as_global(JniEnv target_env) const {
-            auto global = reinterpret_cast<JniType<T>::Type>(target_env->NewGlobalRef(this->ref));
+            auto global = reinterpret_cast<typename JniType<T>::Type>(target_env->NewGlobalRef(this->ref));
             JniExceptionCheck::throw_if_pending(target_env);
 
             return std::move(JniGlobalRef<T>::wrap(std::move(target_env), global));
@@ -176,7 +165,7 @@ namespace ujr {
      */
     template<typename T> class JniWeakRef final : public JniRef<T> {
     private:
-        explicit JniWeakRef(JniType<T>::Type ref)
+        explicit JniWeakRef(typename JniType<T>::Type ref)
             : JniRef<T>(ref) {}
 
     public:
@@ -228,7 +217,7 @@ namespace ujr {
          * @param ref the JNI reference
          * @return the wrapped reference
          */
-        static JniWeakRef wrap(JniType<T>::Type ref) { return JniWeakRef(ref); }
+        static JniWeakRef wrap(typename JniType<T>::Type ref) { return JniWeakRef(ref); }
     };
 
     /**
@@ -238,7 +227,7 @@ namespace ujr {
      */
     template<typename T> class JniStrongRef : public JniRef<T> {
     protected:
-        explicit JniStrongRef(JniType<T>::Type ref)
+        explicit JniStrongRef(typename JniType<T>::Type ref)
             : JniRef<T>(ref) {}
 
     public:
@@ -299,7 +288,7 @@ namespace ujr {
         JniEnv env;
         bool needs_delete;
 
-        explicit JniLocalRef(JniEnv env, JniType<T>::Type ref, bool needs_delete)
+        explicit JniLocalRef(JniEnv env, typename JniType<T>::Type ref, bool needs_delete)
             : JniStrongRef<T>(ref)
             , env(std::move(env))
             , needs_delete(needs_delete) {}
@@ -315,7 +304,7 @@ namespace ujr {
             : JniStrongRef<T>(other.ref)
             , env(other.env)
             , needs_delete(true) {
-            this->ref = reinterpret_cast<JniType<T>::Type>(this->env->NewLocalRef(other.ref));
+            this->ref = reinterpret_cast<typename JniType<T>::Type>(this->env->NewLocalRef(other.ref));
         }
 
         JniLocalRef(JniLocalRef &&other) noexcept
@@ -330,7 +319,7 @@ namespace ujr {
 
             this->env = other.env;
             this->needs_delete = true;
-            this->ref = reinterpret_cast<JniType<T>::Type>(this->env->NewLocalRef(other.ref));
+            this->ref = reinterpret_cast<typename JniType<T>::Type>(this->env->NewLocalRef(other.ref));
 
             return *this;
         }
@@ -397,7 +386,7 @@ namespace ujr {
          * @return the cloned weak reference
          */
         JniWeakRef<T> clone_as_weak() const {
-            auto weak = reinterpret_cast<JniType<T>::Type>(env->NewWeakGlobalRef(this->ref));
+            auto weak = reinterpret_cast<typename JniType<T>::Type>(env->NewWeakGlobalRef(this->ref));
             JniExceptionCheck::throw_if_pending(env);
 
             return std::move(JniWeakRef<T>::wrap(weak));
@@ -409,7 +398,7 @@ namespace ujr {
          * @return the cloned strong local reference
          */
         JniLocalRef<T> clone_as_local() const {
-            auto local = reinterpret_cast<JniType<T>::Type>(env->NewLocalRef(this->ref));
+            auto local = reinterpret_cast<typename JniType<T>::Type>(env->NewLocalRef(this->ref));
             JniExceptionCheck::throw_if_pending(env);
 
             return std::move(JniLocalRef<T>::wrap(env, local));
@@ -421,7 +410,7 @@ namespace ujr {
          * @return the cloned strong global reference
          */
         JniGlobalRef<T> clone_as_global() const {
-            auto global = reinterpret_cast<JniType<T>::Type>(env->NewGlobalRef(this->ref));
+            auto global = reinterpret_cast<typename JniType<T>::Type>(env->NewGlobalRef(this->ref));
             JniExceptionCheck::throw_if_pending(env);
 
             return std::move(JniGlobalRef<T>::wrap(global));
@@ -436,7 +425,7 @@ namespace ujr {
          * @param ref the JNI reference
          * @return the wrapped reference
          */
-        static JniLocalRef wrap(JniEnv env, JniType<T>::Type ref) { return JniLocalRef(env, ref, true); }
+        static JniLocalRef wrap(JniEnv env, typename JniType<T>::Type ref) { return JniLocalRef(env, ref, true); }
 
         /**
          * Wraps a JNI reference into a local reference which cannot be deleted.
@@ -447,7 +436,9 @@ namespace ujr {
          * @param ref the JNI reference
          * @return the wrapped reference
          */
-        static JniLocalRef wrap_nodelete(JniEnv env, JniType<T>::Type ref) { return JniLocalRef(env, ref, false); }
+        static JniLocalRef wrap_nodelete(JniEnv env, typename JniType<T>::Type ref) {
+            return JniLocalRef(env, ref, false);
+        }
 
         // SPECIALIZATIONS
 
@@ -520,7 +511,7 @@ namespace ujr {
      */
     template<typename T> class JniGlobalRef final : public JniStrongRef<T> {
     private:
-        explicit JniGlobalRef(JniType<T>::Type ref)
+        explicit JniGlobalRef(typename JniType<T>::Type ref)
             : JniStrongRef<T>(ref) {}
 
     public:
@@ -566,6 +557,21 @@ namespace ujr {
          * @param ref the JNI reference
          * @return the wrapped reference
          */
-        static JniGlobalRef wrap(JniType<T>::Type ref) { return JniGlobalRef(ref); }
+        static JniGlobalRef wrap(typename JniType<T>::Type ref) { return JniGlobalRef(ref); }
     };
+
+    // Comparison operators
+    // C++20 forces us to declare them outside the class because otherwise it considers
+    // them to be ambiguous
+
+    /**
+     * Compares this reference to another reference.
+     *
+     * @tparam O the type of the other reference
+     * @param other the other reference
+     * @return true if the references are equal (refer to the same object!), false otherwise
+     */
+    template<typename A, typename B> bool operator==(const JniLocalRef<A> &a, const JniLocalRef<B> &b) {
+        return a.ref_equals(b);
+    }
 } // namespace ujr

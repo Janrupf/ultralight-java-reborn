@@ -32,11 +32,11 @@ namespace ujr {
         return *this;
     }
 
-    void JniEnv::init(JavaVM *jvm) { JniEnv::jvm = jvm; }
+    void JniEnv::init(JavaVM *o_jvm) { JniEnv::jvm = o_jvm; }
 
     void JniEnv::deinit() { JniEnv::jvm = nullptr; }
 
-    JniEnv JniEnv::from_existing(JNIEnv *env) { return std::move(JniEnv(env)); }
+    JniEnv JniEnv::from_existing(JNIEnv *env) { return JniEnv(env); }
 
     JniEnv JniEnv::from_thread(bool auto_attach) {
         JNIEnv *env;

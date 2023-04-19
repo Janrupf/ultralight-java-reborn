@@ -47,7 +47,7 @@ namespace ujr {
 
         template<typename T, typename... Args>
             requires IsJniRefType<T>
-        JniType<T>::LocalRefType invoke(const JniEnv &env, jmethodID id, jobject obj, Args... args) {
+        typename JniType<T>::LocalRefType invoke(const JniEnv &env, jmethodID id, jobject obj, Args... args) {
             return JniType<T>::LocalRefType::wrap(
                 env,
                 JniInvoker<typename JniType<T>::Type>::invoke(env, id, obj, args...)
@@ -56,7 +56,7 @@ namespace ujr {
 
         template<typename T, typename... Args>
             requires IsJniRefType<T>
-        JniType<T>::LocalRefType
+        typename JniType<T>::LocalRefType
         invoke_non_virtual(const JniEnv &env, jclass clazz, jmethodID id, jobject obj, Args... args) {
             return JniType<T>::LocalRefType::wrap(
                 env,
@@ -66,7 +66,7 @@ namespace ujr {
 
         template<typename T, typename... Args>
             requires IsJniRefType<T>
-        JniType<T>::LocalRefType invoke_static(const JniEnv &env, jclass clazz, jmethodID id, Args... args) {
+        typename JniType<T>::LocalRefType invoke_static(const JniEnv &env, jclass clazz, jmethodID id, Args... args) {
             return JniType<T>::LocalRefType::wrap(
                 env,
                 JniInvoker<typename JniType<T>::Type>::invoke_static(env, clazz, id, args...)
@@ -77,19 +77,19 @@ namespace ujr {
 
         template<typename T, typename... Args>
             requires(IsJniValueType<T>)
-        JniType<T>::Type invoke(const JniEnv &env, jmethodID id, jobject obj, Args... args) {
+        typename JniType<T>::Type invoke(const JniEnv &env, jmethodID id, jobject obj, Args... args) {
             return JniInvoker<typename JniType<T>::Type>::invoke(env, id, obj, args...);
         }
 
         template<typename T, typename... Args>
             requires(IsJniValueType<T>)
-        JniType<T>::Type invoke_non_virtual(const JniEnv &env, jclass clazz, jmethodID id, jobject obj, Args... args) {
+        typename JniType<T>::Type invoke_non_virtual(const JniEnv &env, jclass clazz, jmethodID id, jobject obj, Args... args) {
             return JniInvoker<typename JniType<T>::Type>::invoke_non_virtual(env, clazz, id, obj, args...);
         }
 
         template<typename T, typename... Args>
             requires(IsJniValueType<T>)
-        JniType<T>::Type invoke_static(const JniEnv &env, jclass clazz, jmethodID id, Args... args) {
+        typename JniType<T>::Type invoke_static(const JniEnv &env, jclass clazz, jmethodID id, Args... args) {
             return JniInvoker<typename JniType<T>::Type>::invoke_static(env, clazz, id, args...);
         }
 
@@ -407,7 +407,7 @@ namespace ujr {
         {
             this->resolve(env);
 
-            auto obj = reinterpret_cast<JniType<Class>::Type>(
+            auto obj = reinterpret_cast<typename JniType<Class>::Type>(
                 env->NewObject(this->clazz.get(env), this->id, JniTypeConverter<FnArgs>::convert_to_jni(args)...)
             );
 

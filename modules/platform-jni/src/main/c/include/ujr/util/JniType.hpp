@@ -16,7 +16,7 @@ namespace ujr {
      * @tparam T the type to get the JNI type of
      */
     template<typename T> struct JniType {
-        using Type = T::AsJniType;
+        using Type = typename T::AsJniType;
         using LocalRefType = JniLocalRef<Type>;
 
         static constexpr JniClassName Name = T::AsJniName;
@@ -145,7 +145,7 @@ namespace ujr {
          * @param t the value to convert
          * @return t
          */
-        static JniType<T>::Type convert_to_jni(T t)
+        static typename JniType<T>::Type convert_to_jni(T t)
             requires(!IsJniRefWrapper<T>)
         {
             return t;
@@ -157,7 +157,7 @@ namespace ujr {
          * @param t the reference to convert
          * @return the converted reference
          */
-        static JniType<T>::Type convert_to_jni(T t)
+        static typename JniType<T>::Type convert_to_jni(T t)
             requires IsJniRefWrapper<T>
         {
             return t.get();
@@ -172,7 +172,7 @@ namespace ujr {
          * @param t the value to convert
          * @return t
          */
-        static T convert_from_jni([[maybe_unused]] const JniEnv &env, JniType<T>::Type t)
+        static T convert_from_jni([[maybe_unused]] const JniEnv &env, typename JniType<T>::Type t)
             requires(IsJniValueType<T>)
         {
             return t;
@@ -185,7 +185,7 @@ namespace ujr {
          * @param t the reference to convert
          * @return the converted reference
          */
-        static JniType<T>::LocalRefType convert_from_jni(const JniEnv &env, JniType<T>::Type t)
+        static typename JniType<T>::LocalRefType convert_from_jni(const JniEnv &env, typename JniType<T>::Type t)
             requires IsJniRefType<T>
         {
             return JniType<T>::LocalRefType::wrap(env, t);

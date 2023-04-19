@@ -30,7 +30,7 @@ namespace ujr {
         /**
          * The C++ JNI type of the object this class represents.
          */
-        using AsJniType = JniType<ObjectType>::Type;
+        using AsJniType = typename JniType<ObjectType>::Type;
 
         /**
          * The JNI binary name of the class.

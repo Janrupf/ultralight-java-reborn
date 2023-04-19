@@ -36,7 +36,7 @@ namespace ujr {
                 std::rethrow_exception(exception_ptr);
             } catch (const JniException &e) {
                 // This is a JNI exception, so we can delegate the translation
-                return std::move(e.translate_to_java());
+                return e.translate_to_java();
             } catch (const std::exception &e) {
                 // This is a C++ exception, so we need to translate it to a Java exception
                 auto env = JniEnv::from_thread(false);
@@ -64,7 +64,7 @@ namespace ujr {
                 }
 
                 // And finally construct the actual exception
-                return std::move(CPP_EXCEPTION_CONSTRUCTOR.invoke(env, message));
+                return CPP_EXCEPTION_CONSTRUCTOR.invoke(env, message);
             }
         } else {
             std::abort(); // UNREACHABLE

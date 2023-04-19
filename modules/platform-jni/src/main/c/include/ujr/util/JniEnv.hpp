@@ -27,9 +27,9 @@ namespace ujr {
         /**
          * Stores the reference to the JVM instance.
          *
-         * @param jvm the jvm instance
+         * @param o_jvm the jvm instance
          */
-        static void init(JavaVM *jvm);
+        static void init(JavaVM *o_jvm);
 
         /**
          * Clears the reference to the JVM instance.
