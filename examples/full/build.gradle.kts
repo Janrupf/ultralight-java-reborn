@@ -13,7 +13,6 @@ application {
 
 dependencies {
     implementation(project(":modules:ultralight-java-reborn-core"))
-    implementation(project(":modules:ultralight-java-reborn-api"))
     runtimeOnly(project(":modules:ultralight-java-reborn-platform-jni"))
 
     // Only used in the example, not required for Ultralight Java Reborn

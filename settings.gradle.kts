@@ -20,7 +20,6 @@ fun addModule(name: String) {
 
 addExample("full")
 
-addModule("api")
 addModule("core")
 addModule("native-ap")
 addModule("platform-jni")

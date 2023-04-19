@@ -7,9 +7,6 @@ import net.janrupf.ujr.core.platform.PlatformEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class UJRFullExample {
     public static void main(String[] args) {
         Logger logger = LogManager.getLogger(UJRFullExample.class);
