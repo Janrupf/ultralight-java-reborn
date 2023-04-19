@@ -1,6 +1,6 @@
-#include "net_janrupf_ujr_core_platform_abstraction_config_UlConfig_native_access.hpp"
-#include "net_janrupf_ujr_core_platform_abstraction_config_UlFaceWinding_native_access.hpp"
-#include "net_janrupf_ujr_core_platform_abstraction_config_UlFontHinting_native_access.hpp"
+#include "net_janrupf_ujr_api_config_UlConfig_native_access.hpp"
+#include "net_janrupf_ujr_api_config_UlFaceWinding_native_access.hpp"
+#include "net_janrupf_ujr_api_config_UlFontHinting_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_native_access.hpp"
 

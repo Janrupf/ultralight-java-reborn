@@ -1,10 +1,8 @@
 package net.janrupf.ujr.platform.jni.impl;
 
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
-import net.janrupf.ujr.core.platform.abstraction.config.UlConfig;
+import net.janrupf.ujr.api.config.UlConfig;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
-
-import java.util.Objects;
 
 public class JNIUlPlatform implements UlPlatform {
     @NativeAccess

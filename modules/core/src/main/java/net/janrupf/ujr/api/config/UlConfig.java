@@ -1,4 +1,4 @@
-package net.janrupf.ujr.core.platform.abstraction.config;
+package net.janrupf.ujr.api.config;
 
 import java.lang.annotation.Native;
 

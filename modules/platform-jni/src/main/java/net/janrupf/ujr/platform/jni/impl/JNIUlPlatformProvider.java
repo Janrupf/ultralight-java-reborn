@@ -2,9 +2,9 @@ package net.janrupf.ujr.platform.jni.impl;
 
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
-import net.janrupf.ujr.core.platform.abstraction.config.UlConfig;
-import net.janrupf.ujr.core.platform.abstraction.config.UlFaceWinding;
-import net.janrupf.ujr.core.platform.abstraction.config.UlFontHinting;
+import net.janrupf.ujr.api.config.UlConfig;
+import net.janrupf.ujr.api.config.UlFaceWinding;
+import net.janrupf.ujr.api.config.UlFontHinting;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccessOther;
 
 @NativeAccessOther({

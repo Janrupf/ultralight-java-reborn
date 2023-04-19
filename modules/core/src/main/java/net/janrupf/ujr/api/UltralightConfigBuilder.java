@@ -1,8 +1,8 @@
 package net.janrupf.ujr.api;
 
-import net.janrupf.ujr.core.platform.abstraction.config.UlConfig;
-import net.janrupf.ujr.core.platform.abstraction.config.UlFaceWinding;
-import net.janrupf.ujr.core.platform.abstraction.config.UlFontHinting;
+import net.janrupf.ujr.api.config.UlConfig;
+import net.janrupf.ujr.api.config.UlFaceWinding;
+import net.janrupf.ujr.api.config.UlFontHinting;
 
 /**
  * Helper class to create a new {@link UlConfig} instance with a fluent API.

@@ -2,7 +2,7 @@ package net.janrupf.ujr.api;
 
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
-import net.janrupf.ujr.core.platform.abstraction.config.UlConfig;
+import net.janrupf.ujr.api.config.UlConfig;
 import net.janrupf.ujr.core.util.ApiProvider;
 
 public class UltralightPlatform {

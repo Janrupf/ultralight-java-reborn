@@ -1,4 +1,4 @@
-package net.janrupf.ujr.core.platform.abstraction.config;
+package net.janrupf.ujr.api.config;
 
 /**
  *  The winding order for front-facing triangles. (Only used when the GPU renderer is used)
