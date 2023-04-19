@@ -105,9 +105,9 @@ namespace ujr {
 
             auto java_clazz = clazz.get(env);
             if constexpr (Static) {
-                id = env->GetStaticFieldID(java_clazz, Name, JniType<T>::AsJniName);
+                id = env->GetStaticFieldID(java_clazz, Name, JniType<T>::Name);
             } else {
-                id = env->GetFieldID(java_clazz, Name, JniType<T>::AsJniName);
+                id = env->GetFieldID(java_clazz, Name, JniType<T>::Name);
             }
 
             JniExceptionCheck::throw_if_pending(env);

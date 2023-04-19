@@ -56,6 +56,23 @@ namespace ujr {
     template<typename T>
     concept IsJniValueType = IsJniType<T> && !IsJniRefType<T> && !std::is_void_v<T>;
 
+    template<typename T>
+        requires IsJniType<T>
+    class JniRef;
+
+    /**
+     * Concept which requires that a type is a JNI reference type wrapper.
+     *
+     * @tparam T the type to check
+     */
+    template<typename T>
+    concept IsJniRefWrapper = requires(T t) {
+        []<typename X>(const JniRef<X> &ref)
+            requires IsJniType<X>
+        {}
+        (t);
+    };
+
     // JNI type SPECIALIZATIONS
 #define JNI_VALUE_TYPE_SPECIALIZATION(j_type, class_name)                                                              \
     template<> struct JniType<j_type> {                                                                                \
@@ -129,7 +146,7 @@ namespace ujr {
          * @return t
          */
         static JniType<T>::Type convert_to_jni(T t)
-            requires IsJniValueType<T>
+            requires(!IsJniRefWrapper<T>)
         {
             return t;
         }
@@ -141,7 +158,7 @@ namespace ujr {
          * @return the converted reference
          */
         static JniType<T>::Type convert_to_jni(T t)
-            requires IsJniRefType<T>
+            requires IsJniRefWrapper<T>
         {
             return t.get();
         }
@@ -156,7 +173,7 @@ namespace ujr {
          * @return t
          */
         static T convert_from_jni([[maybe_unused]] const JniEnv &env, JniType<T>::Type t)
-            requires IsJniValueType<T>
+            requires(IsJniValueType<T>)
         {
             return t;
         }

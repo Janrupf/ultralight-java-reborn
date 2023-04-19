@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Ultralight/String16.h>
+
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -355,6 +357,26 @@ namespace ujr {
             result.resize(utf8_length);
 
             env->GetStringUTFRegion(this->ref, 0, utf8_length, result.data());
+            JniExceptionCheck::throw_if_pending(env);
+
+            return result;
+        }
+
+        /**
+         * Retrieves the UTF-16 representation of this string.
+         *
+         * @return the UTF-16 representation
+         */
+        [[nodiscard]] ultralight::String16 to_utf16() const
+            requires std::is_same_v<typename JniType<T>::Type, jstring>
+        {
+            auto utf16_length = static_cast<size_t>(env->GetStringLength(this->ref));
+
+            // We can safely use a critical method here
+            auto *utf16_chars = env->GetStringCritical(this->ref, nullptr);
+            ultralight::String16 result(utf16_chars, utf16_length);
+            env->ReleaseStringCritical(this->ref, utf16_chars);
+
             JniExceptionCheck::throw_if_pending(env);
 
             return result;

@@ -87,13 +87,13 @@ public class CPPNativeAccessClassBuilder {
         String jniType = typeMapper.toJniType(clazz);
 
         // Add the class
-        content.append("    static ::ujr::JniClass<\"")
+        content.append("    static inline ::ujr::JniClass<\"")
                 .append(binaryClassName.replace('.', '/'))
                 .append("\", ")
                 .append(jniType)
                 .append("> ")
                 .append(declarationName)
-                .append(";\n");
+                .append("{};\n");
     }
 
     /**
@@ -123,7 +123,7 @@ public class CPPNativeAccessClassBuilder {
         }
 
         // Add the field
-        content.append("    static ::ujr::")
+        content.append("    static inline ::ujr::")
                 .append(cppClass)
                 .append("<")
                 .append("decltype(")
@@ -135,6 +135,9 @@ public class CPPNativeAccessClassBuilder {
                 .append(jniType)
                 .append("> ")
                 .append(declarationName)
+                .append("{")
+                .append(classDeclarationName)
+                .append("}")
                 .append(";\n");
     }
 
