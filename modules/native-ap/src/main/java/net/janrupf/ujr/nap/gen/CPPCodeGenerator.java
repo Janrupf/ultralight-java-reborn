@@ -14,10 +14,7 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Generates C++ code for the collected targets.
@@ -51,7 +48,7 @@ public class CPPCodeGenerator {
             }
 
             Set<Element> elementsInClass = nativeAccessClasses.computeIfAbsent(
-                    (TypeElement) enclosing, k -> new HashSet<>()
+                    (TypeElement) enclosing, k -> new LinkedHashSet<>() // Preserve insertion order
             );
 
             // Add the element so we know about it

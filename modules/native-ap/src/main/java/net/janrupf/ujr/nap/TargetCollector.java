@@ -2,6 +2,7 @@ package net.janrupf.ujr.nap;
 
 import javax.lang.model.element.Element;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -11,7 +12,7 @@ public class TargetCollector {
     private final Set<Element> nativeAccessElements;
 
     public TargetCollector() {
-        this.nativeAccessElements = new HashSet<>();
+        this.nativeAccessElements = new LinkedHashSet<>();
     }
 
     /**
