@@ -142,8 +142,8 @@ namespace ujr {
         auto get(const JniEnv &env) {
             this->resolve(env);
 
-            auto val = reinterpret_cast<typename JniType<T>::Type>(
-                _internal::JniFieldAccessor<typename JniType<Class>::Type>::get_static(
+            auto val = static_cast<typename JniType<T>::Type>(
+                _internal::JniFieldAccessor<typename JniType<T>::Type>::get_static(
                     env,
                     this->clazz.get(env),
                     this->id
@@ -168,7 +168,7 @@ namespace ujr {
             this->resolve(env);
 
             auto val = JniTypeConverter<T>::convert_to_jni(value);
-            _internal::JniFieldAccessor<typename JniType<Class>::Type>::set_static(
+            _internal::JniFieldAccessor<typename JniType<T>::Type>::set_static(
                 env,
                 this->clazz.get(env),
                 this->id,
@@ -212,8 +212,8 @@ namespace ujr {
             this->resolve(env);
 
             auto obj = JniTypeConverter<typename JniType<Class>::Type>::convert_to_jni(self);
-            auto val = reinterpret_cast<typename JniType<T>::Type>(
-                _internal::JniFieldAccessor<typename JniType<Class>::Type>::get(env, obj, this->id)
+            auto val = static_cast<typename JniType<T>::Type>(
+                _internal::JniFieldAccessor<typename JniType<T>::Type>::get(env, obj, this->id)
             );
 
             JniExceptionCheck::throw_if_pending(env);
@@ -236,7 +236,7 @@ namespace ujr {
 
             auto obj = JniTypeConverter<typename JniType<Class>::Type>::convert_to_jni(self);
             auto val = JniTypeConverter<T>::convert_to_jni(value);
-            _internal::JniFieldAccessor<typename JniType<Class>::Type>::set(env, obj, this->id, val);
+            _internal::JniFieldAccessor<typename JniType<T>::Type>::set(env, obj, this->id, val);
 
             JniExceptionCheck::throw_if_pending(env);
         }

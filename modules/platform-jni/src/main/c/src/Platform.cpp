@@ -47,5 +47,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env
         } else {
             throw std::runtime_error("Unexpected font hinting value");
         }
+
+        native_config.font_gamma = UlConfig::FONT_GAMMA.get(env, config);
     });
 }

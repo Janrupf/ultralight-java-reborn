@@ -157,7 +157,7 @@ namespace ujr {
          * @param t the reference to convert
          * @return the converted reference
          */
-        static typename JniType<T>::Type convert_to_jni(T t)
+        static auto convert_to_jni(T t)
             requires IsJniRefWrapper<T>
         {
             return t.get();
@@ -185,7 +185,7 @@ namespace ujr {
          * @param t the reference to convert
          * @return the converted reference
          */
-        static typename JniType<T>::LocalRefType convert_from_jni(const JniEnv &env, typename JniType<T>::Type t)
+        static auto convert_from_jni(const JniEnv &env, typename JniType<T>::Type t)
             requires IsJniRefType<T>
         {
             return JniType<T>::LocalRefType::wrap(env, t);
