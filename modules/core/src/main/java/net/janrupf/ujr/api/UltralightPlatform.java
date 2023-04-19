@@ -1,5 +1,6 @@
 package net.janrupf.ujr.api;
 
+import net.janrupf.ujr.api.logger.UltralightLogger;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
 import net.janrupf.ujr.api.config.UlConfig;
@@ -53,5 +54,23 @@ public class UltralightPlatform {
      */
     public void setConfig(UlConfig config) {
         platform.setConfig(config);
+    }
+
+    /**
+     * Set the Logger (to handle error messages and debug output).
+     *
+     * @param logger the logger
+     */
+    public void setLogger(UltralightLogger logger) {
+        platform.setLogger(logger);
+    }
+
+    /**
+     * Get the Logger.
+     *
+     * @return the current logger, or {@code null}, if none is set
+     */
+    public UltralightLogger getLogger() {
+        return platform.getLogger();
     }
 }
