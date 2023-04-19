@@ -27,6 +27,9 @@ namespace ujr {
     template<typename T>
         requires IsJniType<T>
     class JniRef {
+        template <typename O>
+        friend class JniLocalRef;
+
     public:
         /**
          * The C++ JNI type of the object this reference represents.
@@ -89,6 +92,19 @@ namespace ujr {
             }
 
             return *this;
+        }
+
+        /**
+         * Compares this reference to another reference.
+         *
+         * @tparam O the type of the other reference
+         * @param env the JNI environment to use for checking
+         * @param other the other reference
+         * @return true if the references are equal (refer to the same object!), false otherwise
+         */
+        template<typename O = T> bool ref_equals(const JniEnv &env, const JniRef<O> &other) const {
+            // Avoid calling IsSameObject if the references are the same.
+            return this->ref == other.ref || env->IsSameObject(this->ref, other.ref);
         }
 
         /**
@@ -282,7 +298,8 @@ namespace ujr {
 
         JniLocalRef(JniLocalRef &&other) noexcept
             : JniStrongRef<T>(std::move(other))
-            , env(std::move(other.env)), needs_delete(other.needs_delete) {}
+            , env(std::move(other.env))
+            , needs_delete(other.needs_delete) {}
 
         JniLocalRef &operator=(const JniLocalRef &other) {
             if (this->needs_delete && this->ref != nullptr) {
@@ -353,6 +370,27 @@ namespace ujr {
         }
 
         /**
+         * Compares this reference to another reference.
+         *
+         * @tparam O the type of the other reference
+         * @param other the other reference
+         * @return true if the references are equal (refer to the same object!), false otherwise
+         */
+        template<typename O = T> bool ref_equals(const JniRef<O> &other) const {
+            // Avoid calling IsSameObject if the references are the same.
+            return this->ref == other.ref || env->IsSameObject(this->ref, other.ref);
+        }
+
+        /**
+         * Compares this reference to another reference.
+         *
+         * @tparam O the type of the other reference
+         * @param other the other reference
+         * @return true if the references are equal (refer to the same object!), false otherwise
+         */
+        template<typename O = T> bool operator==(const JniRef<O> &other) const { return ref_equals(other); }
+
+        /**
          * Clones this reference as a weak reference.
          *
          * @return the cloned weak reference
@@ -408,9 +446,7 @@ namespace ujr {
          * @param ref the JNI reference
          * @return the wrapped reference
          */
-        static JniLocalRef wrap_nodelete(JniEnv env, JniType<T>::Type ref) {
-            return JniLocalRef(env, ref, false);
-        }
+        static JniLocalRef wrap_nodelete(JniEnv env, JniType<T>::Type ref) { return JniLocalRef(env, ref, false); }
 
         // SPECIALIZATIONS
 

@@ -26,7 +26,7 @@ public class NameMapper {
                 lastWasLower = false;
             } else {
                 builder.append(Character.toUpperCase(c));
-                lastWasLower = true;
+                lastWasLower = Character.isLowerCase(c);
             }
         }
 
