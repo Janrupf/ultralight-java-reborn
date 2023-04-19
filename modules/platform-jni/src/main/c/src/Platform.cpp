@@ -2,17 +2,20 @@
 #include "net_janrupf_ujr_core_platform_abstraction_config_UlFaceWinding_native_access.hpp"
 #include "net_janrupf_ujr_core_platform_abstraction_config_UlFontHinting_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform.h"
+#include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_native_access.hpp"
 
 #include <Ultralight/platform/Config.h>
+#include <Ultralight/platform/Platform.h>
 
 #include "ujr/util/JniEntryGuard.hpp"
 
 JNIEXPORT void JNICALL
-Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env, jobject, jobject config) {
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env, jobject self, jobject config) {
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::UlConfig;
         using ujr::native_access::UlFaceWinding;
         using ujr::native_access::UlFontHinting;
+        using ujr::native_access::JNIUlPlatform;
 
         // Check that the config object is not null
         env.wrap_argument(config).require_non_null_argument("config");
@@ -49,5 +52,21 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env
         }
 
         native_config.font_gamma = UlConfig::FONT_GAMMA.get(env, config);
+        native_config.user_stylesheet
+            = UlConfig::USER_STYLESHEET.get(env, config).require_non_null_argument("config.userStylesheet").to_utf16();
+        native_config.force_repaint = UlConfig::FORCE_REPAINT.get(env, config);
+        native_config.animation_timer_delay = UlConfig::ANIMATION_TIMER_DELAY.get(env, config);
+        native_config.scroll_timer_delay = UlConfig::SCROLL_TIMER_DELAY.get(env, config);
+        native_config.recycle_delay = UlConfig::RECYCLE_DELAY.get(env, config);
+        native_config.memory_cache_size = UlConfig::MEMORY_CACHE_SIZE.get(env, config);
+        native_config.page_cache_size = UlConfig::PAGE_CACHE_SIZE.get(env, config);
+        native_config.override_ram_size = UlConfig::OVERRIDE_RAM_SIZE.get(env, config);
+        native_config.min_large_heap_size = UlConfig::MIN_LARGE_HEAP_SIZE.get(env, config);
+        native_config.min_small_heap_size = UlConfig::MIN_SMALL_HEAP_SIZE.get(env, config);
+        native_config.num_renderer_threads = UlConfig::NUM_RENDERER_THREADS.get(env, config);
+        native_config.max_update_time = UlConfig::MAX_UPDATE_TIME.get(env, config);
+        native_config.bitmap_alignment = UlConfig::BITMAP_ALIGNMENT.get(env, config);
+
+        reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self))->set_config(native_config);
     });
 }

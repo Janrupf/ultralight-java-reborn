@@ -7,6 +7,9 @@ import net.janrupf.ujr.core.platform.PlatformEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class UJRFullExample {
     public static void main(String[] args) {
         Logger logger = LogManager.getLogger(UJRFullExample.class);
@@ -48,8 +51,10 @@ public class UJRFullExample {
         UltralightPlatform platform = UltralightPlatform.instance();
 
         // Now it is time to set a few configuration options. We simply use a builder to create
-        // a new configuration object and then pass it to the platform. Here we use the defaults.
-        platform.setConfig(new UltralightConfigBuilder().cachePath("/tmp").build());
+        // a new configuration object and then pass it to the platform. Here we use the defaults
+        // for all options (where available), but you can customize them as you wish. The cache
+        // path is the only required option.
+        platform.setConfig(new UltralightConfigBuilder().cachePath(System.getProperty("java.io.tmpdir")).build());
 
         // After we are done using the library, we should tell it to perform cleanup
         ujr.cleanup();

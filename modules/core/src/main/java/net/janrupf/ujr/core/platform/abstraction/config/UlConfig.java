@@ -52,7 +52,7 @@ public class UlConfig {
      * styles for various DOM elements, scrollbars, and platform input widgets.
      */
     @Native
-    public String userStylesheet;
+    public String userStylesheet = "";
 
     /**
      * Whether or not we should continuously repaint any Views or compositor layers, regardless if
@@ -135,7 +135,7 @@ public class UlConfig {
      * {@code max(Runtime.getRuntime().availableProcessors() - 1, 1)}
      */
     @Native
-    public long numRenderThreads = 0;
+    public long numRendererThreads = 0;
 
     // TODO: Replace Renderer::Update with a javadoc link once this API has a Java binding.
     /**

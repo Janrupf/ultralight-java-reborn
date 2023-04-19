@@ -213,13 +213,13 @@ public class UltralightConfigBuilder extends UlConfig {
     /**
      * Sets the number of render threads.
      * <p>
-     * See {@link UlConfig#numRenderThreads} for more information.
+     * See {@link UlConfig#numRendererThreads} for more information.
      *
      * @param numRenderThreads the number of render threads to use
      * @return this
      */
-    public UltralightConfigBuilder numRenderThreads(long numRenderThreads) {
-        this.numRenderThreads = numRenderThreads;
+    public UltralightConfigBuilder numRendererThreads(long numRenderThreads) {
+        this.numRendererThreads = numRenderThreads;
         return this;
     }
 
