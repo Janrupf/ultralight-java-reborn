@@ -59,7 +59,7 @@ namespace ujr {
 
                 if (ref_clazz) {
                     // Class has not been garbage collected, we are good to go
-                    return std::move(ref_clazz); // NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                    return ref_clazz;
                 }
             }
 
@@ -90,7 +90,7 @@ namespace ujr {
             auto local_ref = JniLocalRef<jclass>::wrap(env, ref_clazz);
             clazz.emplace(local_ref.clone_as_weak());
 
-            return std::move(local_ref);
+            return local_ref;
         }
 
     public:
@@ -125,8 +125,9 @@ namespace ujr {
      * @tparam T the type to check
      */
     template<typename T>
-    concept IsJniClass
-        = requires(T t) { []<JniClassName Name, typename ObjectType>(const JniClass<Name, ObjectType> &clazz) {}(t); };
+    concept IsJniClass = requires(T t) {
+        []<JniClassName Name, typename ObjectType>([[maybe_unused]] const JniClass<Name, ObjectType> &clazz) {}(t);
+    };
 
 } // namespace ujr
 

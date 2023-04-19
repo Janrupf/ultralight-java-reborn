@@ -37,7 +37,7 @@ namespace ujr {
         // the JniType<T>::Name. This will cause a compile error if the JniType<T>::Name
         // is not a valid JniClassName. Since we are in a concept, this will cause the
         // concept to fail.
-        []<size_t N>(JniClassName<N> name) {}(JniType<T>::Name);
+        []<size_t N>([[maybe_unused]] JniClassName<N> name) {}(JniType<T>::Name);
     };
 
     /**
@@ -67,7 +67,7 @@ namespace ujr {
      */
     template<typename T>
     concept IsJniRefWrapper = requires(T t) {
-        []<typename X>(const JniRef<X> &ref)
+        []<typename X>([[maybe_unused]] const JniRef<X> &ref)
             requires IsJniType<X>
         {}
         (t);

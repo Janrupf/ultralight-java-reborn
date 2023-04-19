@@ -7,7 +7,7 @@
 #include "ujr/util/JniEntryGuard.hpp"
 
 JNIEXPORT void JNICALL
-Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env, jobject self, jobject config) {
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env, jobject, jobject config) {
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::UlConfig;
         using ujr::native_access::UlFaceWinding;

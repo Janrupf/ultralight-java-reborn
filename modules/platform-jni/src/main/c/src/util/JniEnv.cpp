@@ -49,16 +49,16 @@ namespace ujr {
 
                 if (result != JNI_OK) {
                     // JVM is probably shutting down, return an invalid environment
-                    return std::move(JniEnv(nullptr));
+                    return JniEnv(nullptr);
                 }
             } else {
                 // Not attached and not allowed to attach, return an invalid environment
-                return std::move(JniEnv(nullptr));
+                return JniEnv(nullptr);
             }
         }
 
         // The JNI environment should be valid at this point
-        return std::move(JniEnv(env));
+        return JniEnv(env);
     }
 
     JniEnv JniEnv::require_existing_from_thread() {
@@ -68,7 +68,7 @@ namespace ujr {
             throw std::runtime_error("Thread not attached to JVM");
         }
 
-        return std::move(env);
+        return env;
     }
 
     bool JniEnv::is_valid() const { return env != nullptr; }

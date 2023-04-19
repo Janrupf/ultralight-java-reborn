@@ -107,6 +107,28 @@ namespace ujr {
             return this->ref == other.ref || env->IsSameObject(this->ref, other.ref);
         }
 
+
+        /**
+         * Compares this reference to another reference.
+         *
+         * @tparam O the type of the other reference
+         * @param other the other reference
+         * @return true if the references are equal (refer to the same object!), false otherwise
+         */
+        template<typename O = T> bool ref_equals(const JniLocalRef<O> &other) const {
+            // Avoid calling IsSameObject if the references are the same.
+            return this->ref == other.ref || other.associated_env()->IsSameObject(this->ref, other.ref);
+        }
+
+        /**
+         * Compares this reference to another reference.
+         *
+         * @tparam O the type of the other reference
+         * @param other the other reference
+         * @return true if the references are equal (refer to the same object!), false otherwise
+         */
+        template<typename O = T> bool operator==(const JniLocalRef<O> &other) const { return ref_equals(other); }
+
         /**
          * Clones this reference as a weak reference.
          *
@@ -349,12 +371,12 @@ namespace ujr {
         /**
          * Throws an IllegalArgumentException if this reference is null.
          *
-         * @param env the JNI environment to use for checking
+         * @param o_env the JNI environment to use for checking
          * @param name the name of the argument
          * @return this
          */
-        const JniLocalRef &require_non_null_argument(const JniEnv &env, std::string name) override {
-            JniRef<T>::require_non_null_argument(env, std::move(name));
+        const JniLocalRef &require_non_null_argument(const JniEnv &o_env, std::string name) override {
+            JniRef<T>::require_non_null_argument(o_env, std::move(name));
             return *this;
         }
 
@@ -368,27 +390,6 @@ namespace ujr {
             JniRef<T>::require_non_null_argument(env, std::move(name));
             return *this;
         }
-
-        /**
-         * Compares this reference to another reference.
-         *
-         * @tparam O the type of the other reference
-         * @param other the other reference
-         * @return true if the references are equal (refer to the same object!), false otherwise
-         */
-        template<typename O = T> bool ref_equals(const JniRef<O> &other) const {
-            // Avoid calling IsSameObject if the references are the same.
-            return this->ref == other.ref || env->IsSameObject(this->ref, other.ref);
-        }
-
-        /**
-         * Compares this reference to another reference.
-         *
-         * @tparam O the type of the other reference
-         * @param other the other reference
-         * @return true if the references are equal (refer to the same object!), false otherwise
-         */
-        template<typename O = T> bool operator==(const JniRef<O> &other) const { return ref_equals(other); }
 
         /**
          * Clones this reference as a weak reference.

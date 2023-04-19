@@ -14,6 +14,8 @@ if(NOT DEFINED UJR_JNI_HEADER_DIR)
     message(SEND_ERROR "Missing UJR_JNI_HEADER_DIR, please set it to the path of the JNI header files")
 endif()
 
+option(UJR_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
+
 ###########################
 # Add 3rd party libraries #
 ###########################
@@ -22,6 +24,14 @@ include(cmake/Ultralight.cmake)
 find_package(JNI REQUIRED)
 if(NOT JNI_FOUND)
     message(SEND_ERROR "JNI could not be found")
+endif()
+
+if (UJR_WARNINGS_AS_ERRORS)
+    if (MSVC)
+        add_compile_options(/W4 /WX)
+    else()
+        add_compile_options(-Wall -Wextra -pedantic -Werror)
+    endif()
 endif()
 
 #####################
