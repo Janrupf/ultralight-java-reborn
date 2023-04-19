@@ -4,11 +4,9 @@ import net.janrupf.ujr.nap.util.NativeTypeMapper;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
 
 /**
  * Helper to generate C++ classes for native access.
@@ -77,22 +75,15 @@ public class CPPNativeAccessClassBuilder {
     }
 
     /**
-     * Adds a class accessor to the generated class.
+     * Adds the class accessor to the generated class.
      *
      * @param clazz           the class to add
-     * @param declarationName the name of the variable to declare
      */
-    public void addClass(TypeElement clazz, String declarationName) {
-        String binaryClassName = environment.getElementUtils().getBinaryName(clazz).toString();
-        String jniType = typeMapper.toJniType(clazz);
-
+    public void addClass(TypeElement clazz) {
         // Add the class
-        content.append("    static inline ::ujr::JniClass<\"")
-                .append(binaryClassName.replace('.', '/'))
-                .append("\", ")
-                .append(jniType)
-                .append("> ")
-                .append(declarationName)
+        content.append("    static inline ")
+                .append(typeMapper.toJniClassType(clazz))
+                .append(" CLAZZ")
                 .append("{};\n");
     }
 
@@ -100,10 +91,9 @@ public class CPPNativeAccessClassBuilder {
      * Adds a field accessor to the generated class.
      *
      * @param field                the field to add
-     * @param classDeclarationName the name of the class variable to use
      * @param declarationName      the name of the variable to declare
      */
-    public void addField(VariableElement field, String classDeclarationName, String declarationName) {
+    public void addField(VariableElement field, String declarationName) {
         TypeMirror fieldType = field.asType();
         TypeElement fieldClazz = (TypeElement) environment.getTypeUtils().asElement(fieldType);
 
@@ -126,19 +116,13 @@ public class CPPNativeAccessClassBuilder {
         content.append("    static inline ::ujr::")
                 .append(cppClass)
                 .append("<")
-                .append("decltype(")
-                .append(classDeclarationName)
-                .append("), ")
-                .append("\"")
+                .append("decltype(CLAZZ), \"")
                 .append(field.getSimpleName())
                 .append("\", ")
                 .append(jniType)
                 .append("> ")
                 .append(declarationName)
-                .append("{")
-                .append(classDeclarationName)
-                .append("}")
-                .append(";\n");
+                .append("{CLAZZ};\n");
     }
 
     /**

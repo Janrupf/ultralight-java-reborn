@@ -1,6 +1,7 @@
 package net.janrupf.ujr.nap.util;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -26,6 +27,17 @@ public class NativeTypeMapper {
      * @return the JNI type
      */
     public String toJniType(TypeElement element) {
+        return toJniType(element, true);
+    }
+
+    /**
+     * Converts the given type element to a native type.
+     *
+     * @param element               the element to convert
+     * @param enableJniWrapperTypes whether to enable C++ JNI wrapper types
+     * @return the JNI type
+     */
+    public String toJniType(TypeElement element, boolean enableJniWrapperTypes) {
         TypeMirror type = element.asType();
 
         // First check for primitive types
@@ -34,8 +46,16 @@ public class NativeTypeMapper {
             return primitive;
         }
 
+        PackageElement pkg = environment.getElementUtils().getPackageOf(element);
+        if (pkg != null && pkg.getQualifiedName().toString().startsWith("java.")) {
+            // Disable JNI wrapper types for Java builtin types
+            enableJniWrapperTypes = false;
+        }
+
         // Non-primitive type
-        if (isInstanceOf(element, "java.lang.String")) {
+        if (enableJniWrapperTypes) {
+            return toJniClassType(element);
+        } else if (isInstanceOf(element, "java.lang.String")) {
             return "jstring";
         } else if (isInstanceOf(element, "java.lang.Throwable")) {
             return "jthrowable";
@@ -91,5 +111,18 @@ public class NativeTypeMapper {
         TypeMirror targetMirror = target.asType();
 
         return environment.getTypeUtils().isAssignable(elementMirror, targetMirror);
+    }
+
+    /**
+     * Converts a type element to a JNI class type.
+     *
+     * @param clazz the element to convert
+     * @return the JNI class type
+     */
+    public String toJniClassType(TypeElement clazz) {
+        String binaryClassName = environment.getElementUtils().getBinaryName(clazz).toString();
+        String jniType = toJniType(clazz, false);
+
+        return "::ujr::JniClass<\"" + binaryClassName.replace('.', '/') + "\", " + jniType + ">";
     }
 }

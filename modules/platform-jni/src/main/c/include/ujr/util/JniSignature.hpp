@@ -26,6 +26,13 @@ namespace ujr {
             }
 
             /**
+             * Converts the compile time string to a class name.
+             *
+             * @return the class name
+             */
+            [[nodiscard]] constexpr JniClassName<N> as_class_name() const noexcept { return JniClassName(buffer); }
+
+            /**
              * Converts the compile time string to a C string.
              *
              * @return the C string
@@ -125,5 +132,18 @@ namespace ujr {
             _internal::CompileTimeString(")"),
             _internal::jni_type_name(JniType<R>::Name)
         );
+    };
+
+    /**
+     * Helper struct for constructing JNI class signatures.
+     *
+     * @tparam T the JNI class name
+     */
+    template<JniClassName T> struct JniClassSignature {
+        static constexpr JniClassName Signature
+            = _internal::concat_compile_time_strings(
+                  _internal::CompileTimeString("L"), _internal::jni_type_name(T), _internal::CompileTimeString(";")
+            )
+                  .as_class_name();
     };
 } // namespace ujr

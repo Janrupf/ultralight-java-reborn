@@ -102,10 +102,9 @@ public class CPPCodeGenerator {
                 typeElement.getSimpleName().toString()
         );
 
-        String classDeclaration = "CLAZZ";
 
         // Add the class itself
-        builder.addClass(typeElement, classDeclaration);
+        builder.addClass(typeElement);
 
         // Now add all the members
         for (Element element : elements) {
@@ -113,7 +112,6 @@ public class CPPCodeGenerator {
                 // It's a field
                 builder.addField(
                         (VariableElement) element,
-                        classDeclaration,
                         NameMapper.toScreamingSnakeCase(element.getSimpleName().toString())
                 );
             } else {

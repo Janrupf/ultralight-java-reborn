@@ -9,6 +9,7 @@
 
 #include "ujr/util/JniName.hpp"
 #include "ujr/util/JniRef.hpp"
+#include "ujr/util/JniSignature.hpp"
 #include "ujr/util/JniType.hpp"
 
 namespace ujr {
@@ -34,7 +35,7 @@ namespace ujr {
         /**
          * The JNI binary name of the class.
          */
-        static constexpr JniClassName AsJniName = Name;
+        static constexpr JniClassName AsJniName = JniClassSignature<Name>::Signature;
 
     private:
         std::mutex clazz_mutex;
