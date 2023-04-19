@@ -17,6 +17,20 @@ namespace ujr {
         // The underlying exception
         std::variant<JniLocalRef<jthrowable>, std::exception_ptr> exception;
 
+    protected:
+        /**
+         * Constructs a new JniException.
+         *
+         * The resulting exception will not be valid unless the `translate_to_java` method is
+         * overridden.
+         */
+        explicit JniException();
+
+        /**
+         * Constructs a new JniException from an existing Java or C++ exception.
+         *
+         * @param exception the existing exception
+         */
         explicit JniException(std::variant<JniLocalRef<jthrowable>, std::exception_ptr> exception);
 
     public:
@@ -63,5 +77,13 @@ namespace ujr {
          * @return the JNI exception
          */
         [[nodiscard]] static JniException from_cpp(std::exception_ptr exception);
+
+        /**
+         * Constructs a JNI exception from a Java exception.
+         *
+         * @param exception the Java exception to construct the JNI exception from
+         * @return the JNI exception
+         */
+        [[nodiscard]] static JniException from_java(JniLocalRef<jthrowable> exception);
     };
 } // namespace ujr

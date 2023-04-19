@@ -69,12 +69,27 @@ namespace ujr {
         }
 
         /**
-         * Determines whether this reference is valid.
+         * Determines whether this reference is null.
          *
          * @param env the JNI environment to use for checking
          * @return true if the reference is valid, false otherwise
          */
-        [[nodiscard]] bool is_valid(const JniEnv &env) const { return !env->IsSameObject(this->ref, nullptr); }
+        [[nodiscard]] bool is_null(const JniEnv &env) const { return env->IsSameObject(this->ref, nullptr); }
+
+        /**
+         * Throws an IllegalArgumentException if this reference is null.
+         *
+         * @param env the JNI environment to use for checking
+         * @param name the name of the argument
+         * @return this
+         */
+        virtual const JniRef &require_non_null_argument(const JniEnv &env, std::string name) {
+            if (this->is_null(env)) {
+                JniExceptionCheck::throw_illegal_argument(std::move(name), "must not be null");
+            }
+
+            return *this;
+        }
 
         /**
          * Clones this reference as a weak reference.
@@ -156,6 +171,18 @@ namespace ujr {
         }
 
         /**
+         * Throws an IllegalArgumentException if this reference is null.
+         *
+         * @param env the JNI environment to use for checking
+         * @param name the name of the argument
+         * @return this
+         */
+        const JniWeakRef &require_non_null_argument(const JniEnv &env, std::string name) final {
+            JniRef<T>::require_non_null_argument(env, std::move(name));
+            return *this;
+        }
+
+        /**
          * Wraps an existing JNI reference into a weak reference.
          *
          * The passed reference must be a weak reference.
@@ -215,51 +242,68 @@ namespace ujr {
         {
             env->Throw(get());
         }
+
+        /**
+         * Throws an IllegalArgumentException if this reference is null.
+         *
+         * @param env the JNI environment to use for checking
+         * @param name the name of the argument
+         * @return this
+         */
+        const JniStrongRef &require_non_null_argument(const JniEnv &env, std::string name) override {
+            JniRef<T>::require_non_null_argument(env, std::move(name));
+            return *this;
+        }
     };
 
     template<typename T> class JniLocalRef final : public JniStrongRef<T> {
     private:
         JniEnv env;
+        bool needs_delete;
 
-        explicit JniLocalRef(JniEnv env, JniType<T>::Type ref)
+        explicit JniLocalRef(JniEnv env, JniType<T>::Type ref, bool needs_delete)
             : JniStrongRef<T>(ref)
-            , env(std::move(env)) {}
+            , env(std::move(env))
+            , needs_delete(needs_delete) {}
 
     public:
         ~JniLocalRef() final {
-            if (this->ref != nullptr) {
+            if (this->needs_delete && this->ref != nullptr) {
                 this->env->DeleteLocalRef(this->ref);
             }
         }
 
         JniLocalRef(const JniLocalRef &other)
             : JniStrongRef<T>(other.ref)
-            , env(other.env) {
+            , env(other.env)
+            , needs_delete(true) {
             this->ref = reinterpret_cast<JniType<T>::Type>(this->env->NewLocalRef(other.ref));
         }
 
         JniLocalRef(JniLocalRef &&other) noexcept
             : JniStrongRef<T>(std::move(other))
-            , env(std::move(other.env)) {}
+            , env(std::move(other.env)), needs_delete(other.needs_delete) {}
 
         JniLocalRef &operator=(const JniLocalRef &other) {
-            if (this->ref != nullptr) {
+            if (this->needs_delete && this->ref != nullptr) {
                 this->env->DeleteLocalRef(this->ref);
             }
 
             this->env = other.env;
+            this->needs_delete = true;
             this->ref = reinterpret_cast<JniType<T>::Type>(this->env->NewLocalRef(other.ref));
 
             return *this;
         }
 
         JniLocalRef &operator=(JniLocalRef &&other) noexcept {
-            if (this->ref != nullptr) {
+            if (this->needs_delete && this->ref != nullptr) {
                 this->env->DeleteLocalRef(this->ref);
             }
 
             JniStrongRef<T>::operator=(std::move(other));
             this->env = std::move(other.env);
+            this->needs_delete = other.needs_delete;
 
             return *this;
         }
@@ -284,6 +328,29 @@ namespace ujr {
          * @return true if the reference is valid, false otherwise
          */
         operator bool() const { return is_valid(); } // NOLINT(google-explicit-constructor)
+
+        /**
+         * Throws an IllegalArgumentException if this reference is null.
+         *
+         * @param env the JNI environment to use for checking
+         * @param name the name of the argument
+         * @return this
+         */
+        const JniLocalRef &require_non_null_argument(const JniEnv &env, std::string name) override {
+            JniRef<T>::require_non_null_argument(env, std::move(name));
+            return *this;
+        }
+
+        /**
+         * Throws an IllegalArgumentException if this reference is null.
+         *
+         * @param name the name of the argument
+         * @return this
+         */
+        const JniLocalRef &require_non_null_argument(std::string name) {
+            JniRef<T>::require_non_null_argument(env, std::move(name));
+            return *this;
+        }
 
         /**
          * Clones this reference as a weak reference.
@@ -322,7 +389,7 @@ namespace ujr {
         }
 
         /**
-         * Wraps a JNI reference into a local reference.
+         * Wraps a JNI reference into a local reference which can be deleted.
          *
          * The passed reference must be a local reference.
          *
@@ -330,7 +397,20 @@ namespace ujr {
          * @param ref the JNI reference
          * @return the wrapped reference
          */
-        static JniLocalRef wrap(JniEnv env, JniType<T>::Type ref) { return JniLocalRef(env, ref); }
+        static JniLocalRef wrap(JniEnv env, JniType<T>::Type ref) { return JniLocalRef(env, ref, true); }
+
+        /**
+         * Wraps a JNI reference into a local reference which cannot be deleted.
+         *
+         * The passed reference must be a local reference.
+         *
+         * @param env the environment to the reference belongs to
+         * @param ref the JNI reference
+         * @return the wrapped reference
+         */
+        static JniLocalRef wrap_nodelete(JniEnv env, JniType<T>::Type ref) {
+            return JniLocalRef(env, ref, false);
+        }
 
         // SPECIALIZATIONS
 
@@ -426,6 +506,18 @@ namespace ujr {
             }
 
             JniStrongRef<T>::operator=(std::move(other));
+            return *this;
+        }
+
+        /**
+         * Throws an IllegalArgumentException if this reference is null.
+         *
+         * @param env the JNI environment to use for checking
+         * @param name the name of the argument
+         * @return this
+         */
+        const JniGlobalRef &require_non_null_argument(const JniEnv &env, std::string name) override {
+            JniRef<T>::require_non_null_argument(env, std::move(name));
             return *this;
         }
 

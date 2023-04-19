@@ -7,6 +7,9 @@ namespace ujr {
     static JniClass<"net/janrupf/ujr/platform/jni/exception/CPPException", jthrowable> CPP_EXCEPTION_CLASS;
     static JniConstructor<decltype(CPP_EXCEPTION_CLASS), jstring> CPP_EXCEPTION_CONSTRUCTOR(CPP_EXCEPTION_CLASS);
 
+    JniException::JniException()
+        : exception(nullptr) {}
+
     JniException::JniException(std::variant<JniLocalRef<jthrowable>, std::exception_ptr> exception)
         : exception(std::move(exception)) {}
 
@@ -89,10 +92,14 @@ namespace ujr {
 
     void JniException::throw_java_as_cpp(JniLocalRef<jthrowable> exception) {
         // Rethrow the exception
-        throw JniException(std::variant<JniLocalRef<jthrowable>, std::exception_ptr>(std::move(exception)));
+        throw JniException::from_java(std::move(exception));
     }
 
     JniException JniException::from_cpp(std::exception_ptr exception) {
+        return JniException(std::variant<JniLocalRef<jthrowable>, std::exception_ptr>(std::move(exception)));
+    }
+
+    JniException JniException::from_java(JniLocalRef<jthrowable> exception) {
         return JniException(std::variant<JniLocalRef<jthrowable>, std::exception_ptr>(std::move(exception)));
     }
 } // namespace ujr

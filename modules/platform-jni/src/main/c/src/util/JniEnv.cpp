@@ -1,5 +1,6 @@
 #include "ujr/util/JniEnv.hpp"
 
+#include <stdexcept>
 #include <utility>
 
 namespace ujr {
@@ -58,6 +59,16 @@ namespace ujr {
 
         // The JNI environment should be valid at this point
         return std::move(JniEnv(env));
+    }
+
+    JniEnv JniEnv::require_existing_from_thread() {
+        auto env = from_thread(false);
+
+        if (!env.is_valid()) {
+            throw std::runtime_error("Thread not attached to JVM");
+        }
+
+        return std::move(env);
     }
 
     bool JniEnv::is_valid() const { return env != nullptr; }

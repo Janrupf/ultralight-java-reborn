@@ -16,7 +16,6 @@ public class JNIUlPlatform implements UlPlatform {
 
     @Override
     public void setConfig(UlConfig config) {
-        Objects.requireNonNull(config, "config must not be null");
         nativeSetConfig(config);
     }
 

@@ -32,6 +32,7 @@ set(UJR_SOURCES
         src/util/JniEnv.cpp
         src/util/JniException.cpp
         src/util/JniExceptionCheck.cpp
+        src/util/JniIllegalArgumentException.cpp
         src/util/JniMethod.cpp
 
         src/Platform.cpp

@@ -49,7 +49,7 @@ public class UJRFullExample {
 
         // Now it is time to set a few configuration options. We simply use a builder to create
         // a new configuration object and then pass it to the platform. Here we use the defaults.
-        platform.setConfig(new UltralightConfigBuilder().build());
+        platform.setConfig(new UltralightConfigBuilder().cachePath("/tmp").build());
 
         // After we are done using the library, we should tell it to perform cleanup
         ujr.cleanup();

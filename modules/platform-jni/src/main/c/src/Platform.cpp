@@ -12,10 +12,17 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::UlConfig;
 
-        ultralight::Config config;
+        // Check that the config object is not null
+        env.wrap_argument(config).require_non_null_argument("config");
 
-        config.cache_path = UlConfig::CACHE_PATH.get(env, self).to_utf16();
-        config.resource_path_prefix = UlConfig::RESOURCE_PATH_PREFIX.get(env, self).to_utf16();
-        UlConfig::FACE_WINDING.get(env, self);
+        // Begin the translation
+        ultralight::Config native_config;
+
+        native_config.cache_path
+            = UlConfig::CACHE_PATH.get(env, config).require_non_null_argument("config.cachePath").to_utf16();
+        native_config.resource_path_prefix = UlConfig::RESOURCE_PATH_PREFIX.get(env, config)
+                                                 .require_non_null_argument("config.resourcePathPrefix")
+                                                 .to_utf16();
+        UlConfig::FACE_WINDING.get(env, config);
     });
 }

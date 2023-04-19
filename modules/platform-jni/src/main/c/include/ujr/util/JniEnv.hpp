@@ -3,6 +3,9 @@
 #include <jni.h>
 
 namespace ujr {
+    template <typename T>
+    class JniLocalRef;
+
     /**
      * Reference to a JNI environment.
      */
@@ -56,11 +59,33 @@ namespace ujr {
         static JniEnv from_thread(bool auto_attach = true);
 
         /**
+         * Creates a JniEnv from the current thread.
+         *
+         * The created environment will always be valid. If no environment is available,
+         * an exception is thrown.
+         *
+         * @return the created JniEnv
+         */
+        static JniEnv require_existing_from_thread();
+
+        /**
          * Determines whether this JniEnv is valid.
          *
          * @return true if this JniEnv is valid, false otherwise
          */
         [[nodiscard]] bool is_valid() const;
+
+        /**
+         * Wraps an argument passed to a JNI method.
+         *
+         * @tparam T the type of the argument
+         * @param argument the argument to wrap
+         * @return the wrapped argument
+         */
+        template<typename T>
+        [[nodiscard]] JniLocalRef<T> wrap_argument(T argument) {
+            return JniLocalRef<T>::wrap_nodelete(*this, argument);
+        }
 
         /**
          * Retrieves the underlying JNI environment.

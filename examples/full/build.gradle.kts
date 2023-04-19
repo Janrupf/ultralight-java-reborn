@@ -8,6 +8,7 @@ repositories {
 
 application {
     mainClass.set("net.janrupf.ujr.example.full.UJRFullExample")
+    applicationDefaultJvmArgs = listOf("-Xcheck:jni")
 }
 
 dependencies {
