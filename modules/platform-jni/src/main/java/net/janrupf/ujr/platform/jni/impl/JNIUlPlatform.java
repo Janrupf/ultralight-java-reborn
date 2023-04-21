@@ -11,7 +11,7 @@ public class JNIUlPlatform implements UlPlatform {
     private final long handle;
 
     @NativeAccess
-    private long logger;
+    private long logger; // Pointer to a native logger, TODO: Garbage collect?
 
     JNIUlPlatform(long handle) {
         this.handle = handle;

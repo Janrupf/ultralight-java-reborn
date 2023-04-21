@@ -157,7 +157,7 @@ namespace ujr {
          * @param t the reference to convert
          * @return the converted reference
          */
-        static auto convert_to_jni(T t)
+        static auto convert_to_jni(const T &t)
             requires IsJniRefWrapper<T>
         {
             return t.get();
@@ -208,6 +208,6 @@ namespace ujr {
      */
     template<typename Source, typename Target>
     concept IsJniConvertibleTo = requires(Source s) {
-        { JniTypeConverter<Target>::convert_to_jni(s) } -> std::convertible_to<typename JniType<Target>::Type>;
+        { JniTypeConverter<Source>::convert_to_jni(s) } -> std::convertible_to<typename JniType<Target>::Type>;
     };
 }; // namespace ujr

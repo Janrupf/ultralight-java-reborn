@@ -1,5 +1,6 @@
 package net.janrupf.ujr.platform.jni.impl;
 
+import net.janrupf.ujr.api.logger.UltralightLogLevel;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
 import net.janrupf.ujr.api.config.UlConfig;
@@ -10,7 +11,8 @@ import net.janrupf.ujr.platform.jni.ffi.NativeAccessOther;
 @NativeAccessOther({
         UlConfig.class,
         UlFaceWinding.class,
-        UlFontHinting.class
+        UlFontHinting.class,
+        UltralightLogLevel.class
 }) // We need native access to instances of UlConfig and related classes
 public class JNIUlPlatformProvider implements UlPlatformProvider {
     private JNIUlPlatform platform;
@@ -18,7 +20,7 @@ public class JNIUlPlatformProvider implements UlPlatformProvider {
     @Override
     public UlPlatform instance() {
         if (platform == null) {
-            // Not cached yes, so we need to retrieve the native instance
+            // Not cached yet, so we need to retrieve the native instance
             platform = new JNIUlPlatform(nativeInstance());
         }
 

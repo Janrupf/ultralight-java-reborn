@@ -47,6 +47,9 @@ public class UJRFullExample {
         // level platform abstraction.
         UltralightPlatform platform = UltralightPlatform.instance();
 
+        // Let's set a logger, so we can receive log messages from Ultralight.
+        platform.setLogger(new LoggerBridge(LogManager.getLogger("Ultralight")));
+
         // Now it is time to set a few configuration options. We simply use a builder to create
         // a new configuration object and then pass it to the platform. Here we use the defaults
         // for all options (where available), but you can customize them as you wish. The cache

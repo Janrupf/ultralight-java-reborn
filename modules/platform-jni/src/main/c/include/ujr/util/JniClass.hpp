@@ -117,6 +117,26 @@ namespace ujr {
          * @return the JNI class reference, or nullptr if the class could not be found or loaded
          */
         JniLocalRef<jclass> maybe_get(const JniEnv &env) { return std::move(do_get(env, false)); }
+
+        /**
+         * Allocates a new object of this class but does not call the constructor.
+         *
+         * This method should only be used if the object does not require
+         * the constructor to be called and is subsequently initialized by native code.
+         *
+         * A context switch to Java can be avoided by using this method.
+         *
+         * @param env the JNI environment to use
+         * @return the created local object reference
+         */
+        typename JniType<ObjectType>::LocalRefType alloc_object(const JniEnv &env) {
+            auto r_clazz = get(env);
+
+            auto obj = env->AllocObject(r_clazz);
+            JniExceptionCheck::throw_if_pending(env);
+
+            return JniType<ObjectType>::LocalRefType::wrap(env, obj);
+        }
     };
 
     /**

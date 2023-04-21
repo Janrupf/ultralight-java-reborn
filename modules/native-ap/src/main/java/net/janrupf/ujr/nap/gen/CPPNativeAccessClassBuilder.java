@@ -3,10 +3,13 @@ package net.janrupf.ujr.nap.gen;
 import net.janrupf.ujr.nap.util.NativeTypeMapper;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Helper to generate C++ classes for native access.
@@ -77,7 +80,7 @@ public class CPPNativeAccessClassBuilder {
     /**
      * Adds the class accessor to the generated class.
      *
-     * @param clazz           the class to add
+     * @param clazz the class to add
      */
     public void addClass(TypeElement clazz) {
         // Add the class
@@ -90,8 +93,8 @@ public class CPPNativeAccessClassBuilder {
     /**
      * Adds a field accessor to the generated class.
      *
-     * @param field                the field to add
-     * @param declarationName      the name of the variable to declare
+     * @param field           the field to add
+     * @param declarationName the name of the variable to declare
      */
     public void addField(VariableElement field, String declarationName) {
         TypeMirror fieldType = field.asType();
@@ -120,6 +123,62 @@ public class CPPNativeAccessClassBuilder {
                 .append(field.getSimpleName())
                 .append("\", ")
                 .append(jniType)
+                .append("> ")
+                .append(declarationName)
+                .append("{CLAZZ};\n");
+    }
+
+    /**
+     * Adds a method accessor to the generated class.
+     *
+     * @param method          the method to add
+     * @param declarationName the name of the variable to declare
+     */
+    public void addMethod(ExecutableElement method, String declarationName) {
+        TypeMirror returnType = method.getReturnType();
+        TypeElement returnClazz = (TypeElement) environment.getTypeUtils().asElement(returnType);
+
+        String jniReturnType;
+        if (returnClazz != null) {
+            jniReturnType = typeMapper.toJniType(returnClazz);
+        } else {
+            // Primitive types don't have an associated element
+            jniReturnType = typeMapper.toPrimitiveJniType(returnType);
+        }
+
+        List<String> jniParameterTypes = new ArrayList<>();
+        for (VariableElement parameter : method.getParameters()) {
+            TypeMirror parameterType = parameter.asType();
+            TypeElement parameterClazz = (TypeElement) environment.getTypeUtils().asElement(parameterType);
+
+            String jniType;
+            if (parameterClazz != null) {
+                jniType = typeMapper.toJniType(parameterClazz);
+            } else {
+                // Primitive types don't have an associated element
+                jniType = typeMapper.toPrimitiveJniType(parameterType);
+            }
+
+            jniParameterTypes.add(jniType);
+        }
+
+        String cppClass;
+        if (method.getModifiers().contains(Modifier.STATIC)) {
+            cppClass = "JniStaticMethod";
+        } else {
+            cppClass = "JniInstanceMethod";
+        }
+
+        // Add the method
+        content.append("    static inline ::ujr::")
+                .append(cppClass)
+                .append("<")
+                .append("decltype(CLAZZ), \"")
+                .append(method.getSimpleName())
+                .append("\", ")
+                .append(jniReturnType)
+                .append(", ")
+                .append(String.join(", ", jniParameterTypes))
                 .append("> ")
                 .append(declarationName)
                 .append("{CLAZZ};\n");

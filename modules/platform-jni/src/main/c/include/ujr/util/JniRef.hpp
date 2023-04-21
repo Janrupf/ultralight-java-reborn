@@ -251,6 +251,17 @@ namespace ujr {
         T get() const { return this->ref; }
 
         /**
+         * Retrieves the underlying JNI reference and resets this reference to null.
+         *
+         * @return the JNI reference
+         */
+        T leak() {
+            auto ref = this->ref;
+            this->ref = nullptr;
+            return ref;
+        }
+
+        /**
          * Retrieves the underlying JNI reference.
          *
          * @return the JNI reference
@@ -493,6 +504,7 @@ namespace ujr {
         /**
          * Creates a new local reference from a UTF-8 string.
          *
+         * @param env the JNI environment
          * @param s the UTF-8 string
          * @return the local reference
          */
@@ -500,6 +512,20 @@ namespace ujr {
             requires std::is_same_v<typename JniType<T>::Type, jstring>
         {
             auto java_s = env->NewStringUTF(s);
+            return JniLocalRef::wrap(std::move(env), java_s);
+        }
+
+        /**
+         * Creates a new local reference from a UTF-16 string.
+         *
+         * @param env the JNI environment
+         * @param s the UTF-16 string
+         * @return the local reference
+         */
+        static JniLocalRef from_utf16(JniEnv env, const ultralight::String16 &s)
+            requires std::is_same_v<typename JniType<T>::Type, jstring>
+        {
+            auto java_s = env->NewString(reinterpret_cast<const jchar *>(s.data()), static_cast<jint>(s.length()));
             return JniLocalRef::wrap(std::move(env), java_s);
         }
     };

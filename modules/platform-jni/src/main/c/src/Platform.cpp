@@ -3,11 +3,14 @@
 #include "net_janrupf_ujr_api_config_UlFontHinting_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_wrapper_logger_JNIUlLoggerNative_native_access.hpp"
 
 #include <Ultralight/platform/Config.h>
+#include <Ultralight/platform/Logger.h>
 #include <Ultralight/platform/Platform.h>
 
 #include "ujr/util/JniEntryGuard.hpp"
+#include "ujr/wrapper/Logger.hpp"
 
 JNIEXPORT void JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env, jobject self, jobject config) {
@@ -68,5 +71,54 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env
         native_config.bitmap_alignment = UlConfig::BITMAP_ALIGNMENT.get(env, config);
 
         reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self))->set_config(native_config);
+    });
+}
+
+JNIEXPORT void JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetLogger(JNIEnv *env, jobject self, jobject logger) {
+    ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIUlPlatform;
+
+        auto *existing_native_logger = reinterpret_cast<ultralight::Logger *>(JNIUlPlatform::LOGGER.get(env, self));
+        // Clear the field in case an exception is thrown before we set it again
+        JNIUlPlatform::LOGGER.set(env, self, 0);
+
+        delete existing_native_logger;
+
+        auto j_logger = env.wrap_argument(logger).clone_as_global();
+        auto *platform = reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self));
+
+        auto *new_native_logger = new ujr::Logger(std::move(j_logger));
+        platform->set_logger(new_native_logger);
+
+        // Set the native logger field
+        JNIUlPlatform::LOGGER.set(env, self, reinterpret_cast<jlong>(new_native_logger));
+    });
+}
+
+JNIEXPORT jobject JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetLogger(JNIEnv *env, jobject self) {
+    return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
+        using ujr::native_access::JNIUlPlatform;
+        using ujr::native_access::JNIUlLoggerNative;
+
+        auto *existing_native_logger = reinterpret_cast<ultralight::Logger *>(JNIUlPlatform::LOGGER.get(env, self));
+        if (!existing_native_logger) {
+            // No logger set, return null
+            return nullptr;
+        }
+
+        // Test if the logger is a JNI logger
+        auto *jni_logger = dynamic_cast<ujr::Logger *>(existing_native_logger);
+        if (jni_logger) {
+            // It is, we can return the Java logger
+            return jni_logger->get_j_logger().get();
+        }
+
+        // We have to construct a Java logger wrapper
+        auto jni_logger_ref = JNIUlLoggerNative::CLAZZ.alloc_object(env);
+        JNIUlLoggerNative::HANDLE.set(env, jni_logger_ref, reinterpret_cast<jlong>(existing_native_logger));
+
+        return jni_logger_ref.leak();
     });
 }

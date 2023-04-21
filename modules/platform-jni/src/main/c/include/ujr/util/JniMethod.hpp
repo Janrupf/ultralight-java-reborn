@@ -83,7 +83,8 @@ namespace ujr {
 
         template<typename T, typename... Args>
             requires(IsJniValueType<T>)
-        typename JniType<T>::Type invoke_non_virtual(const JniEnv &env, jclass clazz, jmethodID id, jobject obj, Args... args) {
+        typename JniType<T>::Type
+        invoke_non_virtual(const JniEnv &env, jclass clazz, jmethodID id, jobject obj, Args... args) {
             return JniInvoker<typename JniType<T>::Type>::invoke_non_virtual(env, clazz, id, obj, args...);
         }
 
@@ -209,7 +210,7 @@ namespace ujr {
          * @return the return value of this method
          */
         template<typename Self, typename... FnArgs>
-        auto invoke(const JniEnv &env, Self self, FnArgs... args)
+        auto invoke(const JniEnv &env, const Self &self, FnArgs... args)
             requires(
                 !std::is_void_v<R> && IsJniConvertibleTo<Self, typename JniType<Class>::Type>
                 && (IsJniConvertibleTo<FnArgs, Args> && ...)
@@ -221,7 +222,7 @@ namespace ujr {
                 env,
                 this->id,
                 JniTypeConverter<Self>::convert_to_jni(self),
-                JniTypeConverter<FnArgs>::convert_to_jni(args)...
+                JniTypeConverter<FnArgs>::convert_to_jni(std::forward<FnArgs>(args))...
             );
 
             JniExceptionCheck::throw_if_pending(env);
@@ -239,7 +240,7 @@ namespace ujr {
          * @param args the arguments to pass to this method
          */
         template<typename Self, typename... FnArgs>
-        void invoke(const JniEnv &env, Self self, FnArgs... args)
+        void invoke(const JniEnv &env, const Self &self, FnArgs... args)
             requires(
                 std::is_void_v<R> && IsJniConvertibleTo<Self, typename JniType<Class>::Type>
                 && (IsJniConvertibleTo<FnArgs, Args> && ...)
@@ -251,7 +252,7 @@ namespace ujr {
                 env,
                 this->id,
                 JniTypeConverter<Self>::convert_to_jni(self),
-                JniTypeConverter<FnArgs>::convert_to_jni(args)...
+                JniTypeConverter<FnArgs>::convert_to_jni(std::forward<FnArgs>(args))...
             );
 
             JniExceptionCheck::throw_if_pending(env);
@@ -268,7 +269,7 @@ namespace ujr {
          * @return the return value of this method
          */
         template<typename Self, typename... FnArgs>
-        auto invoke_non_virtual(const JniEnv &env, Self self, FnArgs... args)
+        auto invoke_non_virtual(const JniEnv &env, const Self &self, FnArgs... args)
             requires(
                 !std::is_void_v<R> && IsJniConvertibleTo<Self, typename JniType<Class>::Type>
                 && (IsJniConvertibleTo<FnArgs, Args> && ...)
@@ -281,7 +282,7 @@ namespace ujr {
                 this->clazz.get(env),
                 this->id,
                 JniTypeConverter<Self>::convert_to_jni(self),
-                JniTypeConverter<FnArgs>::convert_to_jni(args)...
+                JniTypeConverter<FnArgs>::convert_to_jni(std::forward<FnArgs>(args))...
             );
 
             JniExceptionCheck::throw_if_pending(env);
@@ -299,7 +300,7 @@ namespace ujr {
          * @param args the arguments to pass to this method
          */
         template<typename Self, typename... FnArgs>
-        void invoke_non_virtual(const JniEnv &env, Self self, FnArgs... args)
+        void invoke_non_virtual(const JniEnv &env, const Self &self, FnArgs... args)
             requires(
                 std::is_void_v<R> && IsJniConvertibleTo<Self, typename JniType<Class>::Type>
                 && (IsJniConvertibleTo<FnArgs, Args> && ...)
@@ -312,7 +313,7 @@ namespace ujr {
                 this->clazz.get(env),
                 this->id,
                 JniTypeConverter<Self>::convert_to_jni(self),
-                JniTypeConverter<FnArgs>::convert_to_jni(args)...
+                JniTypeConverter<FnArgs>::convert_to_jni(std::forward<FnArgs>(args))...
             );
 
             JniExceptionCheck::throw_if_pending(env);
@@ -355,7 +356,7 @@ namespace ujr {
             auto val = _internal::JniInvoker<R>::invoke_static(
                 env,
                 this->id,
-                JniTypeConverter<FnArgs>::convert_to_jni(args)...
+                JniTypeConverter<FnArgs>::convert_to_jni(std::forward<FnArgs>(args))...
             );
 
             JniExceptionCheck::throw_if_pending(env);
@@ -376,7 +377,11 @@ namespace ujr {
         {
             this->resolve(env);
 
-            _internal::JniInvoker<R>::invoke_static(env, this->id, JniTypeConverter<FnArgs>::convert_to_jni(args)...);
+            _internal::JniInvoker<R>::invoke_static(
+                env,
+                this->id,
+                JniTypeConverter<FnArgs>::convert_to_jni(std::forward<FnArgs>(args))...
+            );
 
             JniExceptionCheck::throw_if_pending(env);
         }
@@ -407,9 +412,11 @@ namespace ujr {
         {
             this->resolve(env);
 
-            auto obj = reinterpret_cast<typename JniType<Class>::Type>(
-                env->NewObject(this->clazz.get(env), this->id, JniTypeConverter<FnArgs>::convert_to_jni(args)...)
-            );
+            auto obj = reinterpret_cast<typename JniType<Class>::Type>(env->NewObject(
+                this->clazz.get(env),
+                this->id,
+                JniTypeConverter<FnArgs>::convert_to_jni(std::forward<FnArgs>(args))...
+            ));
 
             JniExceptionCheck::throw_if_pending(env);
             return JniType<Class>::LocalRefType::wrap(env, obj);

@@ -5,10 +5,7 @@ import net.janrupf.ujr.nap.util.NameMapper;
 import net.janrupf.ujr.nap.util.NativeTypeMapper;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.Name;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -109,6 +106,12 @@ public class CPPCodeGenerator {
                 // It's a field
                 builder.addField(
                         (VariableElement) element,
+                        NameMapper.toScreamingSnakeCase(element.getSimpleName().toString())
+                );
+            } else if (element instanceof ExecutableElement) {
+                // It's a method
+                builder.addMethod(
+                        (ExecutableElement) element,
                         NameMapper.toScreamingSnakeCase(element.getSimpleName().toString())
                 );
             } else {
