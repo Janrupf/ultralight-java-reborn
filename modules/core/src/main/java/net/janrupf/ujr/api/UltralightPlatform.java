@@ -56,6 +56,15 @@ public class UltralightPlatform {
         platform.setConfig(config);
     }
 
+    // TODO: get/set Font loader with Java objects
+
+    /**
+     * Sets the font loader to be the platform font loader.
+     */
+    public void usePlatformFontLoader() {
+        platform.usePlatformFontLoader();
+    }
+
     /**
      * Set the Logger (to handle error messages and debug output).
      *

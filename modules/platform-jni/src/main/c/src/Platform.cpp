@@ -5,6 +5,7 @@
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_logger_JNIUlLoggerNative_native_access.hpp"
 
+#include <AppCore/Platform.h>
 #include <Ultralight/platform/Config.h>
 #include <Ultralight/platform/Logger.h>
 #include <Ultralight/platform/Platform.h>
@@ -71,6 +72,16 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env
         native_config.bitmap_alignment = UlConfig::BITMAP_ALIGNMENT.get(env, config);
 
         reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self))->set_config(native_config);
+    });
+}
+
+JNIEXPORT void JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeUsePlatformFontLoader(JNIEnv *env, jobject self) {
+    ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIUlPlatform;
+
+        auto *platform = reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self));
+        platform->set_font_loader(ultralight::GetPlatformFontLoader());
     });
 }
 

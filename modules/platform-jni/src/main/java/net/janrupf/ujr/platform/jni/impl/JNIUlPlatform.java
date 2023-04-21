@@ -25,6 +25,13 @@ public class JNIUlPlatform implements UlPlatform {
     private native void nativeSetConfig(UlConfig config);
 
     @Override
+    public void usePlatformFontLoader() {
+        nativeUsePlatformFontLoader();
+    }
+
+    private native void nativeUsePlatformFontLoader();
+
+    @Override
     public void setLogger(UltralightLogger logger) {
         nativeSetLogger(new JNIUlLogger(logger));
     }

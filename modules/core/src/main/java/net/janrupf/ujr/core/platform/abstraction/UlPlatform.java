@@ -6,6 +6,8 @@ import net.janrupf.ujr.api.logger.UltralightLogger;
 public interface UlPlatform {
     void setConfig(UlConfig config);
 
+    void usePlatformFontLoader();
+
     void setLogger(UltralightLogger logger);
 
     UltralightLogger getLogger();
