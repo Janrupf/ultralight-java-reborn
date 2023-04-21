@@ -53,8 +53,8 @@ set(UJR_SOURCES
         src/util/JniIllegalArgumentException.cpp
         src/util/JniMethod.cpp
 
-        src/wrapper/Logger.cpp
-        src/wrapper/LoggerNative.cpp
+        src/wrapper/logger/Logger.cpp
+        src/wrapper/logger/LoggerNative.cpp
 
         src/Platform.cpp
         src/PlatformProvider.cpp

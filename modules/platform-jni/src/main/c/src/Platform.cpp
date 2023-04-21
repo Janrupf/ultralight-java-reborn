@@ -10,7 +10,7 @@
 #include <Ultralight/platform/Platform.h>
 
 #include "ujr/util/JniEntryGuard.hpp"
-#include "ujr/wrapper/Logger.hpp"
+#include "ujr/wrapper/logger/Logger.hpp"
 
 JNIEXPORT void JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env, jobject self, jobject config) {

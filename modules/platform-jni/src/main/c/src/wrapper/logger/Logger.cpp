@@ -1,4 +1,4 @@
-#include "ujr/wrapper/Logger.hpp"
+#include "ujr/wrapper/logger/Logger.hpp"
 #include "net_janrupf_ujr_api_logger_UltralightLogLevel_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_logger_JNIUlLogger_native_access.hpp"
 
