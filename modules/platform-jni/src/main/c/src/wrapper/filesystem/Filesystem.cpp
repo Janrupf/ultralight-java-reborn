@@ -49,11 +49,21 @@ namespace ujr {
         // Translate the file path
         auto j_file_path = JniLocalRef<jstring>::from_utf16(env, file_path.utf16());
 
-        // Call the Java instance
-        auto j_buffer = native_access::JNIUlFilesystem::OPEN_FILE.invoke(env, j_filesystem, j_file_path);
+        try {
+            // Call the Java instance
+            auto j_buffer = native_access::JNIUlFilesystem::OPEN_FILE.invoke(env, j_filesystem, j_file_path);
 
-        // Translate the result
-        return Buffer::wrap_delegated_buffer(env, j_buffer);
+            // Translate the result
+            return Buffer::wrap_delegated_buffer(env, j_buffer);
+        } catch (const JniException &e) {
+            if (e.is_java_io_exception()) {
+                // Only allowed exception
+                return nullptr;
+            } else {
+                // rethrow
+                throw;
+            }
+        }
     }
 
     const JniGlobalRef<jobject> &Filesystem::get_j_filesystem() const { return j_filesystem; }

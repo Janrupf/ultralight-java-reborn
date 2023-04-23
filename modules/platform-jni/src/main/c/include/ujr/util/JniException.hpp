@@ -85,5 +85,19 @@ namespace ujr {
          * @return the JNI exception
          */
         [[nodiscard]] static JniException from_java(JniLocalRef<jthrowable> exception);
+
+        /**
+         * Determines whether this exception is a Java exception and an instance of CPPException.
+         *
+         * @return true if this exception is a Java exception and an instance of CPPException, false otherwise
+         */
+        [[nodiscard]] bool is_java_cpp_exception() const;
+
+        /**
+         * Determines whether this exception is a Java exception and an instance of IOException.
+         *
+         * @return true if this exception is a Java exception and an instance of IOException, false otherwise
+         */
+        [[nodiscard]] bool is_java_io_exception() const;
     };
 } // namespace ujr

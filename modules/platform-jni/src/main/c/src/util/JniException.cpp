@@ -7,6 +7,8 @@ namespace ujr {
     static JniClass<"net/janrupf/ujr/platform/jni/exception/CPPException", jthrowable> CPP_EXCEPTION_CLASS;
     static JniConstructor<decltype(CPP_EXCEPTION_CLASS), jstring> CPP_EXCEPTION_CONSTRUCTOR(CPP_EXCEPTION_CLASS);
 
+    static JniClass<"java/io/IOException", jthrowable> IO_EXCEPTION_CLASS;
+
     JniException::JniException()
         : exception(nullptr) {}
 
@@ -101,5 +103,27 @@ namespace ujr {
 
     JniException JniException::from_java(JniLocalRef<jthrowable> exception) {
         return JniException(std::variant<JniLocalRef<jthrowable>, std::exception_ptr>(std::move(exception)));
+    }
+
+    bool JniException::is_java_cpp_exception() const {
+        if (std::holds_alternative<JniLocalRef<jthrowable>>(exception)) {
+            const auto &ref = std::get<JniLocalRef<jthrowable>>(exception);
+            const auto &env = ref.associated_env();
+
+            return env->IsInstanceOf(ref.get(), CPP_EXCEPTION_CLASS.get(env).get());
+        }
+
+        return false;
+    }
+
+    bool JniException::is_java_io_exception() const {
+        if (std::holds_alternative<JniLocalRef<jthrowable>>(exception)) {
+            const auto &ref = std::get<JniLocalRef<jthrowable>>(exception);
+            const auto &env = ref.associated_env();
+
+            return env->IsInstanceOf(ref.get(), IO_EXCEPTION_CLASS.get(env).get());
+        }
+
+        return false;
     }
 } // namespace ujr
