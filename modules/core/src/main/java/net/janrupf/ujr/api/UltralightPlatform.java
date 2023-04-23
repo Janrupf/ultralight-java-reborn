@@ -1,5 +1,6 @@
 package net.janrupf.ujr.api;
 
+import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.api.logger.UltralightLogger;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
@@ -81,5 +82,10 @@ public class UltralightPlatform {
      */
     public UltralightLogger getLogger() {
         return platform.getLogger();
+    }
+
+
+    public void setFilesystem(UltralightFilesystem filesystem) {
+
     }
 }

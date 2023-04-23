@@ -176,10 +176,14 @@ public class CPPNativeAccessClassBuilder {
                 .append("decltype(CLAZZ), \"")
                 .append(method.getSimpleName())
                 .append("\", ")
-                .append(jniReturnType)
-                .append(", ")
-                .append(String.join(", ", jniParameterTypes))
-                .append("> ")
+                .append(jniReturnType);
+
+        if (!jniParameterTypes.isEmpty()) {
+            content.append(", ")
+                    .append(String.join(", ", jniParameterTypes));
+        }
+
+        content.append("> ")
                 .append(declarationName)
                 .append("{CLAZZ};\n");
     }

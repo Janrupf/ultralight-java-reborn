@@ -150,11 +150,11 @@ namespace ujr {
          * @param target_env the environment to clone the reference in
          * @return the cloned strong global reference
          */
-        JniGlobalRef<T> clone_as_global(JniEnv target_env) const {
+        JniGlobalRef<T> clone_as_global(const JniEnv &target_env) const {
             auto global = reinterpret_cast<typename JniType<T>::Type>(target_env->NewGlobalRef(this->ref));
             JniExceptionCheck::throw_if_pending(target_env);
 
-            return std::move(JniGlobalRef<T>::wrap(std::move(target_env), global));
+            return std::move(JniGlobalRef<T>::wrap(global));
         }
     };
 
@@ -450,6 +450,14 @@ namespace ujr {
         static JniLocalRef wrap_nodelete(JniEnv env, typename JniType<T>::Type ref) {
             return JniLocalRef(env, ref, false);
         }
+
+        /**
+         * Creates a null reference.
+         *
+         * @param env the environment to the reference belongs to
+         * @return the created reference
+         */
+        static JniLocalRef null(JniEnv env) { return JniLocalRef(env, nullptr, false); }
 
         // SPECIALIZATIONS
 

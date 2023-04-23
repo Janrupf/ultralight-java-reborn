@@ -43,6 +43,35 @@ namespace ujr {
 
 #undef DEFINE_JNI_INVOKER
 
+#define DEFINE_JNI_ARRAY_INVOKER(j_type)                                                                               \
+    template<> struct JniInvoker<j_type> {                                                                             \
+        template<typename... Args> static j_type invoke(const JniEnv &env, jmethodID id, jobject obj, Args... args) {  \
+            return reinterpret_cast<j_type>(env->CallObjectMethod(obj, id, args...));                                  \
+        }                                                                                                              \
+                                                                                                                       \
+        template<typename... Args>                                                                                     \
+        static j_type invoke_non_virtual(const JniEnv &env, jclass clazz, jmethodID id, jobject obj, Args... args) {   \
+            return reinterpret_cast<j_type>(env->CallNonvirtualObjectMethod(obj, clazz, id, args...));                 \
+        }                                                                                                              \
+                                                                                                                       \
+        template<typename... Args>                                                                                     \
+        static j_type invoke_static(const JniEnv &env, jclass clazz, jmethodID, Args... args) {                        \
+            return reinterpret_cast<j_type>(env->CallStaticObjectMethod(clazz, args...));                              \
+        }                                                                                                              \
+    }
+
+        DEFINE_JNI_ARRAY_INVOKER(jbooleanArray);
+        DEFINE_JNI_ARRAY_INVOKER(jbyteArray);
+        DEFINE_JNI_ARRAY_INVOKER(jcharArray);
+        DEFINE_JNI_ARRAY_INVOKER(jshortArray);
+        DEFINE_JNI_ARRAY_INVOKER(jintArray);
+        DEFINE_JNI_ARRAY_INVOKER(jlongArray);
+        DEFINE_JNI_ARRAY_INVOKER(jfloatArray);
+        DEFINE_JNI_ARRAY_INVOKER(jdoubleArray);
+        DEFINE_JNI_ARRAY_INVOKER(jobjectArray);
+
+#undef DEFINE_JNI_ARRAY_INVOKER
+
         // ref type SPECIALIZATIONS
 
         template<typename T, typename... Args>
@@ -218,7 +247,7 @@ namespace ujr {
         {
             this->resolve(env);
 
-            auto val = _internal::JniInvoker<R>::invoke(
+            auto val = _internal::JniInvoker<typename JniType<R>::Type>::invoke(
                 env,
                 this->id,
                 JniTypeConverter<Self>::convert_to_jni(self),
