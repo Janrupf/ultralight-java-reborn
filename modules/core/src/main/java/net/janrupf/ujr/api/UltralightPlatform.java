@@ -85,7 +85,21 @@ public class UltralightPlatform {
     }
 
 
+    /**
+     * Sets the filesystem to be used by Ultralight.
+     *
+     * @param filesystem the filesystem
+     */
     public void setFilesystem(UltralightFilesystem filesystem) {
+        platform.setFilesystem(filesystem);
+    }
 
+    /**
+     * Retrieves the filesystem to be used by Ultralight.
+     *
+     * @return the filesystem, or {@code null}, if none is set
+     */
+    public UltralightFilesystem getFilesystem() {
+        return platform.getFilesystem();
     }
 }

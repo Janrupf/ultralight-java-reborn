@@ -106,7 +106,7 @@ namespace ujr {
         auto direct_data = static_cast<unsigned char *>(env->GetDirectBufferAddress(byte_buffer));
 
         if (direct_data != nullptr) {
-            // Adjust the data pointer so it points to the current position
+            // Adjust the data pointer, so it points to the current position
             auto real_data = direct_data + buffer_position;
 
             if (reinterpret_cast<size_t>(direct_data) % 16 != 0) {

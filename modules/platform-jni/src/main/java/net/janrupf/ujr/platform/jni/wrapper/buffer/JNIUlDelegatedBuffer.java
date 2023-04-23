@@ -6,6 +6,9 @@ import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+/**
+ * Helper class to wrap a {@link UltralightBuffer} and provide a native interface to it.
+ */
 public class JNIUlDelegatedBuffer {
     private UltralightBuffer delegate;
 

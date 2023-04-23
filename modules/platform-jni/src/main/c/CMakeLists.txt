@@ -54,6 +54,10 @@ set(UJR_SOURCES
         src/util/JniMethod.cpp
 
         src/wrapper/buffer/Buffer.cpp
+        src/wrapper/buffer/BufferNative.cpp
+
+        src/wrapper/filesystem/Filesystem.cpp
+        src/wrapper/filesystem/FilesystemNative.cpp
 
         src/wrapper/logger/Logger.cpp
         src/wrapper/logger/LoggerNative.cpp

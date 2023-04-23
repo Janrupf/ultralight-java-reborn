@@ -72,6 +72,24 @@ namespace ujr {
 
 #undef DEFINE_JNI_ARRAY_INVOKER
 
+        template<> struct JniInvoker<jstring> {
+            template<typename... Args>
+            static jstring invoke(const JniEnv &env, jmethodID id, jobject obj, Args... args) {
+                return reinterpret_cast<jstring>(env->CallObjectMethod(obj, id, args...));
+            }
+
+            template<typename... Args>
+            static jstring
+            invoke_non_virtual(const JniEnv &env, jclass clazz, jmethodID id, jobject obj, Args... args) {
+                return reinterpret_cast<jstring>(env->CallNonvirtualObjectMethod(obj, clazz, id, args...));
+            }
+
+            template<typename... Args>
+            static jstring invoke_static(const JniEnv &env, jclass clazz, jmethodID, Args... args) {
+                return reinterpret_cast<jstring>(env->CallStaticObjectMethod(clazz, args...));
+            }
+        };
+
         // ref type SPECIALIZATIONS
 
         template<typename T, typename... Args>

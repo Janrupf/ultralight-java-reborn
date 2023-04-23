@@ -3,14 +3,17 @@
 #include "net_janrupf_ujr_api_config_UlFontHinting_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_wrapper_filesystem_JNIUlFilesystemNative_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_logger_JNIUlLoggerNative_native_access.hpp"
 
 #include <AppCore/Platform.h>
 #include <Ultralight/platform/Config.h>
+#include <Ultralight/platform/FileSystem.h>
 #include <Ultralight/platform/Logger.h>
 #include <Ultralight/platform/Platform.h>
 
 #include "ujr/util/JniEntryGuard.hpp"
+#include "ujr/wrapper/filesystem/Filesystem.hpp"
 #include "ujr/wrapper/logger/Logger.hpp"
 
 JNIEXPORT void JNICALL
@@ -131,5 +134,58 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetLogger(JNIEnv *env
         JNIUlLoggerNative::HANDLE.set(env, jni_logger_ref, reinterpret_cast<jlong>(existing_native_logger));
 
         return jni_logger_ref.leak();
+    });
+}
+
+JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetFilesystem(
+    JNIEnv *env, jobject self, jobject filesystem
+) {
+    ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIUlPlatform;
+
+        auto *existing_native_filesystem
+            = reinterpret_cast<ultralight::FileSystem *>(JNIUlPlatform::FILESYSTEM.get(env, self));
+        // Clear the field in case an exception is thrown before we set it again
+
+        JNIUlPlatform::FILESYSTEM.set(env, self, 0);
+
+        delete existing_native_filesystem;
+
+        auto j_filesystem = env.wrap_argument(filesystem).clone_as_global();
+        auto *platform = reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self));
+
+        auto *new_native_filesystem = new ujr::Filesystem(std::move(j_filesystem));
+        platform->set_file_system(new_native_filesystem);
+
+        // Set the native filesystem field
+        JNIUlPlatform::FILESYSTEM.set(env, self, reinterpret_cast<jlong>(new_native_filesystem));
+    });
+}
+
+JNIEXPORT jobject JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetFilesystem(JNIEnv *env, jobject self) {
+    return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
+        using ujr::native_access::JNIUlPlatform;
+        using ujr::native_access::JNIUlFilesystemNative;
+
+        auto *existing_native_filesystem
+            = reinterpret_cast<ultralight::FileSystem *>(JNIUlPlatform::FILESYSTEM.get(env, self));
+        if (!existing_native_filesystem) {
+            // No filesystem set, return null
+            return nullptr;
+        }
+
+        // Test if the filesystem is a JNI filesystem
+        auto *jni_filesystem = dynamic_cast<ujr::Filesystem *>(existing_native_filesystem);
+        if (jni_filesystem) {
+            // It is, we can return the Java filesystem
+            return jni_filesystem->get_j_filesystem().get();
+        }
+
+        // We have to construct a Java filesystem wrapper
+        auto jni_filesystem_ref = JNIUlFilesystemNative::CLAZZ.alloc_object(env);
+        JNIUlFilesystemNative::HANDLE.set(env, jni_filesystem_ref, reinterpret_cast<jlong>(existing_native_filesystem));
+
+        return jni_filesystem_ref.leak();
     });
 }
