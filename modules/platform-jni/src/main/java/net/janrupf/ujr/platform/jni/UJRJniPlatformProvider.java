@@ -3,12 +3,14 @@ package net.janrupf.ujr.platform.jni;
 import net.janrupf.ujr.core.platform.InvalidPlatformEnvironmentException;
 import net.janrupf.ujr.core.platform.PlatformFeatures;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
+import net.janrupf.ujr.core.platform.abstraction.UlResourceProvider;
 import net.janrupf.ujr.core.platform.option.PlatformEnvironmentOptionContainer;
 import net.janrupf.ujr.core.platform.option.std.CommonPlatformOptions;
 import net.janrupf.ujr.core.platform.provider.PlatformEnvironmentProvider;
 import net.janrupf.ujr.platform.jni.bundled.BundledNatives;
 import net.janrupf.ujr.platform.jni.bundled.HashedNative;
 import net.janrupf.ujr.platform.jni.impl.JNIUlPlatformProvider;
+import net.janrupf.ujr.platform.jni.impl.JNIUlResourceProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,6 +124,8 @@ public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
     public <T> T tryProvideApi(Class<T> interfaceClass) {
         if (interfaceClass == UlPlatformProvider.class) {
             return interfaceClass.cast(new JNIUlPlatformProvider());
+        } if (interfaceClass == UlResourceProvider.class) {
+            return interfaceClass.cast(new JNIUlResourceProvider());
         } else {
             return null;
         }

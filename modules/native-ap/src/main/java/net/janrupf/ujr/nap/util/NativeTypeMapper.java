@@ -47,7 +47,7 @@ public class NativeTypeMapper {
         }
 
         PackageElement pkg = environment.getElementUtils().getPackageOf(element);
-        if (pkg != null && pkg.getQualifiedName().toString().startsWith("java.")) {
+        if (pkg != null && pkg.getQualifiedName().toString().startsWith("java.lang.")) {
             // Disable JNI wrapper types for Java builtin types
             enableJniWrapperTypes = false;
         }

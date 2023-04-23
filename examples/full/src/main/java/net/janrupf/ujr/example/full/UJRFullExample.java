@@ -64,7 +64,12 @@ public class UJRFullExample {
         // a new configuration object and then pass it to the platform. Here we use the defaults
         // for all options (where available), but you can customize them as you wish. The cache
         // path is the only required option.
-        platform.setConfig(new UltralightConfigBuilder().cachePath(System.getProperty("java.io.tmpdir")).build());
+        platform.setConfig(
+                new UltralightConfigBuilder()
+                        .cachePath(System.getProperty("java.io.tmpdir"))
+                        // Set a custom prefix to distinguish from other file systems
+                        .resourcePathPrefix(FilesystemBridge.RESOURCE_PREFIX)
+                        .build());
 
         // Now we can create a renderer as all configuration has been finished.
         // The renderer instance is responsible for managing views and executing the

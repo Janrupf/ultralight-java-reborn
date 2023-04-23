@@ -160,6 +160,9 @@ if (!disableNativeBuild) {
         from(compactedDir) {
             into("META-INF/resources/native")
         }
+        from("$installDir/share") {
+            into("META-INF/resources/pkg")
+        }
     }
 
     gradle.afterProject {
