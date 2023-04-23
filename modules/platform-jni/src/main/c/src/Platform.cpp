@@ -3,6 +3,7 @@
 #include "net_janrupf_ujr_api_config_UlFontHinting_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_clipboard_JNIUlClipboardNative_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_filesystem_JNIUlFilesystemNative_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_logger_JNIUlLoggerNative_native_access.hpp"
@@ -12,6 +13,7 @@
 #include <Ultralight/platform/FileSystem.h>
 #include <Ultralight/platform/Logger.h>
 #include <Ultralight/platform/Platform.h>
+#include <Ultralight/Renderer.h>
 
 #include "ujr/util/JniEntryGuard.hpp"
 #include "ujr/wrapper/clipboard/Clipboard.hpp"
@@ -241,5 +243,20 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetClipboard(JNIEnv *
         JNIUlClipboardNative::HANDLE.set(env, jni_clipboard_ref, reinterpret_cast<jlong>(existing_native_clipboard));
 
         return jni_clipboard_ref.leak();
+    });
+}
+
+JNIEXPORT jobject JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeCreateRenderer(JNIEnv *env, jobject) {
+    return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
+        using ujr::native_access::JNIUlRenderer;
+
+        auto renderer = ultralight::Renderer::Create();
+        auto renderer_ref = renderer.LeakRef(); // We'll take over reference counting ourselves
+
+        auto jni_renderer_ref = JNIUlRenderer::CLAZZ.alloc_object(env);
+        JNIUlRenderer::HANDLE.set(env, jni_renderer_ref, reinterpret_cast<jlong>(renderer_ref));
+
+        return jni_renderer_ref.leak();
     });
 }

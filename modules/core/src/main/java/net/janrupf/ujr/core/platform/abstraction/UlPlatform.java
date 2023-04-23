@@ -21,4 +21,6 @@ public interface UlPlatform {
     void setClipboard(UltralightClipboard clipboard);
 
     UltralightClipboard getClipboard();
+
+    UlRenderer createRenderer();
 }

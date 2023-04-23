@@ -2,6 +2,7 @@ package net.janrupf.ujr.example.full;
 
 import net.janrupf.ujr.api.UltralightConfigBuilder;
 import net.janrupf.ujr.api.UltralightPlatform;
+import net.janrupf.ujr.api.UltralightRenderer;
 import net.janrupf.ujr.core.UltralightJavaReborn;
 import net.janrupf.ujr.core.platform.PlatformEnvironment;
 import org.apache.logging.log4j.LogManager;
@@ -64,6 +65,15 @@ public class UJRFullExample {
         // for all options (where available), but you can customize them as you wish. The cache
         // path is the only required option.
         platform.setConfig(new UltralightConfigBuilder().cachePath(System.getProperty("java.io.tmpdir")).build());
+
+        // Now we can create a renderer as all configuration has been finished.
+        // The renderer instance is responsible for managing views and executing the
+        // rendering process.
+        //
+        // Only one instance can exist per platform instance (and thus per thread).
+        UltralightRenderer renderer = UltralightRenderer.getOrCreate();
+
+        renderer.logMemoryUsage();
 
         // After we are done using the library, we should tell it to perform cleanup
         ujr.cleanup();

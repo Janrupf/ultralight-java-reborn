@@ -5,6 +5,7 @@ import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.api.logger.UltralightLogger;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.api.config.UlConfig;
+import net.janrupf.ujr.core.platform.abstraction.UlRenderer;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.wrapper.filesystem.JNIUlFilesystem;
 import net.janrupf.ujr.platform.jni.wrapper.logger.JNIUlLogger;
@@ -81,4 +82,11 @@ public class JNIUlPlatform implements UlPlatform {
     }
 
     private native UltralightClipboard nativeGetClipboard();
+
+    @Override
+    public UlRenderer createRenderer() {
+        return nativeCreateRenderer();
+    }
+
+    private native UlRenderer nativeCreateRenderer();
 }

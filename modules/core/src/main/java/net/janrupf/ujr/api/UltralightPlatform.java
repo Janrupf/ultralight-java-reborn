@@ -6,6 +6,7 @@ import net.janrupf.ujr.api.logger.UltralightLogger;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
 import net.janrupf.ujr.api.config.UlConfig;
+import net.janrupf.ujr.core.platform.abstraction.UlRenderer;
 import net.janrupf.ujr.core.util.ApiProvider;
 
 public class UltralightPlatform {
@@ -120,5 +121,9 @@ public class UltralightPlatform {
      */
     public UltralightClipboard getClipboard() {
         return platform.getClipboard();
+    }
+
+    /* package */ UlRenderer createRenderer() {
+        return platform.createRenderer();
     }
 }
