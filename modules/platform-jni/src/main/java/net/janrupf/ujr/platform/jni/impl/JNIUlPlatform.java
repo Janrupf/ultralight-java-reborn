@@ -1,5 +1,6 @@
 package net.janrupf.ujr.platform.jni.impl;
 
+import net.janrupf.ujr.api.clipboard.UltralightClipboard;
 import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.api.logger.UltralightLogger;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
@@ -17,6 +18,9 @@ public class JNIUlPlatform implements UlPlatform {
 
     @NativeAccess
     private long filesystem; // Pointer to a native filesystem, TODO: Garbage collect?
+
+    @NativeAccess
+    private long clipboard; // Pointer to a native clipboard, TODO: Garbage collect?
 
     JNIUlPlatform(long handle) {
         this.handle = handle;
@@ -63,4 +67,18 @@ public class JNIUlPlatform implements UlPlatform {
     }
 
     private native UltralightFilesystem nativeGetFilesystem();
+
+    @Override
+    public void setClipboard(UltralightClipboard clipboard) {
+        nativeSetClipboard(clipboard);
+    }
+
+    private native void nativeSetClipboard(UltralightClipboard clipboard);
+
+    @Override
+    public UltralightClipboard getClipboard() {
+        return nativeGetClipboard();
+    }
+
+    private native UltralightClipboard nativeGetClipboard();
 }

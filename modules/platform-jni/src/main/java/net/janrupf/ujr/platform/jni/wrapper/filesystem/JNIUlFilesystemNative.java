@@ -6,7 +6,6 @@ import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.wrapper.buffer.JNIUlBufferNative;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
 /**

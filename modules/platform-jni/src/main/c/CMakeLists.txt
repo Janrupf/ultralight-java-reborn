@@ -56,6 +56,9 @@ set(UJR_SOURCES
         src/wrapper/buffer/Buffer.cpp
         src/wrapper/buffer/BufferNative.cpp
 
+        src/wrapper/clipboard/Clipboard.cpp
+        src/wrapper/clipboard/ClipboardNative.cpp
+
         src/wrapper/filesystem/Filesystem.cpp
         src/wrapper/filesystem/FilesystemNative.cpp
 

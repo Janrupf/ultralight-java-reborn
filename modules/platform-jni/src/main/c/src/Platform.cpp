@@ -3,6 +3,7 @@
 #include "net_janrupf_ujr_api_config_UlFontHinting_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_wrapper_clipboard_JNIUlClipboardNative_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_filesystem_JNIUlFilesystemNative_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_logger_JNIUlLoggerNative_native_access.hpp"
 
@@ -13,6 +14,7 @@
 #include <Ultralight/platform/Platform.h>
 
 #include "ujr/util/JniEntryGuard.hpp"
+#include "ujr/wrapper/clipboard/Clipboard.hpp"
 #include "ujr/wrapper/filesystem/Filesystem.hpp"
 #include "ujr/wrapper/logger/Logger.hpp"
 
@@ -145,8 +147,8 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nati
 
         auto *existing_native_filesystem
             = reinterpret_cast<ultralight::FileSystem *>(JNIUlPlatform::FILESYSTEM.get(env, self));
-        // Clear the field in case an exception is thrown before we set it again
 
+        // Clear the field in case an exception is thrown before we set it again
         JNIUlPlatform::FILESYSTEM.set(env, self, 0);
 
         delete existing_native_filesystem;
@@ -187,5 +189,57 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetFilesystem(JNIEnv 
         JNIUlFilesystemNative::HANDLE.set(env, jni_filesystem_ref, reinterpret_cast<jlong>(existing_native_filesystem));
 
         return jni_filesystem_ref.leak();
+    });
+}
+
+JNIEXPORT void JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetClipboard(JNIEnv *env, jobject self, jobject clipboard) {
+    ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIUlPlatform;
+
+        auto *existing_native_clipboard
+            = reinterpret_cast<ultralight::Clipboard *>(JNIUlPlatform::CLIPBOARD.get(env, self));
+
+        // Clear the field in case an exception is thrown before we set it again
+        JNIUlPlatform::CLIPBOARD.set(env, self, 0);
+
+        delete existing_native_clipboard;
+
+        auto j_clipboard = env.wrap_argument(clipboard).clone_as_global();
+        auto *platform = reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self));
+
+        auto *new_native_clipboard = new ujr::Clipboard(std::move(j_clipboard));
+        platform->set_clipboard(new_native_clipboard);
+
+        // Set the native clipboard field
+        JNIUlPlatform::CLIPBOARD.set(env, self, reinterpret_cast<jlong>(new_native_clipboard));
+    });
+}
+
+JNIEXPORT jobject JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetClipboard(JNIEnv *env, jobject self) {
+    return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
+        using ujr::native_access::JNIUlPlatform;
+        using ujr::native_access::JNIUlClipboardNative;
+
+        auto *existing_native_clipboard
+            = reinterpret_cast<ultralight::Clipboard *>(JNIUlPlatform::CLIPBOARD.get(env, self));
+        if (!existing_native_clipboard) {
+            // No clipboard set, return null
+            return nullptr;
+        }
+
+        // Test if the clipboard is a JNI clipboard
+        auto *jni_clipboard = dynamic_cast<ujr::Clipboard *>(existing_native_clipboard);
+        if (jni_clipboard) {
+            // It is, we can return the Java clipboard
+            return jni_clipboard->get_j_clipboard().get();
+        }
+
+        // We have to construct a Java clipboard wrapper
+        auto jni_clipboard_ref = JNIUlClipboardNative::CLAZZ.alloc_object(env);
+        JNIUlClipboardNative::HANDLE.set(env, jni_clipboard_ref, reinterpret_cast<jlong>(existing_native_clipboard));
+
+        return jni_clipboard_ref.leak();
     });
 }

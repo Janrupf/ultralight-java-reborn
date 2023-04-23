@@ -56,6 +56,9 @@ public class UJRFullExample {
         // Ultralight also needs a custom file system implementation, so we will provide one
         platform.setFilesystem(new FilesystemBridge());
 
+        // The clipboard is also required, so we will provide a dummy implementation
+        platform.setClipboard(new ClipboardBridge());
+
         // Now it is time to set a few configuration options. We simply use a builder to create
         // a new configuration object and then pass it to the platform. Here we use the defaults
         // for all options (where available), but you can customize them as you wish. The cache

@@ -1,5 +1,6 @@
 package net.janrupf.ujr.api;
 
+import net.janrupf.ujr.api.clipboard.UltralightClipboard;
 import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.api.logger.UltralightLogger;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
@@ -95,11 +96,29 @@ public class UltralightPlatform {
     }
 
     /**
-     * Retrieves the filesystem to be used by Ultralight.
+     * Retrieves the filesystem used by Ultralight.
      *
      * @return the filesystem, or {@code null}, if none is set
      */
     public UltralightFilesystem getFilesystem() {
         return platform.getFilesystem();
+    }
+
+    /**
+     * Set the Clipboard (will be used for all clipboard operations)
+     *
+     * @param clipboard a user-defined Clipboard implementation
+     */
+    public void setClipboard(UltralightClipboard clipboard) {
+        platform.setClipboard(clipboard);
+    }
+
+    /**
+     * Retrieves the clipboard used by Ultralight.
+     *
+     * @return the clipboard, or {@code null}, if none is set
+     */
+    public UltralightClipboard getClipboard() {
+        return platform.getClipboard();
     }
 }
