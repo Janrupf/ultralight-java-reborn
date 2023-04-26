@@ -162,8 +162,13 @@ public class CPPNativeAccessClassBuilder {
             jniParameterTypes.add(jniType);
         }
 
+
+        boolean isConstructor = method.getSimpleName().contentEquals("<init>");
+
         String cppClass;
-        if (method.getModifiers().contains(Modifier.STATIC)) {
+        if (isConstructor) {
+            cppClass = "JniConstructor";
+        } else if (method.getModifiers().contains(Modifier.STATIC)) {
             cppClass = "JniStaticMethod";
         } else {
             cppClass = "JniInstanceMethod";
@@ -173,14 +178,18 @@ public class CPPNativeAccessClassBuilder {
         content.append("    static inline ::ujr::")
                 .append(cppClass)
                 .append("<")
-                .append("decltype(CLAZZ), \"")
-                .append(method.getSimpleName())
-                .append("\", ")
-                .append(jniReturnType);
+                .append("decltype(CLAZZ), ");
+
+        if (!isConstructor) {
+            content.append("\"").append(method.getSimpleName()).append("\", ").append(jniReturnType);
+
+            if (!jniParameterTypes.isEmpty()) {
+                content.append(", ");
+            }
+        }
 
         if (!jniParameterTypes.isEmpty()) {
-            content.append(", ")
-                    .append(String.join(", ", jniParameterTypes));
+            content.append(String.join(", ", jniParameterTypes));
         }
 
         content.append("> ")

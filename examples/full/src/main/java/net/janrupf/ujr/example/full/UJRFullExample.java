@@ -1,8 +1,6 @@
 package net.janrupf.ujr.example.full;
 
-import net.janrupf.ujr.api.UltralightConfigBuilder;
-import net.janrupf.ujr.api.UltralightPlatform;
-import net.janrupf.ujr.api.UltralightRenderer;
+import net.janrupf.ujr.api.*;
 import net.janrupf.ujr.core.UltralightJavaReborn;
 import net.janrupf.ujr.core.platform.PlatformEnvironment;
 import org.apache.logging.log4j.LogManager;
@@ -78,7 +76,9 @@ public class UJRFullExample {
         // Only one instance can exist per platform instance (and thus per thread).
         UltralightRenderer renderer = UltralightRenderer.getOrCreate();
 
-        renderer.logMemoryUsage();
+        // With the renderer we can create a view. A view is a single window that can
+        // display a web page. It is also responsible for handling input events.
+        UltralightView view = renderer.createView(1280, 720, new UltralightViewConfigBuilder().build());
 
         // After we are done using the library, we should tell it to perform cleanup
         ujr.cleanup();

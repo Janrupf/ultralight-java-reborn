@@ -1,5 +1,6 @@
 package net.janrupf.ujr.api;
 
+import net.janrupf.ujr.api.config.UlViewConfig;
 import net.janrupf.ujr.api.logger.UltralightLogger;
 import net.janrupf.ujr.core.platform.abstraction.UlRenderer;
 
@@ -48,7 +49,18 @@ public class UltralightRenderer {
 
     // TODO: default_session
 
-    // TODO: CreateView
+    // TODO: Support session parameter
+    /**
+     * Create a new View.
+     *
+     * @param width  the initial width, in pixels
+     * @param height the initial height, in pixels
+     * @param config configuration details for the View
+     * @return the created view
+     */
+    public UltralightView createView(int width, int height, UlViewConfig config) {
+        return new UltralightView(renderer.createView(width, height, config));
+    }
 
     /**
      * Update timers and dispatch internal callbacks. You should call this often

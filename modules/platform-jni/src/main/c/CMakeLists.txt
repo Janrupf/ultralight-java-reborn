@@ -88,7 +88,8 @@ set(UJR_SOURCES
         src/Platform.cpp
         src/PlatformProvider.cpp
         src/Renderer.cpp
-        src/UJRLibrary.cpp)
+        src/UJRLibrary.cpp
+        src/View.cpp)
 
 add_library(ultralight-java-reborn SHARED ${UJR_SOURCES})
 target_include_directories(ultralight-java-reborn PRIVATE ${UJR_JNI_HEADER_DIR} ${CMAKE_CURRENT_LIST_DIR}/include)

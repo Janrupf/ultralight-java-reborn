@@ -109,10 +109,15 @@ public class CPPCodeGenerator {
                         NameMapper.toScreamingSnakeCase(element.getSimpleName().toString())
                 );
             } else if (element instanceof ExecutableElement) {
+                String name = element.getSimpleName().toString();
+                if (name.equals("<init>")) {
+                    name = "constructor";
+                }
+
                 // It's a method
                 builder.addMethod(
                         (ExecutableElement) element,
-                        NameMapper.toScreamingSnakeCase(element.getSimpleName().toString())
+                        NameMapper.toScreamingSnakeCase(name)
                 );
             } else {
                 // ???

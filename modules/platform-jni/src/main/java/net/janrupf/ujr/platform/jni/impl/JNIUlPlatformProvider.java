@@ -1,5 +1,6 @@
 package net.janrupf.ujr.platform.jni.impl;
 
+import net.janrupf.ujr.api.config.UlViewConfig;
 import net.janrupf.ujr.api.logger.UltralightLogLevel;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
@@ -10,10 +11,11 @@ import net.janrupf.ujr.platform.jni.ffi.NativeAccessOther;
 
 @NativeAccessOther({
         UlConfig.class,
+        UlViewConfig.class,
         UlFaceWinding.class,
         UlFontHinting.class,
-        UltralightLogLevel.class
-}) // We need native access to instances of UlConfig and related classes
+        UltralightLogLevel.class,
+}) // We need native access to instances of Ul[View]Config and related classes
 public class JNIUlPlatformProvider implements UlPlatformProvider {
     private JNIUlPlatform platform;
 

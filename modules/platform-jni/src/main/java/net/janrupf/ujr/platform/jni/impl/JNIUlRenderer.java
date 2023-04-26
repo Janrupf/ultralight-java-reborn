@@ -1,6 +1,8 @@
 package net.janrupf.ujr.platform.jni.impl;
 
+import net.janrupf.ujr.api.config.UlViewConfig;
 import net.janrupf.ujr.core.platform.abstraction.UlRenderer;
+import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 
 import java.net.InetAddress;
@@ -12,6 +14,13 @@ public class JNIUlRenderer implements UlRenderer {
     private JNIUlRenderer() {
         throw new RuntimeException("Allocate in native code without calling constructor");
     }
+
+    @Override
+    public UlView createView(int width, int height, UlViewConfig config) {
+        return nativeCreateView(width, height, config);
+    }
+
+    private native UlView nativeCreateView(int width, int height, UlViewConfig config);
 
     @Override
     public void update() {
