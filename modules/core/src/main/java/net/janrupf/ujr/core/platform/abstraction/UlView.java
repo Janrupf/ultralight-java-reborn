@@ -1,5 +1,6 @@
 package net.janrupf.ujr.core.platform.abstraction;
 
+import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
 
 public interface UlView {
@@ -59,7 +60,7 @@ public interface UlView {
 
     boolean hasInputFocus();
 
-    // TODO: FireKeyEvent
+    void fireKeyEvent(UlKeyEvent event);
 
     // TODO: FireMouseEvent
 

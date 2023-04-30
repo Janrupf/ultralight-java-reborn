@@ -2,6 +2,7 @@ package net.janrupf.ujr.platform.jni;
 
 import net.janrupf.ujr.core.platform.InvalidPlatformEnvironmentException;
 import net.janrupf.ujr.core.platform.PlatformFeatures;
+import net.janrupf.ujr.core.platform.abstraction.UlKeyboard;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
 import net.janrupf.ujr.core.platform.abstraction.UlResourceProvider;
 import net.janrupf.ujr.core.platform.option.PlatformEnvironmentOptionContainer;
@@ -9,6 +10,7 @@ import net.janrupf.ujr.core.platform.option.std.CommonPlatformOptions;
 import net.janrupf.ujr.core.platform.provider.PlatformEnvironmentProvider;
 import net.janrupf.ujr.platform.jni.bundled.BundledNatives;
 import net.janrupf.ujr.platform.jni.bundled.HashedNative;
+import net.janrupf.ujr.platform.jni.impl.JNIUlKeyboard;
 import net.janrupf.ujr.platform.jni.impl.JNIUlPlatformProvider;
 import net.janrupf.ujr.platform.jni.impl.JNIUlResourceProvider;
 
@@ -126,6 +128,8 @@ public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
             return interfaceClass.cast(new JNIUlPlatformProvider());
         } if (interfaceClass == UlResourceProvider.class) {
             return interfaceClass.cast(new JNIUlResourceProvider());
+        } else if(interfaceClass == UlKeyboard.class) {
+            return interfaceClass.cast(new JNIUlKeyboard());
         } else {
             return null;
         }

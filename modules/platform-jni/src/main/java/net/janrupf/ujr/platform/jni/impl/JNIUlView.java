@@ -1,5 +1,6 @@
 package net.janrupf.ujr.platform.jni.impl;
 
+import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
@@ -180,6 +181,13 @@ public class JNIUlView implements UlView {
     }
 
     private native boolean nativeHasInputFocus();
+
+    @Override
+    public void fireKeyEvent(UlKeyEvent event) {
+        nativeFireKeyEvent(event);
+    }
+
+    private native void nativeFireKeyEvent(UlKeyEvent event);
 
     @Override
     public void setNeedsPaint(boolean needsPaint) {

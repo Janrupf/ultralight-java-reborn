@@ -1,6 +1,9 @@
 package net.janrupf.ujr.platform.jni.impl;
 
 import net.janrupf.ujr.api.config.UlViewConfig;
+import net.janrupf.ujr.api.event.UlKeyEvent;
+import net.janrupf.ujr.api.event.UlKeyEventModifiers;
+import net.janrupf.ujr.api.event.UlKeyEventType;
 import net.janrupf.ujr.api.logger.UltralightLogLevel;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
@@ -15,6 +18,9 @@ import net.janrupf.ujr.platform.jni.ffi.NativeAccessOther;
         UlFaceWinding.class,
         UlFontHinting.class,
         UltralightLogLevel.class,
+        UlKeyEvent.class,
+        UlKeyEventType.class,
+        UlKeyEventModifiers.class,
 }) // We need native access to instances of Ul[View]Config and related classes
 public class JNIUlPlatformProvider implements UlPlatformProvider {
     private JNIUlPlatform platform;

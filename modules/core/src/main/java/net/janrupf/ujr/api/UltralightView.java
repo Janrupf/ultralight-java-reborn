@@ -2,6 +2,7 @@ package net.janrupf.ujr.api;
 
 // TODO: Fix doc comment references
 
+import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
 import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
@@ -294,7 +295,16 @@ public class UltralightView {
         return view.hasInputFocus();
     }
 
-    // TODO: fireKeyEvent
+    /**
+     * Fires a keyboard event.
+     *
+     * @param event the event to fire
+     * @implNote Only events of the {@link net.janrupf.ujr.api.event.UlKeyEventType#CHAR} type actually generate
+     * text in input fields.
+     */
+    public void fireKeyEvent(UlKeyEvent event) {
+        view.fireKeyEvent(event);
+    }
 
     // TODO: fireMouseEvent
 
