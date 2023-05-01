@@ -4,12 +4,17 @@ import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
+import net.janrupf.ujr.api.listener.UltralightViewListener;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
+import net.janrupf.ujr.platform.jni.wrapper.listener.JNIUlViewListener;
 
 public class JNIUlView implements UlView {
     @NativeAccess
-    private long handle;
+    private final long handle;
+
+    @NativeAccess
+    private final long nativeCollector;
 
     private JNIUlView() {
         throw new RuntimeException("Allocate in native code without calling constructor");
@@ -203,6 +208,20 @@ public class JNIUlView implements UlView {
     }
 
     private native void nativeFireScrollEvent(UlScrollEvent event);
+
+    @Override
+    public void setViewListener(UltralightViewListener listener) {
+        nativeSetViewListener(new JNIUlViewListener(listener));
+    }
+
+    private native void nativeSetViewListener(JNIUlViewListener listener);
+
+    @Override
+    public UltralightViewListener viewListener() {
+        return nativeViewListener();
+    }
+
+    private native UltralightViewListener nativeViewListener();
 
     @Override
     public void setNeedsPaint(boolean needsPaint) {

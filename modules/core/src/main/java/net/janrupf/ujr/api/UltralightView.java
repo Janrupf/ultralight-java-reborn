@@ -2,11 +2,13 @@ package net.janrupf.ujr.api;
 
 // TODO: Fix doc comment references
 
+import net.janrupf.ujr.api.config.UlViewConfig;
 import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
 import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
+import net.janrupf.ujr.api.listener.UltralightViewListener;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 
 /**
@@ -33,7 +35,16 @@ import net.janrupf.ujr.core.platform.abstraction.UlView;
 public class UltralightView {
     private final UlView view;
 
-    /* package */ UltralightView(UlView view) {
+    // Do not use this constructor, it's only for internal use by platforms!
+
+    /**
+     * Creates an Ultralight view from a platform abstraction.
+     * <p>
+     * If you are consuming the library, use {@link UltralightRenderer#createView(int, int, UlViewConfig)} instead!
+     *
+     * @param view the platform abstraction
+     */
+    public UltralightView(UlView view) {
         this.view = view;
     }
 
@@ -326,9 +337,23 @@ public class UltralightView {
         view.fireScrollEvent(event);
     }
 
-    // TODO: setViewListener
+    /**
+     * Set a ViewListener to receive callbacks for View-related events.
+     *
+     * @param listener the listener to set
+     */
+    public void setViewListener(UltralightViewListener listener) {
+        view.setViewListener(listener);
+    }
 
-    // TODO: viewListener
+    /**
+     * Retrieves the active view listener.
+     *
+     * @return the active view listener, or null if none is set
+     */
+    public UltralightViewListener viewListener() {
+        return view.viewListener();
+    }
 
     // TODO: setLoadListener
 
@@ -371,5 +396,10 @@ public class UltralightView {
      */
     public void createLocalInspectorView() {
         view.createLocalInspectorView();
+    }
+
+    // Only for use by platform implementations
+    public UlView getImplementation() {
+        return view;
     }
 }

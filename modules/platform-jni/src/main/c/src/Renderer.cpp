@@ -50,7 +50,9 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_n
         auto j_view = JNIUlView::CLAZZ.alloc_object(env);
         JNIUlView::HANDLE.set(env, j_view, reinterpret_cast<jlong>(view));
 
-        ujr::GCSupport::attach_collector(env, j_view, new ujr::ViewCollector(view));
+        auto *collector = new ujr::ViewCollector(view);
+        JNIUlView::NATIVE_COLLECTOR.set(env, j_view, reinterpret_cast<jlong>(collector));
+        ujr::GCSupport::attach_collector(env, j_view, collector);
 
         return j_view.leak();
     });

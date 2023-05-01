@@ -1,8 +1,12 @@
 package net.janrupf.ujr.platform.jni.impl;
 
 import net.janrupf.ujr.api.config.UlViewConfig;
+import net.janrupf.ujr.api.cursor.UlCursor;
 import net.janrupf.ujr.api.event.*;
+import net.janrupf.ujr.api.listener.UlMessageLevel;
+import net.janrupf.ujr.api.listener.UlMessageSource;
 import net.janrupf.ujr.api.logger.UltralightLogLevel;
+import net.janrupf.ujr.api.math.IntRect;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
 import net.janrupf.ujr.api.config.UlConfig;
@@ -29,6 +33,12 @@ import net.janrupf.ujr.platform.jni.ffi.NativeAccessOther;
         UlMouseButton.class,
         UlScrollEvent.class,
         UlScrollEventType.class,
+
+        // View listener related classes
+        UlMessageSource.class,
+        UlMessageLevel.class,
+        UlCursor.class,
+        IntRect.class
 })
 public class JNIUlPlatformProvider implements UlPlatformProvider {
     private JNIUlPlatform platform;

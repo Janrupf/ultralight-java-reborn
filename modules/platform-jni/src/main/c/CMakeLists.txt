@@ -87,6 +87,9 @@ set(UJR_SOURCES
         src/wrapper/logger/Logger.cpp
         src/wrapper/logger/LoggerNative.cpp
 
+        src/wrapper/listener/ViewListener.cpp
+        src/wrapper/listener/ViewListenerNative.cpp
+
         src/Keyboard.cpp
         src/Platform.cpp
         src/PlatformProvider.cpp

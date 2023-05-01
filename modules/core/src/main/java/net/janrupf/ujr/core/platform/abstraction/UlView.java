@@ -4,6 +4,7 @@ import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
+import net.janrupf.ujr.api.listener.UltralightViewListener;
 
 public interface UlView {
     String url();
@@ -68,13 +69,9 @@ public interface UlView {
 
     void fireScrollEvent(UlScrollEvent event);
 
-    // TODO: FireMouseEvent
+    void setViewListener(UltralightViewListener listener);
 
-    // TODO: FireScrollEvent
-
-    // TODO: set_view_listener
-
-    // TODO: view_listener
+    UltralightViewListener viewListener();
 
     // TODO: set_load_listener
 

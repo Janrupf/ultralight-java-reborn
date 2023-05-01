@@ -9,6 +9,7 @@
 #include "net_janrupf_ujr_platform_jni_exception_JniJavascriptException_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlView.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlView_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_native_access.hpp"
 
 #include <Ultralight/View.h>
 
@@ -17,6 +18,7 @@
 #include "ujr/util/JniMethod.hpp"
 #include "ujr/util/JniRef.hpp"
 #include "ujr/View.hpp"
+#include "ujr/wrapper/listener/ViewListener.hpp"
 
 namespace ujr {
     namespace {
@@ -427,6 +429,62 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeFireScrollEvent(JNIEnv *e
 }
 
 JNIEXPORT void JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeSetViewListener(JNIEnv *env, jobject self, jobject listener) {
+    ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIUlView;
+
+        auto *collector = reinterpret_cast<ujr::ViewCollector *>(JNIUlView::NATIVE_COLLECTOR.get(env, self));
+
+        // Clear the field in case an exception is thrown before we set it again
+        delete collector->listener;
+        collector->listener = nullptr;
+
+        auto j_listener = env.wrap_argument(listener);
+        auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
+
+        ultralight::ViewListener *new_native_listener = nullptr;
+
+        if (j_listener.is_valid()) {
+            new_native_listener = new ujr::ViewListener(std::move(j_listener.clone_as_global()));
+        }
+
+        // Set the native listener field
+        view->set_view_listener(new_native_listener);
+        collector->listener = new_native_listener;
+    });
+}
+
+JNIEXPORT jobject JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeViewListener(JNIEnv *env, jobject self) {
+    return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
+        using ujr::native_access::JNIUlView;
+        using ujr::native_access::JNIUlViewListenerNative;
+
+        auto *collector = reinterpret_cast<ujr::ViewCollector *>(JNIUlView::NATIVE_COLLECTOR.get(env, self));
+        if (collector->listener == nullptr) {
+            // No listener set, return null
+            return nullptr;
+        }
+
+        // Test if the listener is a JNI listener
+        auto *jni_listener = dynamic_cast<ujr::ViewListener *>(collector->listener);
+        if (jni_listener) {
+            // It is, we can return the Java listener
+            return jni_listener->get_j_listener().get();
+        }
+
+        auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
+
+        // We have to construct a Java listener wrapper
+        auto jni_listener_ref = JNIUlViewListenerNative::CLAZZ.alloc_object(env);
+        JNIUlViewListenerNative::HANDLE.set(env, jni_listener_ref, reinterpret_cast<jlong>(collector->listener));
+        JNIUlViewListenerNative::VIEW.set(env, jni_listener_ref, reinterpret_cast<jlong>(view));
+
+        return jni_listener_ref.leak();
+    });
+}
+
+JNIEXPORT void JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeSetNeedsPaint(JNIEnv *env, jobject self, jboolean needs_paint) {
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlView;
@@ -460,7 +518,8 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeCreateLocalInspectorView(
 
 namespace ujr {
     ViewCollector::ViewCollector(ultralight::View *view)
-        : view(view) {}
+        : view(view)
+        , listener(nullptr) {}
 
     void ViewCollector::collect() { view->Release(); }
 } // namespace ujr

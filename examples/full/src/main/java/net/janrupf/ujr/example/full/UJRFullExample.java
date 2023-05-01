@@ -80,6 +80,19 @@ public class UJRFullExample {
         // display a web page. It is also responsible for handling input events.
         UltralightView view = renderer.createView(1280, 720, new UltralightViewConfigBuilder().build());
 
+        // In order to know the state of the view, we can attach a listener to it.
+        view.setViewListener(new ViewListener());
+
+        // Load an URL into the view and spin the event loop until the view is loaded
+        view.loadURL("https://www.google.com/");
+
+        // Now we can spin the event loop.
+        while (view.isLoading()) {
+            // We can also use the renderer to update all views and execute the event loop.
+            // This is useful if we have multiple views and want to update them all at once.
+            renderer.update();
+        }
+
         // After we are done using the library, we should tell it to perform cleanup
         ujr.cleanup();
         logger.info("Cleanup finished!");

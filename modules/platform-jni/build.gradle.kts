@@ -176,6 +176,7 @@ if (!disableNativeBuild) {
                     "-B", cmakeBinaryDir,
                     "-DUJR_JNI_HEADER_DIR=${tasks.getByName<JavaCompile>("compileJava").options.headerOutputDirectory.get()}",
                     "-DJAVA_HOME=$javaHome",
+                    "-DCMAKE_BUILD_TYPE=Debug",
             )
         }
     }
