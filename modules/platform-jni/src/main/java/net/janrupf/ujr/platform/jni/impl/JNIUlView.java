@@ -1,6 +1,8 @@
 package net.janrupf.ujr.platform.jni.impl;
 
 import net.janrupf.ujr.api.event.UlKeyEvent;
+import net.janrupf.ujr.api.event.UlMouseEvent;
+import net.janrupf.ujr.api.event.UlScrollEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
@@ -187,6 +189,20 @@ public class JNIUlView implements UlView {
     }
 
     private native void nativeFireKeyEvent(UlKeyEvent event);
+
+    @Override
+    public void fireMouseEvent(UlMouseEvent event) {
+        nativeFireMouseEvent(event);
+    }
+
+    private native void nativeFireMouseEvent(UlMouseEvent event);
+
+    @Override
+    public void fireScrollEvent(UlScrollEvent event) {
+        nativeFireScrollEvent(event);
+    }
+
+    private native void nativeFireScrollEvent(UlScrollEvent event);
 
     @Override
     public void setNeedsPaint(boolean needsPaint) {

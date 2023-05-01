@@ -1,9 +1,7 @@
 package net.janrupf.ujr.platform.jni.impl;
 
 import net.janrupf.ujr.api.config.UlViewConfig;
-import net.janrupf.ujr.api.event.UlKeyEvent;
-import net.janrupf.ujr.api.event.UlKeyEventModifiers;
-import net.janrupf.ujr.api.event.UlKeyEventType;
+import net.janrupf.ujr.api.event.*;
 import net.janrupf.ujr.api.logger.UltralightLogLevel;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
@@ -12,16 +10,26 @@ import net.janrupf.ujr.api.config.UlFaceWinding;
 import net.janrupf.ujr.api.config.UlFontHinting;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccessOther;
 
+// Below is a list of classes for which it was not worth creating wrappers,
+// so instead they are directly targeted with @NativeAccessOther
 @NativeAccessOther({
+        // We need native access to instances of Ul[View]Config and related classes
         UlConfig.class,
         UlViewConfig.class,
         UlFaceWinding.class,
         UlFontHinting.class,
         UltralightLogLevel.class,
+
+        // We also need access to event classes
         UlKeyEvent.class,
         UlKeyEventType.class,
         UlKeyEventModifiers.class,
-}) // We need native access to instances of Ul[View]Config and related classes
+        UlMouseEvent.class,
+        UlMouseEventType.class,
+        UlMouseButton.class,
+        UlScrollEvent.class,
+        UlScrollEventType.class,
+})
 public class JNIUlPlatformProvider implements UlPlatformProvider {
     private JNIUlPlatform platform;
 

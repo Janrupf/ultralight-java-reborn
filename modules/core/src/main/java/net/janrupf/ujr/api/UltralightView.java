@@ -3,6 +3,8 @@ package net.janrupf.ujr.api;
 // TODO: Fix doc comment references
 
 import net.janrupf.ujr.api.event.UlKeyEvent;
+import net.janrupf.ujr.api.event.UlMouseEvent;
+import net.janrupf.ujr.api.event.UlScrollEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
 import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
@@ -306,9 +308,23 @@ public class UltralightView {
         view.fireKeyEvent(event);
     }
 
-    // TODO: fireMouseEvent
+    /**
+     * Fire a mouse event.
+     *
+     * @param event the event to fire
+     */
+    public void fireMouseEvent(UlMouseEvent event) {
+        view.fireMouseEvent(event);
+    }
 
-    // TODO: fireScrollEvent
+    /**
+     * Fire a scroll event.
+     *
+     * @param event the event to fire
+     */
+    public void fireScrollEvent(UlScrollEvent event) {
+        view.fireScrollEvent(event);
+    }
 
     // TODO: setViewListener
 

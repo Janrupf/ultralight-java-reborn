@@ -1,6 +1,11 @@
 #include "net_janrupf_ujr_api_event_UlKeyEvent_native_access.hpp"
 #include "net_janrupf_ujr_api_event_UlKeyEventModifiers_native_access.hpp"
 #include "net_janrupf_ujr_api_event_UlKeyEventType_native_access.hpp"
+#include "net_janrupf_ujr_api_event_UlMouseButton_native_access.hpp"
+#include "net_janrupf_ujr_api_event_UlMouseEvent_native_access.hpp"
+#include "net_janrupf_ujr_api_event_UlMouseEventType_native_access.hpp"
+#include "net_janrupf_ujr_api_event_UlScrollEvent_native_access.hpp"
+#include "net_janrupf_ujr_api_event_UlScrollEventType_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_exception_JniJavascriptException_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlView.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlView_native_access.hpp"
@@ -342,6 +347,82 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeFireKeyEvent(JNIEnv *env,
         ul_event.is_system_key = UlKeyEvent::IS_SYSTEM_KEY.get(env, j_event);
 
         view->FireKeyEvent(ul_event);
+    });
+}
+
+JNIEXPORT void JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeFireMouseEvent(JNIEnv *env, jobject self, jobject event) {
+    ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIUlView;
+        using ujr::native_access::UlMouseEvent;
+        using ujr::native_access::UlMouseEventType;
+        using ujr::native_access::UlMouseButton;
+
+        auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
+
+        auto j_event = env.wrap_argument(event);
+
+        ultralight::MouseEvent ul_event {};
+
+        auto j_type = UlMouseEvent::TYPE.get(env, j_event).require_non_null_argument("event.type");
+        if (j_type == UlMouseEventType::MOVED.get(env)) {
+            ul_event.type = ultralight::MouseEvent::kType_MouseMoved;
+        } else if (j_type == UlMouseEventType::DOWN.get(env)) {
+            ul_event.type = ultralight::MouseEvent::kType_MouseDown;
+        } else if (j_type == UlMouseEventType::UP.get(env)) {
+            ul_event.type = ultralight::MouseEvent::kType_MouseUp;
+        } else {
+            throw std::runtime_error("Invalid mouse event type");
+        }
+
+        ul_event.x = UlMouseEvent::X.get(env, j_event);
+        ul_event.y = UlMouseEvent::Y.get(env, j_event);
+
+        if (auto j_button = UlMouseEvent::BUTTON.get(env, j_event); j_button.is_valid()) {
+            if (j_button == UlMouseButton::LEFT.get(env)) {
+                ul_event.button = ultralight::MouseEvent::kButton_Left;
+            } else if (j_button == UlMouseButton::MIDDLE.get(env)) {
+                ul_event.button = ultralight::MouseEvent::kButton_Middle;
+            } else if (j_button == UlMouseButton::RIGHT.get(env)) {
+                ul_event.button = ultralight::MouseEvent::kButton_Right;
+            } else {
+                throw std::runtime_error("Invalid mouse event button");
+            }
+
+        } else {
+            ul_event.button = ultralight::MouseEvent::kButton_None;
+        }
+
+        view->FireMouseEvent(ul_event);
+    });
+}
+
+JNIEXPORT void JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeFireScrollEvent(JNIEnv *env, jobject self, jobject event) {
+    ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIUlView;
+        using ujr::native_access::UlScrollEvent;
+        using ujr::native_access::UlScrollEventType;
+
+        auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
+
+        auto j_event = env.wrap_argument(event);
+
+        ultralight::ScrollEvent ul_event {};
+
+        auto j_type = UlScrollEvent::TYPE.get(env, j_event).require_non_null_argument("event.type");
+        if (j_type == UlScrollEventType::BY_PIXEL.get(env)) {
+            ul_event.type = ultralight::ScrollEvent::kType_ScrollByPixel;
+        } else if (j_type == UlScrollEventType::BY_PAGE.get(env)) {
+            ul_event.type = ultralight::ScrollEvent::kType_ScrollByPage;
+        } else {
+            throw std::runtime_error("Invalid scroll event type");
+        }
+
+        ul_event.delta_x = UlScrollEvent::DELTA_X.get(env, j_event);
+        ul_event.delta_y = UlScrollEvent::DELTA_Y.get(env, j_event);
+
+        view->FireScrollEvent(ul_event);
     });
 }
 
