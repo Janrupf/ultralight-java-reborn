@@ -10,11 +10,11 @@
 
 #include <AppCore/Platform.h>
 #include <Ultralight/platform/Config.h>
-#include <Ultralight/platform/FileSystem.h>
-#include <Ultralight/platform/Logger.h>
 #include <Ultralight/platform/Platform.h>
 #include <Ultralight/Renderer.h>
 
+#include "ujr/Platform.hpp"
+#include "ujr/Renderer.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
 #include "ujr/wrapper/clipboard/Clipboard.hpp"
 #include "ujr/wrapper/filesystem/Filesystem.hpp"
@@ -97,20 +97,24 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetLogger(JNIEnv *env
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlPlatform;
 
-        auto *existing_native_logger = reinterpret_cast<ultralight::Logger *>(JNIUlPlatform::LOGGER.get(env, self));
+        auto *collector = reinterpret_cast<ujr::PlatformCollector *>(JNIUlPlatform::NATIVE_COLLECTOR.get(env, self));
+
         // Clear the field in case an exception is thrown before we set it again
-        JNIUlPlatform::LOGGER.set(env, self, 0);
+        delete collector->logger;
+        collector->logger = nullptr;
 
-        delete existing_native_logger;
-
-        auto j_logger = env.wrap_argument(logger).clone_as_global();
+        auto j_logger = env.wrap_argument(logger);
         auto *platform = reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self));
 
-        auto *new_native_logger = new ujr::Logger(std::move(j_logger));
-        platform->set_logger(new_native_logger);
+        ultralight::Logger *new_native_logger = nullptr;
+
+        if (j_logger.is_valid()) {
+            new_native_logger = new ujr::Logger(std::move(j_logger.clone_as_global()));
+        }
 
         // Set the native logger field
-        JNIUlPlatform::LOGGER.set(env, self, reinterpret_cast<jlong>(new_native_logger));
+        platform->set_logger(new_native_logger);
+        collector->logger = new_native_logger;
     });
 }
 
@@ -120,14 +124,14 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetLogger(JNIEnv *env
         using ujr::native_access::JNIUlPlatform;
         using ujr::native_access::JNIUlLoggerNative;
 
-        auto *existing_native_logger = reinterpret_cast<ultralight::Logger *>(JNIUlPlatform::LOGGER.get(env, self));
-        if (!existing_native_logger) {
+        auto *collector = reinterpret_cast<ujr::PlatformCollector *>(JNIUlPlatform::NATIVE_COLLECTOR.get(env, self));
+        if (!collector->logger) {
             // No logger set, return null
             return nullptr;
         }
 
         // Test if the logger is a JNI logger
-        auto *jni_logger = dynamic_cast<ujr::Logger *>(existing_native_logger);
+        auto *jni_logger = dynamic_cast<ujr::Logger *>(collector->logger);
         if (jni_logger) {
             // It is, we can return the Java logger
             return jni_logger->get_j_logger().get();
@@ -135,7 +139,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetLogger(JNIEnv *env
 
         // We have to construct a Java logger wrapper
         auto jni_logger_ref = JNIUlLoggerNative::CLAZZ.alloc_object(env);
-        JNIUlLoggerNative::HANDLE.set(env, jni_logger_ref, reinterpret_cast<jlong>(existing_native_logger));
+        JNIUlLoggerNative::HANDLE.set(env, jni_logger_ref, reinterpret_cast<jlong>(collector->logger));
 
         return jni_logger_ref.leak();
     });
@@ -147,22 +151,23 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nati
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlPlatform;
 
-        auto *existing_native_filesystem
-            = reinterpret_cast<ultralight::FileSystem *>(JNIUlPlatform::FILESYSTEM.get(env, self));
+        auto *collector = reinterpret_cast<ujr::PlatformCollector *>(JNIUlPlatform::NATIVE_COLLECTOR.get(env, self));
 
         // Clear the field in case an exception is thrown before we set it again
-        JNIUlPlatform::FILESYSTEM.set(env, self, 0);
+        delete collector->filesystem;
+        collector->filesystem = nullptr;
 
-        delete existing_native_filesystem;
-
-        auto j_filesystem = env.wrap_argument(filesystem).clone_as_global();
+        auto j_filesystem = env.wrap_argument(filesystem);
         auto *platform = reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self));
 
-        auto *new_native_filesystem = new ujr::Filesystem(std::move(j_filesystem));
-        platform->set_file_system(new_native_filesystem);
+        ultralight::FileSystem *new_native_filesystem = nullptr;
 
-        // Set the native filesystem field
-        JNIUlPlatform::FILESYSTEM.set(env, self, reinterpret_cast<jlong>(new_native_filesystem));
+        if (j_filesystem.is_valid()) {
+            new_native_filesystem = new ujr::Filesystem(std::move(j_filesystem.clone_as_global()));
+        }
+
+        platform->set_file_system(new_native_filesystem);
+        collector->filesystem = new_native_filesystem;
     });
 }
 
@@ -172,15 +177,14 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetFilesystem(JNIEnv 
         using ujr::native_access::JNIUlPlatform;
         using ujr::native_access::JNIUlFilesystemNative;
 
-        auto *existing_native_filesystem
-            = reinterpret_cast<ultralight::FileSystem *>(JNIUlPlatform::FILESYSTEM.get(env, self));
-        if (!existing_native_filesystem) {
+        auto *collector = reinterpret_cast<ujr::PlatformCollector *>(JNIUlPlatform::NATIVE_COLLECTOR.get(env, self));
+        if (!collector->filesystem) {
             // No filesystem set, return null
             return nullptr;
         }
 
         // Test if the filesystem is a JNI filesystem
-        auto *jni_filesystem = dynamic_cast<ujr::Filesystem *>(existing_native_filesystem);
+        auto *jni_filesystem = dynamic_cast<ujr::Filesystem *>(collector->filesystem);
         if (jni_filesystem) {
             // It is, we can return the Java filesystem
             return jni_filesystem->get_j_filesystem().get();
@@ -188,7 +192,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetFilesystem(JNIEnv 
 
         // We have to construct a Java filesystem wrapper
         auto jni_filesystem_ref = JNIUlFilesystemNative::CLAZZ.alloc_object(env);
-        JNIUlFilesystemNative::HANDLE.set(env, jni_filesystem_ref, reinterpret_cast<jlong>(existing_native_filesystem));
+        JNIUlFilesystemNative::HANDLE.set(env, jni_filesystem_ref, reinterpret_cast<jlong>(collector->filesystem));
 
         return jni_filesystem_ref.leak();
     });
@@ -199,22 +203,23 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetClipboard(JNIEnv *
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlPlatform;
 
-        auto *existing_native_clipboard
-            = reinterpret_cast<ultralight::Clipboard *>(JNIUlPlatform::CLIPBOARD.get(env, self));
+        auto *collector = reinterpret_cast<ujr::PlatformCollector *>(JNIUlPlatform::NATIVE_COLLECTOR.get(env, self));
 
         // Clear the field in case an exception is thrown before we set it again
-        JNIUlPlatform::CLIPBOARD.set(env, self, 0);
+        delete collector->clipboard;
+        collector->clipboard = nullptr;
 
-        delete existing_native_clipboard;
-
-        auto j_clipboard = env.wrap_argument(clipboard).clone_as_global();
+        auto j_clipboard = env.wrap_argument(clipboard);
         auto *platform = reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self));
 
-        auto *new_native_clipboard = new ujr::Clipboard(std::move(j_clipboard));
-        platform->set_clipboard(new_native_clipboard);
+        ultralight::Clipboard *new_native_clipboard = nullptr;
 
-        // Set the native clipboard field
-        JNIUlPlatform::CLIPBOARD.set(env, self, reinterpret_cast<jlong>(new_native_clipboard));
+        if (j_clipboard.is_valid()) {
+            new_native_clipboard = new ujr::Clipboard(std::move(j_clipboard.clone_as_global()));
+        }
+
+        platform->set_clipboard(new_native_clipboard);
+        collector->clipboard = new_native_clipboard;
     });
 }
 
@@ -224,15 +229,15 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetClipboard(JNIEnv *
         using ujr::native_access::JNIUlPlatform;
         using ujr::native_access::JNIUlClipboardNative;
 
-        auto *existing_native_clipboard
-            = reinterpret_cast<ultralight::Clipboard *>(JNIUlPlatform::CLIPBOARD.get(env, self));
-        if (!existing_native_clipboard) {
+        auto *collector = reinterpret_cast<ujr::PlatformCollector *>(JNIUlPlatform::NATIVE_COLLECTOR.get(env, self));
+
+        if (!collector->clipboard) {
             // No clipboard set, return null
             return nullptr;
         }
 
         // Test if the clipboard is a JNI clipboard
-        auto *jni_clipboard = dynamic_cast<ujr::Clipboard *>(existing_native_clipboard);
+        auto *jni_clipboard = dynamic_cast<ujr::Clipboard *>(collector->clipboard);
         if (jni_clipboard) {
             // It is, we can return the Java clipboard
             return jni_clipboard->get_j_clipboard().get();
@@ -240,7 +245,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetClipboard(JNIEnv *
 
         // We have to construct a Java clipboard wrapper
         auto jni_clipboard_ref = JNIUlClipboardNative::CLAZZ.alloc_object(env);
-        JNIUlClipboardNative::HANDLE.set(env, jni_clipboard_ref, reinterpret_cast<jlong>(existing_native_clipboard));
+        JNIUlClipboardNative::HANDLE.set(env, jni_clipboard_ref, reinterpret_cast<jlong>(collector->clipboard));
 
         return jni_clipboard_ref.leak();
     });
@@ -257,6 +262,22 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeCreateRenderer(JNIEnv
         auto jni_renderer_ref = JNIUlRenderer::CLAZZ.alloc_object(env);
         JNIUlRenderer::HANDLE.set(env, jni_renderer_ref, reinterpret_cast<jlong>(renderer_ref));
 
+        // Attach GC
+        ujr::GCSupport::attach_collector(env, jni_renderer_ref, new ujr::RendererCollector(renderer_ref));
+
         return jni_renderer_ref.leak();
     });
 }
+
+namespace ujr {
+    PlatformCollector::PlatformCollector()
+        : logger(nullptr)
+        , filesystem(nullptr)
+        , clipboard(nullptr) {}
+
+    void PlatformCollector::collect() {
+        delete logger;
+        delete filesystem;
+        delete clipboard;
+    }
+} // namespace ujr

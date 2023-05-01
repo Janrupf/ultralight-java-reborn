@@ -25,8 +25,8 @@ namespace ujr {
         }                                                                                                              \
                                                                                                                        \
         template<typename... Args>                                                                                     \
-        static j_type invoke_static(const JniEnv &env, jclass clazz, jmethodID, Args... args) {                        \
-            return env->CallStatic##j_type_name##Method(clazz, args...);                                               \
+        static j_type invoke_static(const JniEnv &env, jclass clazz, jmethodID id, Args... args) {                     \
+            return env->CallStatic##j_type_name##Method(clazz, id, args...);                                           \
         }                                                                                                              \
     }
 
@@ -55,8 +55,8 @@ namespace ujr {
         }                                                                                                              \
                                                                                                                        \
         template<typename... Args>                                                                                     \
-        static j_type invoke_static(const JniEnv &env, jclass clazz, jmethodID, Args... args) {                        \
-            return reinterpret_cast<j_type>(env->CallStaticObjectMethod(clazz, args...));                              \
+        static j_type invoke_static(const JniEnv &env, jclass clazz, jmethodID id, Args... args) {                     \
+            return reinterpret_cast<j_type>(env->CallStaticObjectMethod(clazz, id, args...));                          \
         }                                                                                                              \
     }
 
@@ -85,8 +85,8 @@ namespace ujr {
             }
 
             template<typename... Args>
-            static jstring invoke_static(const JniEnv &env, jclass clazz, jmethodID, Args... args) {
-                return reinterpret_cast<jstring>(env->CallStaticObjectMethod(clazz, args...));
+            static jstring invoke_static(const JniEnv &env, jclass clazz, jmethodID id, Args... args) {
+                return reinterpret_cast<jstring>(env->CallStaticObjectMethod(clazz, id, args...));
             }
         };
 
@@ -402,6 +402,7 @@ namespace ujr {
 
             auto val = _internal::JniInvoker<R>::invoke_static(
                 env,
+                this->clazz.get(env),
                 this->id,
                 JniTypeConverter<FnArgs>::convert_to_jni(std::forward<FnArgs>(args))...
             );
@@ -426,6 +427,7 @@ namespace ujr {
 
             _internal::JniInvoker<R>::invoke_static(
                 env,
+                this->clazz.get(env),
                 this->id,
                 JniTypeConverter<FnArgs>::convert_to_jni(std::forward<FnArgs>(args))...
             );

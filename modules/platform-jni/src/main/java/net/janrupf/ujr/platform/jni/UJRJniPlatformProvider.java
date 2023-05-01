@@ -10,6 +10,7 @@ import net.janrupf.ujr.core.platform.option.std.CommonPlatformOptions;
 import net.janrupf.ujr.core.platform.provider.PlatformEnvironmentProvider;
 import net.janrupf.ujr.platform.jni.bundled.BundledNatives;
 import net.janrupf.ujr.platform.jni.bundled.HashedNative;
+import net.janrupf.ujr.platform.jni.gc.ObjectCollector;
 import net.janrupf.ujr.platform.jni.impl.JNIUlKeyboard;
 import net.janrupf.ujr.platform.jni.impl.JNIUlPlatformProvider;
 import net.janrupf.ujr.platform.jni.impl.JNIUlResourceProvider;
@@ -126,9 +127,10 @@ public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
     public <T> T tryProvideApi(Class<T> interfaceClass) {
         if (interfaceClass == UlPlatformProvider.class) {
             return interfaceClass.cast(new JNIUlPlatformProvider());
-        } if (interfaceClass == UlResourceProvider.class) {
+        }
+        if (interfaceClass == UlResourceProvider.class) {
             return interfaceClass.cast(new JNIUlResourceProvider());
-        } else if(interfaceClass == UlKeyboard.class) {
+        } else if (interfaceClass == UlKeyboard.class) {
             return interfaceClass.cast(new JNIUlKeyboard());
         } else {
             return null;
@@ -137,6 +139,10 @@ public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
 
     @Override
     public void cleanup() {
+        // This is a rather fragile attempt at cleaning up the native memory
+        System.gc();
+        ObjectCollector.processRound();
+
         try (Stream<Path> files = Files.walk(this.commonPlatformOptions.temporaryDirectory())) {
             //noinspection ResultOfMethodCallIgnored
             files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);

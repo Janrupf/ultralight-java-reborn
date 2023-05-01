@@ -29,7 +29,7 @@ public class JNIUlPlatformProvider implements UlPlatformProvider {
     public UlPlatform instance() {
         if (platform == null) {
             // Not cached yet, so we need to retrieve the native instance
-            platform = new JNIUlPlatform(nativeInstance());
+            platform = nativeInstance();
         }
 
         return platform;
@@ -42,5 +42,5 @@ public class JNIUlPlatformProvider implements UlPlatformProvider {
      *
      * @return the native instance of the underlying Ultralight Platform
      */
-    private native long nativeInstance();
+    private native JNIUlPlatform nativeInstance();
 }

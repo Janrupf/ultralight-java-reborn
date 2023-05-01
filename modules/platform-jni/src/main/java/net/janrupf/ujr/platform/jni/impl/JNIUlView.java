@@ -5,7 +5,6 @@ import net.janrupf.ujr.api.exception.JavascriptException;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 
-// TODO: This class requires garbage collection
 public class JNIUlView implements UlView {
     @NativeAccess
     private long handle;

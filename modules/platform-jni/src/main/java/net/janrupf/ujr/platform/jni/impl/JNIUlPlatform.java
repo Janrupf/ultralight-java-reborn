@@ -15,16 +15,10 @@ public class JNIUlPlatform implements UlPlatform {
     private final long handle;
 
     @NativeAccess
-    private long logger; // Pointer to a native logger, TODO: Garbage collect?
+    private final long nativeCollector;
 
-    @NativeAccess
-    private long filesystem; // Pointer to a native filesystem, TODO: Garbage collect?
-
-    @NativeAccess
-    private long clipboard; // Pointer to a native clipboard, TODO: Garbage collect?
-
-    JNIUlPlatform(long handle) {
-        this.handle = handle;
+    private JNIUlPlatform() {
+        throw new RuntimeException("Allocate in native code without calling constructor");
     }
 
     @Override

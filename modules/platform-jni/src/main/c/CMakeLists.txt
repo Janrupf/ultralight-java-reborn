@@ -66,6 +66,8 @@ endif()
 # Add CMake targets #
 #####################
 set(UJR_SOURCES
+        src/support/GC.cpp
+
         src/util/JniClass.cpp
         src/util/JniEnv.cpp
         src/util/JniException.cpp

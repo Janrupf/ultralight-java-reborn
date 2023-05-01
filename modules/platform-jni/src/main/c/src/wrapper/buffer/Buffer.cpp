@@ -152,7 +152,7 @@ namespace ujr {
         }
 
         auto *elements = static_cast<unsigned char *>(
-            env->GetPrimitiveArrayCritical(reinterpret_cast<jarray>(byte_buffer.get()), nullptr)
+            env->GetPrimitiveArrayCritical(reinterpret_cast<jarray>(byte_buffer_array.get()), nullptr)
         );
         if (!elements) {
             // OOM

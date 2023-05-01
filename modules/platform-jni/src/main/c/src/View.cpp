@@ -11,6 +11,7 @@
 #include "ujr/util/JniEntryGuard.hpp"
 #include "ujr/util/JniMethod.hpp"
 #include "ujr/util/JniRef.hpp"
+#include "ujr/View.hpp"
 
 namespace ujr {
     namespace {
@@ -115,7 +116,7 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeLo
 
         auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
 
-        view->LoadHTML(j_html.to_utf16(), j_html.to_utf16(), add_to_history);
+        view->LoadHTML(j_html.to_utf16(), j_url.to_utf16(), add_to_history);
     });
 }
 
@@ -375,3 +376,10 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeCreateLocalInspectorView(
         view->CreateLocalInspectorView();
     });
 }
+
+namespace ujr {
+    ViewCollector::ViewCollector(ultralight::View *view)
+        : view(view) {}
+
+    void ViewCollector::collect() { view->Release(); }
+} // namespace ujr

@@ -6,8 +6,9 @@
 #include <Ultralight/Renderer.h>
 #include <Ultralight/View.h>
 
+#include "ujr/Renderer.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
-#include "ujr/util/JniRef.hpp"
+#include "ujr/View.hpp"
 
 JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_nativeCreateView(
     JNIEnv *env, jobject self, jint width, jint height, jobject config
@@ -48,6 +49,8 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_n
 
         auto j_view = JNIUlView::CLAZZ.alloc_object(env);
         JNIUlView::HANDLE.set(env, j_view, reinterpret_cast<jlong>(view));
+
+        ujr::GCSupport::attach_collector(env, j_view, new ujr::ViewCollector(view));
 
         return j_view.leak();
     });
@@ -118,3 +121,10 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_nati
         renderer->SetGamepadDetails(index, id_str.data(), axis_count, button_count);
     });
 }
+
+namespace ujr {
+    RendererCollector::RendererCollector(ultralight::Renderer *renderer)
+        : renderer(renderer) {}
+
+    void RendererCollector::collect() { renderer->Release(); }
+} // namespace ujr
