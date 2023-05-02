@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -44,13 +45,22 @@ public class FilesystemBridge implements UltralightFilesystem {
     @Override
     public String getFileMimeType(String path) {
         LOGGER.debug("Retrieving mime type of {}", path);
-        return null;
+
+        // This is a rather naive implementation, but for demonstration,
+        // we don't use a more complex one. In a real application, you should
+        // use a more sophisticated method to determine the mime type.
+        return URLConnection.guessContentTypeFromName(new File(path).getName());
     }
 
     @Override
     public String getFileCharset(String path) {
         LOGGER.debug("Retrieving charset of {}", path);
-        return null;
+
+        // This method will only be called for text files anyway, so it is probably
+        // safe to assume that the file is utf-8 encoded. If your application has more
+        // complex needs, you should use a more sophisticated method to determine the
+        // charset.
+        return "utf-8";
     }
 
     @Override
@@ -103,6 +113,10 @@ public class FilesystemBridge implements UltralightFilesystem {
             }
         }
 
+        // Opening failed.
+        //
+        // It is fine to return null here, which will effectively treated the same as an
+        // IOException and simply result in the opening failing.
         return null;
     }
 }
