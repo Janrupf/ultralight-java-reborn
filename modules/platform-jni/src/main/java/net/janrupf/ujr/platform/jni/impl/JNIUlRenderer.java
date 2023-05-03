@@ -3,6 +3,7 @@ package net.janrupf.ujr.platform.jni.impl;
 import net.janrupf.ujr.api.UltralightView;
 import net.janrupf.ujr.api.config.UlViewConfig;
 import net.janrupf.ujr.core.platform.abstraction.UlRenderer;
+import net.janrupf.ujr.core.platform.abstraction.UlSession;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 
@@ -17,11 +18,25 @@ public class JNIUlRenderer implements UlRenderer {
     }
 
     @Override
-    public UlView createView(int width, int height, UlViewConfig config) {
-        return nativeCreateView(width, height, config);
+    public UlSession createSession(boolean isPersistent, String name) {
+        return nativeCreateSession(isPersistent, name);
     }
 
-    private native UlView nativeCreateView(int width, int height, UlViewConfig config);
+    private native JNIUlSession nativeCreateSession(boolean isPersistent, String name);
+
+    @Override
+    public UlSession defaultSession() {
+        return nativeDefaultSession();
+    }
+
+    private native JNIUlSession nativeDefaultSession();
+
+    @Override
+    public UlView createView(int width, int height, UlViewConfig config, UlSession session) {
+        return nativeCreateView(width, height, config, (JNIUlSession) session);
+    }
+
+    private native UlView nativeCreateView(int width, int height, UlViewConfig config, JNIUlSession session);
 
     @Override
     public void update() {

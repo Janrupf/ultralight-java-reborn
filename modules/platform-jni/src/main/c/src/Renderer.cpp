@@ -1,24 +1,68 @@
 #include "net_janrupf_ujr_api_config_UlViewConfig_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlRenderer.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_impl_JNIUlSession_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlView_native_access.hpp"
 
 #include <Ultralight/Renderer.h>
 #include <Ultralight/View.h>
 
 #include "ujr/Renderer.hpp"
+#include "ujr/Session.hpp"
+#include "ujr/support/GC.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
 #include "ujr/View.hpp"
 
+JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_nativeCreateSession(
+    JNIEnv *env, jobject self, jboolean is_persistent, jstring name
+) {
+    return ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIUlRenderer;
+        using ujr::native_access::JNIUlSession;
+
+        auto j_name = env.wrap_argument(name);
+
+        auto *renderer = reinterpret_cast<ultralight::Renderer *>(JNIUlRenderer::HANDLE.get(env, self));
+        auto *session = renderer->CreateSession(is_persistent, j_name.to_utf16()).LeakRef();
+
+        auto j_session = JNIUlSession::CLAZZ.alloc_object(env);
+        JNIUlSession::HANDLE.set(env, j_session, reinterpret_cast<jlong>(session));
+
+        ujr::GCSupport::attach_collector(env, j_session, new ujr::SessionCollector(session));
+
+        return j_session.leak();
+    });
+}
+
+JNIEXPORT jobject JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_nativeDefaultSession(JNIEnv *env, jobject self) {
+    return ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIUlRenderer;
+        using ujr::native_access::JNIUlSession;
+
+        auto *renderer = reinterpret_cast<ultralight::Renderer *>(JNIUlRenderer::HANDLE.get(env, self));
+        auto *session = renderer->default_session().LeakRef();
+
+        auto j_session = JNIUlSession::CLAZZ.alloc_object(env);
+        JNIUlSession::HANDLE.set(env, j_session, reinterpret_cast<jlong>(session));
+
+        ujr::GCSupport::attach_collector(env, j_session, new ujr::SessionCollector(session));
+
+        return j_session.leak();
+    });
+}
+
 JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_nativeCreateView(
-    JNIEnv *env, jobject self, jint width, jint height, jobject config
+    JNIEnv *env, jobject self, jint width, jint height, jobject config, jobject session
 ) {
     return ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlRenderer;
         using ujr::native_access::UlViewConfig;
         using ujr::native_access::JNIUlView;
+        using ujr::native_access::JNIUlSession;
 
         auto j_config = env.wrap_argument(config);
+        auto j_session = env.wrap_argument(session);
 
         ultralight::ViewConfig ul_config;
         ul_config.is_accelerated = UlViewConfig::IS_ACCELERATED.get(env, j_config);
@@ -44,7 +88,14 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_n
 
         auto *renderer = reinterpret_cast<ultralight::Renderer *>(JNIUlRenderer::HANDLE.get(env, self));
 
-        auto view_ref = renderer->CreateView(width, height, ul_config, nullptr);
+        ultralight::RefPtr<ultralight::Session> ul_session = nullptr;
+
+        if (j_session.is_valid()) {
+            auto *session_ref = reinterpret_cast<ultralight::Session *>(JNIUlSession::HANDLE.get(env, j_session));
+            ul_session = ultralight::RefPtr(session_ref);
+        }
+
+        auto view_ref = renderer->CreateView(width, height, ul_config, std::move(ul_session));
         auto view = view_ref.LeakRef(); // We will take over reference counting ourselves
 
         auto j_view = JNIUlView::CLAZZ.alloc_object(env);

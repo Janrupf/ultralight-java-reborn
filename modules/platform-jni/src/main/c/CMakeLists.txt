@@ -96,6 +96,7 @@ set(UJR_SOURCES
         src/Platform.cpp
         src/PlatformProvider.cpp
         src/Renderer.cpp
+        src/Session.cpp
         src/UJRLibrary.cpp
         src/View.cpp)
 

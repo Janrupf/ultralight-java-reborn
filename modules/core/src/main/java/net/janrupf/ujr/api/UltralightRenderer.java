@@ -3,6 +3,7 @@ package net.janrupf.ujr.api;
 import net.janrupf.ujr.api.config.UlViewConfig;
 import net.janrupf.ujr.api.logger.UltralightLogger;
 import net.janrupf.ujr.core.platform.abstraction.UlRenderer;
+import net.janrupf.ujr.core.platform.abstraction.UlSession;
 
 import java.net.InetAddress;
 
@@ -45,11 +46,33 @@ public class UltralightRenderer {
         this.renderer = renderer;
     }
 
-    // TODO: CreateSession
+    /**
+     * Create a Session to store local data in (such as cookies, local storage,
+     * application cache, indexed db, etc).
+     * <p>
+     * A default, persistent Session is already created for you. You only need to call this
+     * if you want to create private, in-memory session or use a separate session for each
+     * View.
+     *
+     * @param isPersistent whether to store the session on disk, persistent sessions
+     *                     will be written to the path set in {@link net.janrupf.ujr.api.config.UlConfig#cachePath}
+     * @param name         a unique name for this session, this will be used to generate a unique disk
+     *                     path for persistent sessions.
+     * @return the created session
+     */
+    public UltralightSession createSession(boolean isPersistent, String name) {
+        return new UltralightSession(renderer.createSession(isPersistent, name));
+    }
 
-    // TODO: default_session
-
-    // TODO: Support session parameter
+    /**
+     * Retrieves the default Session. This session is persistent (backed to disk) and has the name
+     * "default".
+     *
+     * @return the default session
+     */
+    public UltralightSession defaultSession() {
+        return new UltralightSession(renderer.defaultSession());
+    }
 
     /**
      * Create a new View.
@@ -60,7 +83,25 @@ public class UltralightRenderer {
      * @return the created view
      */
     public UltralightView createView(int width, int height, UlViewConfig config) {
-        return new UltralightView(renderer.createView(width, height, config));
+        return createView(width, height, config, null);
+    }
+
+    /**
+     * Create a new View.
+     *
+     * @param width   the initial width, in pixels
+     * @param height  the initial height, in pixels
+     * @param config  configuration details for the View
+     * @param session the session to store local data in, or null if the default session should be used
+     * @return the created view
+     */
+    public UltralightView createView(int width, int height, UlViewConfig config, UltralightSession session) {
+        UlSession sessionImplementation = null;
+        if (session != null) {
+            sessionImplementation = session.getImplementation();
+        }
+
+        return new UltralightView(renderer.createView(width, height, config, sessionImplementation));
     }
 
     /**

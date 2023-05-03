@@ -6,7 +6,11 @@ import net.janrupf.ujr.api.config.UlViewConfig;
 import java.net.InetAddress;
 
 public interface UlRenderer {
-    UlView createView(int width, int height, UlViewConfig config);
+    UlSession createSession(boolean isPersistent, String name);
+
+    UlSession defaultSession();
+
+    UlView createView(int width, int height, UlViewConfig config, UlSession session);
 
     void update();
 
