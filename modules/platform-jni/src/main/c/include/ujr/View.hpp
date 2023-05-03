@@ -10,7 +10,8 @@ namespace ujr {
         ultralight::View *view;
 
     public:
-        ultralight::ViewListener *listener;
+        ultralight::ViewListener *view_listener;
+        ultralight::LoadListener *load_listener;
 
         explicit ViewCollector(ultralight::View *view);
 

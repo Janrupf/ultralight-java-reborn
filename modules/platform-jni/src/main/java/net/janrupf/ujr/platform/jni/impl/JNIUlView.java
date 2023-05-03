@@ -4,9 +4,11 @@ import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
+import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.api.listener.UltralightViewListener;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
+import net.janrupf.ujr.platform.jni.wrapper.listener.JNIUlLoadListener;
 import net.janrupf.ujr.platform.jni.wrapper.listener.JNIUlViewListener;
 
 public class JNIUlView implements UlView {
@@ -222,6 +224,20 @@ public class JNIUlView implements UlView {
     }
 
     private native UltralightViewListener nativeViewListener();
+
+    @Override
+    public void setLoadListener(UltralightLoadListener listener) {
+        nativeSetLoadListener(new JNIUlLoadListener(listener));
+    }
+
+    private native void nativeSetLoadListener(JNIUlLoadListener listener);
+
+    @Override
+    public UltralightLoadListener loadListener() {
+        return nativeLoadListener();
+    }
+
+    private native UltralightLoadListener nativeLoadListener();
 
     @Override
     public void setNeedsPaint(boolean needsPaint) {

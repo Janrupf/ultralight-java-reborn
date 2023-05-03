@@ -8,6 +8,7 @@ import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
 import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
+import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.api.listener.UltralightViewListener;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 
@@ -355,9 +356,23 @@ public class UltralightView {
         return view.viewListener();
     }
 
-    // TODO: setLoadListener
+    /**
+     * Set a LoadListener to receive callbacks for Load-related events.
+     *
+     * @param listener the listener to set
+     */
+    public void setLoadListener(UltralightLoadListener listener) {
+        view.setLoadListener(listener);
+    }
 
-    // TODO: loadListener
+    /**
+     * Retrieves the active load listener.
+     *
+     * @return the active load listener, or null if none is set
+     */
+    public UltralightLoadListener loadListener() {
+        return view.loadListener();
+    }
 
     /**
      * Set whether this View should be repainted during the next call to {@link UltralightRenderer#render()}.

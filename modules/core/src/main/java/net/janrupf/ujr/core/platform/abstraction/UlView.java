@@ -4,6 +4,7 @@ import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
+import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.api.listener.UltralightViewListener;
 
 public interface UlView {
@@ -73,9 +74,9 @@ public interface UlView {
 
     UltralightViewListener viewListener();
 
-    // TODO: set_load_listener
+    void setLoadListener(UltralightLoadListener listener);
 
-    // TODO: load_listener
+    UltralightLoadListener loadListener();
 
     void setNeedsPaint(boolean needsPaint);
 

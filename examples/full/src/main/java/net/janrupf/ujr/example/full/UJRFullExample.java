@@ -83,6 +83,9 @@ public class UJRFullExample {
         // In order to know the state of the view, we can attach a listener to it.
         view.setViewListener(new ViewListener());
 
+        // Loading progress can be tracked by attaching a load listener to the view.
+        view.setLoadListener(new LoadListener());
+
         // Load an URL into the view and spin the event loop until the view is loaded
         view.loadURL("https://www.google.com/");
 
