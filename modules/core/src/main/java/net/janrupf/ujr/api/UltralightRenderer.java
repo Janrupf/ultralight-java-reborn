@@ -7,7 +7,7 @@ import net.janrupf.ujr.core.platform.abstraction.UlRenderer;
 import java.net.InetAddress;
 
 /**
- * This class manages the lifetime of all Views ({@link View}) and coordinates
+ * This class manages the lifetime of all Views ({@link UltralightView}) and coordinates
  * painting, network requests, and event dispatch.
  */
 public class UltralightRenderer {
