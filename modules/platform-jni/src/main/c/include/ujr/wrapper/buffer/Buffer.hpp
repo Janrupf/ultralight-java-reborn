@@ -25,9 +25,12 @@ namespace ujr {
          *
          * @param env the JNI environment to use
          * @param delegated_buffer the delegated buffer to wrap
+         * @param support_writeback if true, the buffer will be synced back to the java buffer either when it is
+         * destroyed, or when supported, instantly
          * @return the wrapped buffer
          */
-        static ultralight::RefPtr<ultralight::Buffer>
-        wrap_delegated_buffer(const JniEnv &env, const JniStrongRef<jobject> &delegated_buffer);
+        static ultralight::RefPtr<ultralight::Buffer> wrap_delegated_buffer(
+            const JniEnv &env, const JniStrongRef<jobject> &delegated_buffer, bool support_writeback = false
+        );
     };
 } // namespace ujr
