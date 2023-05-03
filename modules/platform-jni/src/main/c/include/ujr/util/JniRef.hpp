@@ -592,6 +592,13 @@ namespace ujr {
          * @return the wrapped reference
          */
         static JniGlobalRef wrap(typename JniType<T>::Type ref) { return JniGlobalRef(ref); }
+
+        /**
+         * Creates a null reference.
+         *
+         * @return the created reference
+         */
+        static JniGlobalRef null() { return JniGlobalRef(nullptr); }
     };
 
     // Comparison operators

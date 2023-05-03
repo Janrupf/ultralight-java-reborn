@@ -7,6 +7,7 @@
 #include "net_janrupf_ujr_platform_jni_wrapper_clipboard_JNIUlClipboardNative_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_filesystem_JNIUlFilesystemNative_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_logger_JNIUlLoggerNative_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_wrapper_surface_JNIUlSurfaceFactoryNative_native_access.hpp"
 
 #include <AppCore/Platform.h>
 #include <Ultralight/platform/Config.h>
@@ -19,6 +20,7 @@
 #include "ujr/wrapper/clipboard/Clipboard.hpp"
 #include "ujr/wrapper/filesystem/Filesystem.hpp"
 #include "ujr/wrapper/logger/Logger.hpp"
+#include "ujr/wrapper/surface/SurfaceFactory.hpp"
 
 JNIEXPORT void JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env, jobject self, jobject config) {
@@ -251,6 +253,61 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeGetClipboard(JNIEnv *
     });
 }
 
+JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetSurfaceFactory(
+    JNIEnv *env, jobject self, jobject surface_factory
+) {
+    ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIUlPlatform;
+
+        auto *collector = reinterpret_cast<ujr::PlatformCollector *>(JNIUlPlatform::NATIVE_COLLECTOR.get(env, self));
+
+        // Clear the field in case an exception is thrown before we set it again
+        delete collector->surface_factory;
+        collector->surface_factory = nullptr;
+
+        auto j_surface_factory = env.wrap_argument(surface_factory);
+        auto *platform = reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self));
+
+        ultralight::SurfaceFactory *new_native_surface_factory = nullptr;
+
+        if (j_surface_factory.is_valid()) {
+            new_native_surface_factory = new ujr::SurfaceFactory(std::move(j_surface_factory.clone_as_global()));
+        }
+
+        platform->set_surface_factory(new_native_surface_factory);
+        collector->surface_factory = new_native_surface_factory;
+    });
+}
+
+JNIEXPORT jobject JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSurfaceFactory(JNIEnv *env, jobject self) {
+    return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
+        using ujr::native_access::JNIUlPlatform;
+        using ujr::native_access::JNIUlSurfaceFactoryNative;
+
+        auto *collector = reinterpret_cast<ujr::PlatformCollector *>(JNIUlPlatform::NATIVE_COLLECTOR.get(env, self));
+
+        if (!collector->surface_factory) {
+            // No surface factory set, return null
+            return nullptr;
+        }
+
+        // Test if the surface factory is a JNI surface factory
+        auto *jni_surface_factory = dynamic_cast<ujr::SurfaceFactory *>(collector->surface_factory);
+        if (jni_surface_factory) {
+            // It is, we can return the Java surface factory
+            return jni_surface_factory->get_j_surface_factory().get();
+        }
+
+        // We have to construct a Java surface factory wrapper
+        auto jni_surface_factory_ref = JNIUlSurfaceFactoryNative::CLAZZ.alloc_object(env);
+        JNIUlSurfaceFactoryNative::HANDLE
+            .set(env, jni_surface_factory_ref, reinterpret_cast<jlong>(collector->surface_factory));
+
+        return jni_surface_factory_ref.leak();
+    });
+}
+
 JNIEXPORT jobject JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeCreateRenderer(JNIEnv *env, jobject) {
     return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
@@ -273,11 +330,13 @@ namespace ujr {
     PlatformCollector::PlatformCollector()
         : logger(nullptr)
         , filesystem(nullptr)
-        , clipboard(nullptr) {}
+        , clipboard(nullptr)
+        , surface_factory(nullptr) {}
 
     void PlatformCollector::collect() {
         delete logger;
         delete filesystem;
         delete clipboard;
+        delete surface_factory;
     }
 } // namespace ujr

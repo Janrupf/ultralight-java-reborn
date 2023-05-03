@@ -3,6 +3,7 @@ package net.janrupf.ujr.api;
 import net.janrupf.ujr.api.clipboard.UltralightClipboard;
 import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.api.logger.UltralightLogger;
+import net.janrupf.ujr.api.surface.UltralightSurfaceFactory;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatform;
 import net.janrupf.ujr.core.platform.abstraction.UlPlatformProvider;
 import net.janrupf.ujr.api.config.UlConfig;
@@ -121,6 +122,31 @@ public class UltralightPlatform {
      */
     public UltralightClipboard getClipboard() {
         return platform.getClipboard();
+    }
+
+    // TODO: fix doc comment references
+
+    /**
+     * Set the {@link UltralightSurfaceFactory}.
+     * <p>
+     * This can be used to provide a platform-specific bitmap surface for View to paint into when
+     * the CPU renderer is enabled. See {@link View::surface()}.
+     *
+     * @param surfaceFactory the surface factory to use
+     * @implNote A default BitmapSurfaceFactory is defined if you never call this, View::surface() can
+     * be safely cast to BitmapSurface.
+     */
+    public void setSurfaceFactory(UltralightSurfaceFactory surfaceFactory) {
+        platform.setSurfaceFactory(surfaceFactory);
+    }
+
+    /**
+     * Retrieves the surface factory used by Ultralight.
+     *
+     * @return the surface factory, or {@code null}, if none is set
+     */
+    public UltralightSurfaceFactory surfaceFactory() {
+        return platform.surfaceFactory();
     }
 
     /* package */ UlRenderer createRenderer() {

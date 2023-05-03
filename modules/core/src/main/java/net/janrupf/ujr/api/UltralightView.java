@@ -10,6 +10,7 @@ import net.janrupf.ujr.api.exception.JavascriptException;
 import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.api.listener.UltralightViewListener;
+import net.janrupf.ujr.api.surface.UltralightSurface;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 
 /**
@@ -135,7 +136,14 @@ public class UltralightView {
 
     // TODO: renderTarget
 
-    // TODO: surface
+    /**
+     * Retrieves the {@link UltralightSurface} for the View (native pixel buffer that the CPU renderer draws into).
+     *
+     * @return the {@link UltralightSurface} for the View, or null if the View is GPU-accelerated
+     */
+    public UltralightSurface surface() {
+        return view.surface();
+    }
 
     /**
      * Load a raw string of HTML, the View will navigate to it as a new page.

@@ -12,6 +12,7 @@ namespace ujr {
         ultralight::Logger *logger;
         ultralight::FileSystem *filesystem;
         ultralight::Clipboard *clipboard;
+        ultralight::SurfaceFactory *surface_factory;
 
         explicit PlatformCollector();
 

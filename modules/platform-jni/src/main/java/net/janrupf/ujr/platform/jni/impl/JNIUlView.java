@@ -6,6 +6,7 @@ import net.janrupf.ujr.api.event.UlScrollEvent;
 import net.janrupf.ujr.api.exception.JavascriptException;
 import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.api.listener.UltralightViewListener;
+import net.janrupf.ujr.api.surface.UltralightSurface;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.wrapper.listener.JNIUlLoadListener;
@@ -84,6 +85,13 @@ public class JNIUlView implements UlView {
     }
 
     private native boolean nativeIsLoading();
+
+    @Override
+    public UltralightSurface surface() {
+        return nativeSurface();
+    }
+
+    private native UltralightSurface nativeSurface();
 
     @Override
     public void loadHTML(String html, String url, boolean addToHistory) {

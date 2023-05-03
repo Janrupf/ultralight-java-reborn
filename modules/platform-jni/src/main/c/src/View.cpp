@@ -11,6 +11,8 @@
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlView_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlLoadListenerNative_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_wrapper_surface_JNIUlSurface_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_wrapper_surface_JNIUlSurfaceNative_native_access.hpp"
 
 #include <Ultralight/View.h>
 
@@ -21,6 +23,7 @@
 #include "ujr/View.hpp"
 #include "ujr/wrapper/listener/LoadListener.hpp"
 #include "ujr/wrapper/listener/ViewListener.hpp"
+#include "ujr/wrapper/surface/Surface.hpp"
 
 namespace ujr {
     namespace {
@@ -111,6 +114,35 @@ JNIEXPORT jboolean JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nati
 
         auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
         return view->is_loading();
+    });
+}
+
+JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeSurface(JNIEnv *env, jobject self) {
+    return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
+        using ujr::native_access::JNIUlView;
+        using ujr::native_access::JNIUlSurface;
+        using ujr::native_access::JNIUlSurfaceNative;
+
+        auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
+        auto *surface = view->surface();
+
+        if (surface == nullptr) {
+            // View has no surface
+            return static_cast<jobject>(nullptr);
+        }
+
+        // Test if the surface is a JNI surface
+        auto *jni_surface = dynamic_cast<ujr::Surface *>(surface);
+        if (jni_surface) {
+            // Surface is a JNI surface, return the Java object
+            return jni_surface->get_j_surface();
+        }
+
+        // We have to construct a Java surface wrapper
+        auto jni_surface_factory_ref = JNIUlSurfaceNative::CLAZZ.alloc_object(env);
+        JNIUlSurfaceNative::HANDLE.set(env, jni_surface_factory_ref, reinterpret_cast<jlong>(surface));
+
+        return jni_surface_factory_ref.leak();
     });
 }
 

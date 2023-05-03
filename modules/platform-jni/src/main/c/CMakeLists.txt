@@ -92,6 +92,11 @@ set(UJR_SOURCES
         src/wrapper/listener/ViewListener.cpp
         src/wrapper/listener/ViewListenerNative.cpp
 
+        src/wrapper/surface/Surface.cpp
+        src/wrapper/surface/SurfaceFactory.cpp
+        src/wrapper/surface/SurfaceFactoryNative.cpp
+        src/wrapper/surface/SurfaceNative.cpp
+
         src/Keyboard.cpp
         src/Platform.cpp
         src/PlatformProvider.cpp
