@@ -262,12 +262,10 @@ Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativ
         auto *listener = reinterpret_cast<ultralight::ViewListener *>(JNIUlViewListenerNative::HANDLE.get(env, self));
         auto *view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
 
-        ultralight::IntRect rect(
-            IntRect::LEFT.get(env, j_popup_rect),
-            IntRect::TOP.get(env, j_popup_rect),
-            IntRect::RIGHT.get(env, j_popup_rect),
-            IntRect::BOTTOM.get(env, j_popup_rect)
-        );
+        ultralight::IntRect rect { IntRect::LEFT.get(env, j_popup_rect),
+                                   IntRect::TOP.get(env, j_popup_rect),
+                                   IntRect::RIGHT.get(env, j_popup_rect),
+                                   IntRect::BOTTOM.get(env, j_popup_rect) };
 
         auto popup_view
             = listener->OnCreateChildView(view, j_opener_url.to_utf16(), j_target_url.to_utf16(), is_popup, rect);
