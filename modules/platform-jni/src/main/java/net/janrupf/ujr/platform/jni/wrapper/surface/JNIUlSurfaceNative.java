@@ -3,16 +3,18 @@ package net.janrupf.ujr.platform.jni.wrapper.surface;
 import net.janrupf.ujr.api.math.IntRect;
 import net.janrupf.ujr.api.surface.UltralightSurface;
 import net.janrupf.ujr.api.util.UltralightBuffer;
+import net.janrupf.ujr.platform.jni.ffi.JNIUlNativePixelBuffer;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
+import net.janrupf.ujr.platform.jni.ffi.NativePixelBufferHolder;
 
-public class JNIUlSurfaceNative implements UltralightSurface {
+public class JNIUlSurfaceNative implements UltralightSurface, NativePixelBufferHolder {
     @NativeAccess
     private final long handle;
 
     @NativeAccess
     private long lockedPixels;
 
-    private JNIUlSurfaceNative() {
+    protected JNIUlSurfaceNative() {
         throw new RuntimeException("Allocate in native code without calling constructor");
     }
 
@@ -46,12 +48,17 @@ public class JNIUlSurfaceNative implements UltralightSurface {
 
     @Override
     public UltralightBuffer lockPixels() {
-        return new JNIUlSurfaceNativePixelBuffer(this, nativeLockPixels());
+        return new JNIUlNativePixelBuffer(this, nativeLockPixels());
     }
 
     private native /* ByteBuffer or byte[] */ Object nativeLockPixels();
 
-    /* package */ native void nativeUnlockPixels(byte[] storage);
+    @Override
+    public void unlockPixels(byte[] storage) {
+        nativeUnlockPixels(storage);
+    }
+
+    public native void nativeUnlockPixels(byte[] storage);
 
     @Override
     public void resize(long width, long height) {

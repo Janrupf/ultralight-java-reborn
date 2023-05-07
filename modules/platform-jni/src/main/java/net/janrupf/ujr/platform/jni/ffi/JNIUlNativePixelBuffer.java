@@ -1,17 +1,17 @@
-package net.janrupf.ujr.platform.jni.wrapper.surface;
+package net.janrupf.ujr.platform.jni.ffi;
 
 import net.janrupf.ujr.api.util.UltralightBuffer;
 
 import java.nio.ByteBuffer;
 
-public class JNIUlSurfaceNativePixelBuffer implements UltralightBuffer {
-    private final JNIUlSurfaceNative surface;
+public class JNIUlNativePixelBuffer implements UltralightBuffer {
+    private final NativePixelBufferHolder holder;
 
     private final ByteBuffer buffer;
     private final byte[] array;
 
-    /* package */ JNIUlSurfaceNativePixelBuffer(JNIUlSurfaceNative surface, Object storage) {
-        this.surface = surface;
+    public JNIUlNativePixelBuffer(NativePixelBufferHolder holder, Object storage) {
+        this.holder = holder;
 
         if (storage instanceof ByteBuffer) {
             // Got a direct buffer
@@ -35,6 +35,6 @@ public class JNIUlSurfaceNativePixelBuffer implements UltralightBuffer {
         //
         // Passing null as the array here is fine, as this signals to the native
         // code that no writeback is necessary.
-        surface.nativeUnlockPixels(array);
+        holder.unlockPixels(array);
     }
 }

@@ -1,6 +1,8 @@
 package net.janrupf.ujr.example.full;
 
 import net.janrupf.ujr.api.*;
+import net.janrupf.ujr.api.bitmap.UltralightBitmap;
+import net.janrupf.ujr.api.bitmap.UltralightBitmapSurface;
 import net.janrupf.ujr.core.UltralightJavaReborn;
 import net.janrupf.ujr.core.platform.PlatformEnvironment;
 import org.apache.logging.log4j.LogManager;
@@ -95,6 +97,17 @@ public class UJRFullExample {
             // This is useful if we have multiple views and want to update them all at once.
             renderer.update();
         }
+
+        // The view has loaded, lets render it once to obtain an image
+        renderer.render();
+
+        // Save the PNG of the view to a file
+        //
+        // Because we never set a custom surface factory, the default one providing
+        // bitmap surfaces will be used.
+        UltralightBitmapSurface surface = (UltralightBitmapSurface) view.surface();
+        UltralightBitmap bitmap = surface.bitmap();
+        bitmap.writePNG("test.png");
 
         // After we are done using the library, we should tell it to perform cleanup
         ujr.cleanup();

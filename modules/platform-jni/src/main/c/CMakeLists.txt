@@ -97,6 +97,10 @@ set(UJR_SOURCES
         src/wrapper/surface/SurfaceFactoryNative.cpp
         src/wrapper/surface/SurfaceNative.cpp
 
+        src/Bitmap.cpp
+        src/BitmapFactory.cpp
+        src/BitmapSurface.cpp
+        src/BitmapSurfaceFactoryProvider.cpp
         src/Keyboard.cpp
         src/Platform.cpp
         src/PlatformProvider.cpp

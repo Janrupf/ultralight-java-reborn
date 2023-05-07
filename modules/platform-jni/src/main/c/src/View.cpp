@@ -7,6 +7,7 @@
 #include "net_janrupf_ujr_api_event_UlScrollEvent_native_access.hpp"
 #include "net_janrupf_ujr_api_event_UlScrollEventType_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_exception_JniJavascriptException_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_impl_JNIUlBitmapSurface_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlView.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlView_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlLoadListenerNative_native_access.hpp"
@@ -122,6 +123,7 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativ
         using ujr::native_access::JNIUlView;
         using ujr::native_access::JNIUlSurface;
         using ujr::native_access::JNIUlSurfaceNative;
+        using ujr::native_access::JNIUlBitmapSurface;
 
         auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
         auto *surface = view->surface();
@@ -139,7 +141,14 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativ
         }
 
         // We have to construct a Java surface wrapper
-        auto jni_surface_factory_ref = JNIUlSurfaceNative::CLAZZ.alloc_object(env);
+        auto jni_surface_factory_ref = ujr::JniLocalRef<jobject>::null(env);
+
+        // Special case: Bitmap surface
+        if (auto *b_surface = dynamic_cast<ultralight::BitmapSurface *>(surface); b_surface != nullptr) {
+            jni_surface_factory_ref = JNIUlBitmapSurface::CLAZZ.alloc_object(env);
+        } else {
+            jni_surface_factory_ref = JNIUlSurfaceNative::CLAZZ.alloc_object(env);
+        }
         JNIUlSurfaceNative::HANDLE.set(env, jni_surface_factory_ref, reinterpret_cast<jlong>(surface));
 
         return jni_surface_factory_ref.leak();

@@ -1,5 +1,6 @@
 package net.janrupf.ujr.platform.jni.impl;
 
+import net.janrupf.ujr.api.bitmap.UltralightBitmapSurface;
 import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
@@ -7,6 +8,7 @@ import net.janrupf.ujr.api.exception.JavascriptException;
 import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.api.listener.UltralightViewListener;
 import net.janrupf.ujr.api.surface.UltralightSurface;
+import net.janrupf.ujr.core.platform.abstraction.UlBitmapSurface;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.wrapper.listener.JNIUlLoadListener;
@@ -88,7 +90,13 @@ public class JNIUlView implements UlView {
 
     @Override
     public UltralightSurface surface() {
-        return nativeSurface();
+        UltralightSurface surface = nativeSurface();
+
+        if (surface instanceof JNIUlBitmapSurface) {
+            surface = new UltralightBitmapSurface((UlBitmapSurface) surface);
+        }
+
+        return surface;
     }
 
     private native UltralightSurface nativeSurface();

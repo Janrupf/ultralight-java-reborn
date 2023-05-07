@@ -36,6 +36,13 @@ public class CPPCodeGenerator {
         Map<TypeElement, Set<Element>> nativeAccessClasses = new HashMap<>();
 
         for (Element element : nativeAccessElements) {
+            if (element instanceof TypeElement) {
+                nativeAccessClasses.computeIfAbsent(
+                        (TypeElement) element, k -> new LinkedHashSet<>() // Preserve insertion order
+                );
+                continue;
+            }
+
             Element enclosing = element.getEnclosingElement();
 
             if (!(enclosing instanceof TypeElement)) {

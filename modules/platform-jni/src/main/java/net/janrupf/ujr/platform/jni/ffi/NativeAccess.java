@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
  * Annotation which indicates that the annotated element can be accessed by native code.
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD})
 public @interface NativeAccess {
 }
