@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id("application")
 }
@@ -9,6 +11,10 @@ repositories {
 application {
     mainClass.set("net.janrupf.ujr.example.full.UJRFullExample")
     applicationDefaultJvmArgs = listOf("-Xcheck:jni")
+
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        applicationDefaultJvmArgs += listOf("-XstartOnFirstThread")
+    }
 }
 
 dependencies {

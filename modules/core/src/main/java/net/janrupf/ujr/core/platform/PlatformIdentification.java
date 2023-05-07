@@ -78,7 +78,7 @@ public class PlatformIdentification {
             return new PlatformIdentification("windows", osArch, supportedFeatures);
         } else if (osName.contains("mac")) {
             supportedFeatures.add(PlatformFeatures.SYMBOLIC_LINKS);
-            return new PlatformIdentification("macos", osArch, supportedFeatures);
+            return new PlatformIdentification("mac", osArch, supportedFeatures);
         } else if (osName.contains("linux")) {
             supportedFeatures.add(PlatformFeatures.SYMBOLIC_LINKS);
             return new PlatformIdentification("linux", osArch, supportedFeatures);
