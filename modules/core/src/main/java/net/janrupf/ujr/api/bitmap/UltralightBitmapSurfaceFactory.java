@@ -51,4 +51,18 @@ public class UltralightBitmapSurfaceFactory implements UltralightSurfaceFactory 
     public void destroySurface(UltralightSurface surface) {
         impl.destroySurface(surface);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof UltralightBitmapSurfaceFactory)) {
+            return false;
+        }
+
+        return impl.equals(((UltralightBitmapSurfaceFactory) obj).impl);
+    }
+
+    @Override
+    public int hashCode() {
+        return impl.hashCode();
+    }
 }

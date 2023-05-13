@@ -3,6 +3,8 @@ package net.janrupf.ujr.platform.jni.impl;
 import net.janrupf.ujr.core.platform.abstraction.UlSession;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 
+import java.util.Objects;
+
 public class JNIUlSession implements UlSession {
     @NativeAccess
     private final long handle;
@@ -38,4 +40,17 @@ public class JNIUlSession implements UlSession {
     }
 
     private native String nativeDiskPath();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JNIUlSession)) return false;
+        JNIUlSession that = (JNIUlSession) o;
+        return handle == that.handle;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(handle);
+    }
 }

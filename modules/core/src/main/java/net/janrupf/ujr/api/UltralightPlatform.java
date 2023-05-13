@@ -152,4 +152,18 @@ public class UltralightPlatform {
     /* package */ UlRenderer createRenderer() {
         return platform.createRenderer();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof UltralightPlatform)) {
+            return false;
+        }
+
+        return platform.equals(((UltralightPlatform) obj).platform);
+    }
+
+    @Override
+    public int hashCode() {
+        return platform.hashCode();
+    }
 }

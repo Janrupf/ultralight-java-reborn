@@ -5,6 +5,8 @@ import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.impl.JNIUlView;
 
+import java.util.Objects;
+
 public class JNIUlLoadListenerNative implements UltralightLoadListener {
     @NativeAccess
     private final long handle;
@@ -75,4 +77,17 @@ public class JNIUlLoadListenerNative implements UltralightLoadListener {
     }
 
     private native void nativeOnUpdateHistory(JNIUlView implementation);
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JNIUlLoadListenerNative)) return false;
+        JNIUlLoadListenerNative that = (JNIUlLoadListenerNative) o;
+        return handle == that.handle;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(handle);
+    }
 }

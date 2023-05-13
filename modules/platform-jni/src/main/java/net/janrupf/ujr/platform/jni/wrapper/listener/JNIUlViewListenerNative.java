@@ -9,6 +9,8 @@ import net.janrupf.ujr.api.math.IntRect;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.impl.JNIUlView;
 
+import java.util.Objects;
+
 public class JNIUlViewListenerNative implements UltralightViewListener {
     @NativeAccess
     private final long handle;
@@ -118,4 +120,17 @@ public class JNIUlViewListenerNative implements UltralightViewListener {
     }
 
     private native void nativeOnRequestClose(JNIUlView implementation);
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JNIUlViewListenerNative)) return false;
+        JNIUlViewListenerNative that = (JNIUlViewListenerNative) o;
+        return handle == that.handle;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(handle);
+    }
 }

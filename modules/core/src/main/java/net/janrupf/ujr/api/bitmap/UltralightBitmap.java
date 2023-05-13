@@ -281,4 +281,18 @@ public class UltralightBitmap {
     public void convertToPremultipliedAlpha() {
         bitmap.convertToPremultipliedAlpha();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof UltralightBitmap)) {
+            return false;
+        }
+
+        return bitmap.equals(((UltralightBitmap) obj).bitmap);
+    }
+
+    @Override
+    public int hashCode() {
+        return bitmap.hashCode();
+    }
 }

@@ -66,4 +66,18 @@ public class UltralightBitmapSurface implements UltralightSurface {
     public UltralightBitmap bitmap() {
         return surface.bitmap();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof UltralightBitmapSurface)) {
+            return false;
+        }
+
+        return surface.equals(((UltralightBitmapSurface) obj).surface);
+    }
+
+    @Override
+    public int hashCode() {
+        return surface.hashCode();
+    }
 }

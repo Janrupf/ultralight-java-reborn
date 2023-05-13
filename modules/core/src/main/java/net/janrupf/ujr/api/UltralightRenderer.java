@@ -187,4 +187,19 @@ public class UltralightRenderer {
     // TODO: FireGamepadAxisEvent
 
     // TODO: FireGamepadButtonEvent
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof UltralightRenderer)) {
+            return false;
+        }
+
+        return renderer.equals(((UltralightRenderer) obj).renderer);
+    }
+
+    @Override
+    public int hashCode() {
+        return renderer.hashCode();
+    }
 }

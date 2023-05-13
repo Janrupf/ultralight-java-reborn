@@ -8,6 +8,7 @@ import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 
 import java.net.InetAddress;
+import java.util.Objects;
 
 public class JNIUlRenderer implements UlRenderer {
     @NativeAccess
@@ -86,4 +87,17 @@ public class JNIUlRenderer implements UlRenderer {
     }
 
     private native void nativeSetGamepadDetails(long index, String id, long axisCount, long buttonCount);
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JNIUlRenderer)) return false;
+        JNIUlRenderer that = (JNIUlRenderer) o;
+        return handle == that.handle;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(handle);
+    }
 }

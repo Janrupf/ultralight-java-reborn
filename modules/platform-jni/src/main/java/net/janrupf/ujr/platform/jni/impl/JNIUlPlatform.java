@@ -11,6 +11,8 @@ import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.wrapper.filesystem.JNIUlFilesystem;
 import net.janrupf.ujr.platform.jni.wrapper.logger.JNIUlLogger;
 
+import java.util.Objects;
+
 public class JNIUlPlatform implements UlPlatform {
     @NativeAccess
     private final long handle;
@@ -98,4 +100,17 @@ public class JNIUlPlatform implements UlPlatform {
     }
 
     private native UlRenderer nativeCreateRenderer();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JNIUlPlatform)) return false;
+        JNIUlPlatform that = (JNIUlPlatform) o;
+        return handle == that.handle;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(handle);
+    }
 }

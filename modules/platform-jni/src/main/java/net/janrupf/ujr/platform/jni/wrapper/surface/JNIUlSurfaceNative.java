@@ -7,6 +7,8 @@ import net.janrupf.ujr.platform.jni.ffi.JNIUlNativePixelBuffer;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.ffi.NativePixelBufferHolder;
 
+import java.util.Objects;
+
 public class JNIUlSurfaceNative implements UltralightSurface, NativePixelBufferHolder {
     @NativeAccess
     private final long handle;
@@ -87,4 +89,17 @@ public class JNIUlSurfaceNative implements UltralightSurface, NativePixelBufferH
     }
 
     private native void nativeClearDirtyBounds();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JNIUlSurfaceNative)) return false;
+        JNIUlSurfaceNative that = (JNIUlSurfaceNative) o;
+        return handle == that.handle && lockedPixels == that.lockedPixels;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(handle, lockedPixels);
+    }
 }

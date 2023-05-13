@@ -425,4 +425,18 @@ public class UltralightView {
     public UlView getImplementation() {
         return view;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof UltralightView)) {
+            return false;
+        }
+
+        return view.equals(((UltralightView) obj).view);
+    }
+
+    @Override
+    public int hashCode() {
+        return view.hashCode();
+    }
 }

@@ -9,6 +9,7 @@ import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.ffi.NativePixelBufferHolder;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 public class JNIUlBitmap implements UlBitmap, NativePixelBufferHolder {
     @NativeAccess
@@ -165,4 +166,17 @@ public class JNIUlBitmap implements UlBitmap, NativePixelBufferHolder {
     }
 
     private native void nativeConvertToPremultipliedAlpha();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JNIUlBitmap)) return false;
+        JNIUlBitmap that = (JNIUlBitmap) o;
+        return handle == that.handle;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(handle);
+    }
 }

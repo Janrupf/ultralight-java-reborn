@@ -1,6 +1,7 @@
 package net.janrupf.ujr.api.util;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 /**
  * Wraps an existing {@link ByteBuffer} as an {@link UltralightBuffer}.
@@ -25,5 +26,18 @@ public class NioUltralightBuffer implements UltralightBuffer {
     @Override
     public void close() {
         /* no-op */
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NioUltralightBuffer)) return false;
+        NioUltralightBuffer that = (NioUltralightBuffer) o;
+        return Objects.equals(buffer, that.buffer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(buffer);
     }
 }

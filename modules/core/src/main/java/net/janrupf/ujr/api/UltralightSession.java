@@ -57,4 +57,18 @@ public class UltralightSession {
     public UlSession getImplementation() {
         return session;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof UltralightSession)) {
+            return false;
+        }
+
+        return session.equals(((UltralightSession) obj).session);
+    }
+
+    @Override
+    public int hashCode() {
+        return session.hashCode();
+    }
 }

@@ -14,6 +14,8 @@ import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.wrapper.listener.JNIUlLoadListener;
 import net.janrupf.ujr.platform.jni.wrapper.listener.JNIUlViewListener;
 
+import java.util.Objects;
+
 public class JNIUlView implements UlView {
     @NativeAccess
     private final long handle;
@@ -275,4 +277,17 @@ public class JNIUlView implements UlView {
     }
 
     private native void nativeCreateLocalInspectorView();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JNIUlView)) return false;
+        JNIUlView jniUlView = (JNIUlView) o;
+        return handle == jniUlView.handle;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(handle);
+    }
 }
