@@ -1,5 +1,6 @@
 package net.janrupf.ujr.example.full;
 
+import net.janrupf.ujr.api.UltralightView;
 import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,17 +13,18 @@ public class LoadListener implements UltralightLoadListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
-    public void onBeginLoading(long frameId, boolean isMainFrame, String url) {
+    public void onBeginLoading(UltralightView view, long frameId, boolean isMainFrame, String url) {
         LOGGER.info("Frame id {} started loading {}", frameId, url);
     }
 
     @Override
-    public void onFinishLoading(long frameId, boolean isMainFrame, String url) {
+    public void onFinishLoading(UltralightView view, long frameId, boolean isMainFrame, String url) {
         LOGGER.info("Frame id {} finished loading {}", frameId, url);
     }
 
     @Override
     public void onFailLoading(
+            UltralightView view,
             long frameId,
             boolean isMainFrame,
             String url,
@@ -34,7 +36,7 @@ public class LoadListener implements UltralightLoadListener {
     }
 
     @Override
-    public void onWindowObjectReady(long frameId, boolean isMainFrame, String url) {
+    public void onWindowObjectReady(UltralightView view, long frameId, boolean isMainFrame, String url) {
         // This will be called when the window object has been initialized by the
         // JavaScript engine. This will only happen if any JavaScript is used on the
         // page.
@@ -50,7 +52,7 @@ public class LoadListener implements UltralightLoadListener {
     }
 
     @Override
-    public void onDOMReady(long frameId, boolean isMainFrame, String url) {
+    public void onDOMReady(UltralightView view, long frameId, boolean isMainFrame, String url) {
         // This will be called when the DOM has finished loading. This means that
         // all elements are available and can be accessed.
         //
@@ -59,7 +61,7 @@ public class LoadListener implements UltralightLoadListener {
     }
 
     @Override
-    public void onUpdateHistory() {
+    public void onUpdateHistory(UltralightView view) {
         LOGGER.info("View history updated");
     }
 }

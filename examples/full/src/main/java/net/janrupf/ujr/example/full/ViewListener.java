@@ -20,27 +20,28 @@ public class ViewListener implements UltralightViewListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
-    public void onChangeTitle(String title) {
+    public void onChangeTitle(UltralightView view, String title) {
         LOGGER.info("View title changed to {}", title);
     }
 
     @Override
-    public void onChangeURL(String url) {
+    public void onChangeURL(UltralightView view, String url) {
         LOGGER.info("View URL changed to {}", url);
     }
 
     @Override
-    public void onChangeTooltip(String tooltip) {
+    public void onChangeTooltip(UltralightView view, String tooltip) {
         LOGGER.info("View tooltip changed to {}", tooltip);
     }
 
     @Override
-    public void onChangeCursor(UlCursor cursor) {
+    public void onChangeCursor(UltralightView view, UlCursor cursor) {
         LOGGER.info("View cursor changed to {}", cursor);
     }
 
     @Override
     public void onAddConsoleMessage(
+            UltralightView view,
             UlMessageSource source,
             UlMessageLevel level,
             String message,
@@ -57,7 +58,13 @@ public class ViewListener implements UltralightViewListener {
     }
 
     @Override
-    public UltralightView onCreateChildView(String openerUrl, String targetUrl, boolean isPopup, IntRect popupRect) {
+    public UltralightView onCreateChildView(
+            UltralightView view,
+            String openerUrl,
+            String targetUrl,
+            boolean isPopup,
+            IntRect popupRect
+    ) {
         // This will be called when a view requested a new view to be created, for example
         // by calling window.open() in JavaScript or by clicking a link with target="_blank".
         //
@@ -69,7 +76,7 @@ public class ViewListener implements UltralightViewListener {
     }
 
     @Override
-    public UltralightView onCreateInspectorView(boolean isLocal, String inspectedUrl) {
+    public UltralightView onCreateInspectorView(UltralightView view, boolean isLocal, String inspectedUrl) {
         // This will be called as a result of calling UltralightView#createLocalInspectorView(),
         // here you should set up a new view that will be used to display the inspector.
         //
@@ -81,7 +88,7 @@ public class ViewListener implements UltralightViewListener {
     }
 
     @Override
-    public void onRequestClose() {
+    public void onRequestClose(UltralightView view) {
         // This will be called when the view requested self-closing, for example by calling
         // window.close() in JavaScript. You are free to do whatever, including ignoring
         // the request like we do here.
