@@ -106,7 +106,7 @@ namespace ujr {
          * @return the JNI class reference
          * @throws JniException if the class could not be found or loaded
          */
-        JniLocalRef<jclass> get(const JniEnv &env) { return std::move(do_get(env, true)); }
+        JniLocalRef<jclass> get(const JniEnv &env) { return do_get(env, true); }
 
         /**
          * Retrieves the JNI class reference.
@@ -116,7 +116,7 @@ namespace ujr {
          * @param env  the JNI environment to use
          * @return the JNI class reference, or nullptr if the class could not be found or loaded
          */
-        JniLocalRef<jclass> maybe_get(const JniEnv &env) { return std::move(do_get(env, false)); }
+        JniLocalRef<jclass> maybe_get(const JniEnv &env) { return do_get(env, false); }
 
         /**
          * Allocates a new object of this class but does not call the constructor.

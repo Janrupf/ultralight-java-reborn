@@ -17,6 +17,8 @@
 
 #include <Ultralight/View.h>
 
+#include <stdexcept>
+
 #include "ujr/util/JniClass.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
 #include "ujr/util/JniMethod.hpp"
@@ -31,6 +33,21 @@ namespace ujr {
         JniClass<"java/util/Set"> SET_CLASS;
         JniInstanceMethod<decltype(SET_CLASS), "toArray", jobjectArray> SET_TO_ARRAY(SET_CLASS);
     } // namespace
+
+    JniLocalRef<jobject> View::wrap(const JniEnv &env, ultralight::RefPtr<ultralight::View> view) {
+        using ujr::native_access::JNIUlView;
+
+        auto *view_ref = view.LeakRef();
+
+        auto j_view = JNIUlView::CLAZZ.alloc_object(env);
+        JNIUlView::HANDLE.set(env, j_view, reinterpret_cast<jlong>(view_ref));
+
+        auto *collector = new ujr::ViewCollector(view_ref);
+        ujr::GCSupport::attach_collector(env, j_view, collector);
+        JNIUlView::NATIVE_COLLECTOR.set(env, j_view, reinterpret_cast<jlong>(collector));
+
+        return j_view;
+    }
 } // namespace ujr
 
 JNIEXPORT jstring JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeUrl(JNIEnv *env, jobject self) {
@@ -488,7 +505,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeSetViewListener(JNIEnv *e
         ultralight::ViewListener *new_native_listener = nullptr;
 
         if (j_listener.is_valid()) {
-            new_native_listener = new ujr::ViewListener(std::move(j_listener.clone_as_global()));
+            new_native_listener = new ujr::ViewListener(j_listener.clone_as_global());
         }
 
         // Set the native listener field
@@ -544,7 +561,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeSetLoadListener(JNIEnv *e
         ultralight::LoadListener *new_native_listener = nullptr;
 
         if (j_listener.is_valid()) {
-            new_native_listener = new ujr::LoadListener(std::move(j_listener.clone_as_global()));
+            new_native_listener = new ujr::LoadListener(j_listener.clone_as_global());
         }
 
         // Set the native listener field

@@ -5,6 +5,13 @@
 #include "ujr/support/GC.hpp"
 
 namespace ujr {
+    class Session {
+    public:
+        explicit Session() = delete;
+
+        static JniLocalRef<jobject> wrap(const JniEnv &env, ultralight::RefPtr<ultralight::Session> session);
+    };
+
     class SessionCollector : public NativeCollector {
     public:
         ultralight::Session *session;

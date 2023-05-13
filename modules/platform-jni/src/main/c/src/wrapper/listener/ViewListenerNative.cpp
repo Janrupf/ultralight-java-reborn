@@ -9,6 +9,8 @@
 #include <Ultralight/Listener.h>
 #include <Ultralight/View.h>
 
+#include <stdexcept>
+
 #include "ujr/support/GC.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
 #include "ujr/View.hpp"
@@ -260,7 +262,7 @@ Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativ
         auto j_popup_rect = env.wrap_argument(popup_rect);
 
         auto *listener = reinterpret_cast<ultralight::ViewListener *>(JNIUlViewListenerNative::HANDLE.get(env, self));
-        auto *view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
+        auto *ul_view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
 
         ultralight::IntRect rect { IntRect::LEFT.get(env, j_popup_rect),
                                    IntRect::TOP.get(env, j_popup_rect),
@@ -268,22 +270,14 @@ Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativ
                                    IntRect::BOTTOM.get(env, j_popup_rect) };
 
         auto popup_view
-            = listener->OnCreateChildView(view, j_opener_url.to_utf16(), j_target_url.to_utf16(), is_popup, rect);
+            = listener->OnCreateChildView(ul_view, j_opener_url.to_utf16(), j_target_url.to_utf16(), is_popup, rect);
 
         if (!popup_view) {
             return nullptr;
         }
 
-        auto *view_ref = popup_view.LeakRef(); // We will take over reference counting ourselves
-
-        auto j_view = JNIUlView::CLAZZ.alloc_object(env);
-        JNIUlView::HANDLE.set(env, j_view, reinterpret_cast<jlong>(view_ref));
-
-        auto *collector = new ujr::ViewCollector(view_ref);
-        ujr::GCSupport::attach_collector(env, j_view, collector);
-        JNIUlView::NATIVE_COLLECTOR.set(env, j_view, reinterpret_cast<jlong>(collector));
-
-        return j_view.leak();
+        auto view = ujr::View::wrap(env, ultralight::RefPtr(ul_view));
+        return view.leak();
     });
 }
 

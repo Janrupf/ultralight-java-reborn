@@ -1,5 +1,7 @@
 #include "ujr/util/JniException.hpp"
 
+#include <stdexcept>
+
 #include "ujr/util/JniClass.hpp"
 #include "ujr/util/JniMethod.hpp"
 

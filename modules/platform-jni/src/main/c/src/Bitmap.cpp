@@ -6,6 +6,8 @@
 
 #include <Ultralight/String.h>
 
+#include <stdexcept>
+
 #include "ujr/util/JniEntryGuard.hpp"
 
 JNIEXPORT jlong JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlBitmap_nativeWidth(JNIEnv *env, jobject self) {
@@ -245,8 +247,20 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlBitmap_nativeConvertToPremultipliedA
 }
 
 namespace ujr {
+    JniLocalRef<jobject> Bitmap::wrap(const JniEnv &env, ultralight::RefPtr<ultralight::Bitmap> bitmap) {
+        using ujr::native_access::JNIUlBitmap;
+
+        auto *bitmap_ref = bitmap.LeakRef();
+
+        auto j_bitmap = JNIUlBitmap::CLAZZ.alloc_object(env);
+        JNIUlBitmap::HANDLE.set(env, j_bitmap, reinterpret_cast<jlong>(bitmap_ref));
+        ujr::GCSupport::attach_collector(env, j_bitmap, new ujr::BitmapCollector(bitmap_ref));
+
+        return j_bitmap;
+    }
+
     BitmapCollector::BitmapCollector(ultralight::Bitmap *bitmap)
         : bitmap(bitmap) {}
 
-    void BitmapCollector::collect() { bitmap->Release(); }
-} // namespace ujr
+    void BitmapCollector::collect() { bitmap->Release(); } // namespace ujr
+}

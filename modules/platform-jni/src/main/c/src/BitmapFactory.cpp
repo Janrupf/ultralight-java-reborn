@@ -4,6 +4,8 @@
 
 #include <Ultralight/Bitmap.h>
 
+#include <stdexcept>
+
 #include "ujr/Bitmap.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
 
@@ -24,14 +26,7 @@ namespace {
 JNIEXPORT jobject JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_JNIUlBitmapFactory_nativeCreate0(JNIEnv *env, jobject) {
     return ujr::jni_entry_guard(env, [&](auto env) {
-        using ujr::native_access::JNIUlBitmap;
-
-        auto *bitmap_ref = ultralight::Bitmap::Create().LeakRef();
-
-        auto bitmap = JNIUlBitmap::CLAZZ.alloc_object(env);
-        JNIUlBitmap::HANDLE.set(env, bitmap, reinterpret_cast<jlong>(bitmap_ref));
-        ujr::GCSupport::attach_collector(env, bitmap, new ujr::BitmapCollector(bitmap_ref));
-
+        auto bitmap = ujr::Bitmap::wrap(env, ultralight::Bitmap::Create());
         return bitmap.leak();
     });
 }
@@ -40,15 +35,10 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlBitmapFact
     JNIEnv *env, jobject, jlong width, jlong height, jobject format
 ) {
     return ujr::jni_entry_guard(env, [&](auto env) {
-        using ujr::native_access::JNIUlBitmap;
-
         auto j_format = env.wrap_argument(format);
-        auto *bitmap_ref = ultralight::Bitmap::Create(width, height, java_format_to_native(j_format)).LeakRef();
+        auto ul_bitmap = ultralight::Bitmap::Create(width, height, java_format_to_native(j_format));
 
-        auto bitmap = JNIUlBitmap::CLAZZ.alloc_object(env);
-        JNIUlBitmap::HANDLE.set(env, bitmap, reinterpret_cast<jlong>(bitmap_ref));
-        ujr::GCSupport::attach_collector(env, bitmap, new ujr::BitmapCollector(bitmap_ref));
-
+        auto bitmap = ujr::Bitmap::wrap(env, ul_bitmap);
         return bitmap.leak();
     });
 }
@@ -57,16 +47,10 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlBitmapFact
     JNIEnv *env, jobject, jlong width, jlong height, jobject format, jlong alignment
 ) {
     return ujr::jni_entry_guard(env, [&](auto env) {
-        using ujr::native_access::JNIUlBitmap;
-
         auto j_format = env.wrap_argument(format);
-        auto *bitmap_ref
-            = ultralight::Bitmap::Create(width, height, java_format_to_native(j_format), alignment).LeakRef();
+        auto ul_bitmap = ultralight::Bitmap::Create(width, height, java_format_to_native(j_format), alignment);
 
-        auto bitmap = JNIUlBitmap::CLAZZ.alloc_object(env);
-        JNIUlBitmap::HANDLE.set(env, bitmap, reinterpret_cast<jlong>(bitmap_ref));
-        ujr::GCSupport::attach_collector(env, bitmap, new ujr::BitmapCollector(bitmap_ref));
-
+        auto bitmap = ujr::Bitmap::wrap(env, ul_bitmap);
         return bitmap.leak();
     });
 }
@@ -78,12 +62,9 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlBitmapFactory_nativeCreate3(JNIEnv *
 
         auto j_other = env.wrap_argument(other);
         auto *other_ref = reinterpret_cast<ultralight::Bitmap *>(JNIUlBitmap::HANDLE.get(env, j_other));
-        auto *bitmap_ref = ultralight::Bitmap::Create(*other_ref).LeakRef();
+        auto ul_bitmap = ultralight::Bitmap::Create(*other_ref);
 
-        auto bitmap = JNIUlBitmap::CLAZZ.alloc_object(env);
-        JNIUlBitmap::HANDLE.set(env, bitmap, reinterpret_cast<jlong>(bitmap_ref));
-        ujr::GCSupport::attach_collector(env, bitmap, new ujr::BitmapCollector(bitmap_ref));
-
+        auto bitmap = ujr::Bitmap::wrap(env, ul_bitmap);
         return bitmap.leak();
     });
 }

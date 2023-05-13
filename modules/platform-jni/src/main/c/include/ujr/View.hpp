@@ -5,6 +5,13 @@
 #include "ujr/support/GC.hpp"
 
 namespace ujr {
+    class View {
+    public:
+        explicit View() = delete;
+
+        static JniLocalRef<jobject> wrap(const JniEnv &env, ultralight::RefPtr<ultralight::View> view);
+    };
+
     class ViewCollector : public NativeCollector {
     private:
         ultralight::View *view;

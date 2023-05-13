@@ -141,7 +141,7 @@ namespace ujr {
             auto local = reinterpret_cast<typename JniType<T>::Type>(target_env->NewLocalRef(this->ref));
             JniExceptionCheck::throw_if_pending(target_env);
 
-            return std::move(JniLocalRef<T>::wrap(std::move(target_env), local));
+            return JniLocalRef<T>::wrap(target_env, local);
         }
 
         /**
@@ -154,7 +154,7 @@ namespace ujr {
             auto global = reinterpret_cast<typename JniType<T>::Type>(target_env->NewGlobalRef(this->ref));
             JniExceptionCheck::throw_if_pending(target_env);
 
-            return std::move(JniGlobalRef<T>::wrap(global));
+            return JniGlobalRef<T>::wrap(global);
         }
     };
 
@@ -400,7 +400,7 @@ namespace ujr {
             auto weak = reinterpret_cast<typename JniType<T>::Type>(env->NewWeakGlobalRef(this->ref));
             JniExceptionCheck::throw_if_pending(env);
 
-            return std::move(JniWeakRef<T>::wrap(weak));
+            return JniWeakRef<T>::wrap(weak);
         }
 
         /**
@@ -424,7 +424,7 @@ namespace ujr {
             auto global = reinterpret_cast<typename JniType<T>::Type>(env->NewGlobalRef(this->ref));
             JniExceptionCheck::throw_if_pending(env);
 
-            return std::move(JniGlobalRef<T>::wrap(global));
+            return JniGlobalRef<T>::wrap(global);
         }
 
         /**

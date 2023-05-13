@@ -4,6 +4,8 @@
 
 #include <Ultralight/platform/Logger.h>
 
+#include <stdexcept>
+
 #include "ujr/util/JniEntryGuard.hpp"
 #include "ujr/util/JniEnv.hpp"
 #include "ujr/util/JniRef.hpp"

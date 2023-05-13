@@ -3,7 +3,6 @@
 #include "net_janrupf_ujr_api_config_UlFontHinting_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_native_access.hpp"
-#include "net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_clipboard_JNIUlClipboardNative_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_filesystem_JNIUlFilesystemNative_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_logger_JNIUlLoggerNative_native_access.hpp"
@@ -13,6 +12,8 @@
 #include <Ultralight/platform/Config.h>
 #include <Ultralight/platform/Platform.h>
 #include <Ultralight/Renderer.h>
+
+#include <stdexcept>
 
 #include "ujr/Platform.hpp"
 #include "ujr/Renderer.hpp"
@@ -111,7 +112,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetLogger(JNIEnv *env
         ultralight::Logger *new_native_logger = nullptr;
 
         if (j_logger.is_valid()) {
-            new_native_logger = new ujr::Logger(std::move(j_logger.clone_as_global()));
+            new_native_logger = new ujr::Logger(j_logger.clone_as_global());
         }
 
         // Set the native logger field
@@ -165,7 +166,7 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nati
         ultralight::FileSystem *new_native_filesystem = nullptr;
 
         if (j_filesystem.is_valid()) {
-            new_native_filesystem = new ujr::Filesystem(std::move(j_filesystem.clone_as_global()));
+            new_native_filesystem = new ujr::Filesystem(j_filesystem.clone_as_global());
         }
 
         platform->set_file_system(new_native_filesystem);
@@ -217,7 +218,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetClipboard(JNIEnv *
         ultralight::Clipboard *new_native_clipboard = nullptr;
 
         if (j_clipboard.is_valid()) {
-            new_native_clipboard = new ujr::Clipboard(std::move(j_clipboard.clone_as_global()));
+            new_native_clipboard = new ujr::Clipboard(j_clipboard.clone_as_global());
         }
 
         platform->set_clipboard(new_native_clipboard);
@@ -271,7 +272,7 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nati
         ultralight::SurfaceFactory *new_native_surface_factory = nullptr;
 
         if (j_surface_factory.is_valid()) {
-            new_native_surface_factory = new ujr::SurfaceFactory(std::move(j_surface_factory.clone_as_global()));
+            new_native_surface_factory = new ujr::SurfaceFactory(j_surface_factory.clone_as_global());
         }
 
         platform->set_surface_factory(new_native_surface_factory);
@@ -311,18 +312,10 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSurfaceFactory(JNIEnv
 JNIEXPORT jobject JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeCreateRenderer(JNIEnv *env, jobject) {
     return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
-        using ujr::native_access::JNIUlRenderer;
+        auto ul_renderer = ultralight::Renderer::Create();
+        auto renderer = ujr::Renderer::wrap(env, ul_renderer);
 
-        auto renderer = ultralight::Renderer::Create();
-        auto renderer_ref = renderer.LeakRef(); // We'll take over reference counting ourselves
-
-        auto jni_renderer_ref = JNIUlRenderer::CLAZZ.alloc_object(env);
-        JNIUlRenderer::HANDLE.set(env, jni_renderer_ref, reinterpret_cast<jlong>(renderer_ref));
-
-        // Attach GC
-        ujr::GCSupport::attach_collector(env, jni_renderer_ref, new ujr::RendererCollector(renderer_ref));
-
-        return jni_renderer_ref.leak();
+        return renderer.leak();
     });
 }
 
@@ -338,5 +331,21 @@ namespace ujr {
         delete filesystem;
         delete clipboard;
         delete surface_factory;
+    }
+
+    JniLocalRef<jobject> Platform::wrap(const JniEnv &env, ultralight::Platform &platform) {
+        using ujr::native_access::JNIUlPlatform;
+
+        auto *collector = new ujr::PlatformCollector;
+
+        // Allocate the object and set the native handle and collector
+        auto j_platform = JNIUlPlatform::CLAZZ.alloc_object(env);
+        JNIUlPlatform::HANDLE.set(env, j_platform, reinterpret_cast<jlong>(&platform));
+        JNIUlPlatform::NATIVE_COLLECTOR.set(env, j_platform, reinterpret_cast<jlong>(collector));
+
+        // Attach the collector to the platform
+        ujr::GCSupport::attach_collector(env, j_platform, collector);
+
+        return j_platform;
     }
 } // namespace ujr

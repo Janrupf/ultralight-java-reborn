@@ -49,6 +49,18 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlSession_nativeDiskPath(JNIEnv *env, 
 }
 
 namespace ujr {
+    JniLocalRef<jobject> Session::wrap(const JniEnv &env, ultralight::RefPtr<ultralight::Session> session) {
+        using ujr::native_access::JNIUlSession;
+
+        auto *session_ref = session.LeakRef();
+
+        auto j_session = JNIUlSession::CLAZZ.alloc_object(env);
+        JNIUlSession::HANDLE.set(env, j_session, reinterpret_cast<jlong>(session_ref));
+        ujr::GCSupport::attach_collector(env, j_session, new ujr::SessionCollector(session_ref));
+
+        return j_session;
+    }
+
     SessionCollector::SessionCollector(ultralight::Session *session)
         : session(session) {}
 

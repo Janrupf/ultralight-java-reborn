@@ -18,19 +18,14 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_n
 ) {
     return ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlRenderer;
-        using ujr::native_access::JNIUlSession;
 
         auto j_name = env.wrap_argument(name);
 
         auto *renderer = reinterpret_cast<ultralight::Renderer *>(JNIUlRenderer::HANDLE.get(env, self));
-        auto *session = renderer->CreateSession(is_persistent, j_name.to_utf16()).LeakRef();
+        auto ul_session = renderer->CreateSession(is_persistent, j_name.to_utf16());
 
-        auto j_session = JNIUlSession::CLAZZ.alloc_object(env);
-        JNIUlSession::HANDLE.set(env, j_session, reinterpret_cast<jlong>(session));
-
-        ujr::GCSupport::attach_collector(env, j_session, new ujr::SessionCollector(session));
-
-        return j_session.leak();
+        auto session = ujr::Session::wrap(env, ul_session);
+        return session.leak();
     });
 }
 
@@ -38,17 +33,12 @@ JNIEXPORT jobject JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_nativeDefaultSession(JNIEnv *env, jobject self) {
     return ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlRenderer;
-        using ujr::native_access::JNIUlSession;
 
         auto *renderer = reinterpret_cast<ultralight::Renderer *>(JNIUlRenderer::HANDLE.get(env, self));
-        auto *session = renderer->default_session().LeakRef();
+        auto ul_session = renderer->default_session();
 
-        auto j_session = JNIUlSession::CLAZZ.alloc_object(env);
-        JNIUlSession::HANDLE.set(env, j_session, reinterpret_cast<jlong>(session));
-
-        ujr::GCSupport::attach_collector(env, j_session, new ujr::SessionCollector(session));
-
-        return j_session.leak();
+        auto session = ujr::Session::wrap(env, ul_session);
+        return session.leak();
     });
 }
 
@@ -198,6 +188,18 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_nati
 }
 
 namespace ujr {
+    JniLocalRef<jobject> Renderer::wrap(const JniEnv &env, ultralight::RefPtr<ultralight::Renderer> renderer) {
+        using ujr::native_access::JNIUlRenderer;
+
+        auto *renderer_ref = renderer.LeakRef();
+
+        auto jni_renderer_ref = JNIUlRenderer::CLAZZ.alloc_object(env);
+        JNIUlRenderer::HANDLE.set(env, jni_renderer_ref, reinterpret_cast<jlong>(renderer_ref));
+        ujr::GCSupport::attach_collector(env, jni_renderer_ref, new ujr::RendererCollector(renderer_ref));
+
+        return jni_renderer_ref;
+    }
+
     RendererCollector::RendererCollector(ultralight::Renderer *renderer)
         : renderer(renderer) {}
 
