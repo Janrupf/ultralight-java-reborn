@@ -18,7 +18,7 @@ fun addModule(name: String) {
     }
 }
 
-addExample("full")
+addExample("png")
 
 addModule("core")
 addModule("native-ap")

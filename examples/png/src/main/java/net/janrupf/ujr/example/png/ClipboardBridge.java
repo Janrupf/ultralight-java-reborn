@@ -1,4 +1,4 @@
-package net.janrupf.ujr.example.full;
+package net.janrupf.ujr.example.png;
 
 import net.janrupf.ujr.api.clipboard.UltralightClipboard;
 import org.apache.logging.log4j.LogManager;

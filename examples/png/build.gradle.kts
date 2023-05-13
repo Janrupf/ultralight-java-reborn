@@ -9,7 +9,7 @@ repositories {
 }
 
 application {
-    mainClass.set("net.janrupf.ujr.example.full.UJRFullExample")
+    mainClass.set("net.janrupf.ujr.example.png.UJRFullExample")
     applicationDefaultJvmArgs = listOf("-Xcheck:jni")
 
     if (Os.isFamily(Os.FAMILY_MAC)) {
