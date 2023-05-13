@@ -56,4 +56,8 @@ public class JNIUlSurface {
     public void clearDirtyBounds() {
         delegate.clearDirtyBounds();
     }
+
+    public UltralightSurface getDelegate() {
+        return delegate;
+    }
 }

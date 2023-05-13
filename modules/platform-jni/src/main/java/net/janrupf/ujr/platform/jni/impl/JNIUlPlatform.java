@@ -10,6 +10,7 @@ import net.janrupf.ujr.core.platform.abstraction.UlRenderer;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.wrapper.filesystem.JNIUlFilesystem;
 import net.janrupf.ujr.platform.jni.wrapper.logger.JNIUlLogger;
+import net.janrupf.ujr.platform.jni.wrapper.surface.JNIUlSurfaceFactory;
 
 import java.util.Objects;
 
@@ -82,10 +83,10 @@ public class JNIUlPlatform implements UlPlatform {
 
     @Override
     public void setSurfaceFactory(UltralightSurfaceFactory surfaceFactory) {
-        nativeSetSurfaceFactory(surfaceFactory);
+        nativeSetSurfaceFactory(new JNIUlSurfaceFactory(surfaceFactory));
     }
 
-    private native void nativeSetSurfaceFactory(UltralightSurfaceFactory surfaceFactory);
+    private native void nativeSetSurfaceFactory(JNIUlSurfaceFactory surfaceFactory);
 
     @Override
     public UltralightSurfaceFactory surfaceFactory() {

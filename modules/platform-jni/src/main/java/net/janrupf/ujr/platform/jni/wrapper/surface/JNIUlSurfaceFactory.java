@@ -12,12 +12,12 @@ public class JNIUlSurfaceFactory {
     }
 
     @NativeAccess
-    public UltralightSurface createSurface(long width, long height) {
-        return delegate.createSurface(width, height);
+    public JNIUlSurface createSurface(long width, long height) {
+        return new JNIUlSurface(delegate.createSurface(width, height));
     }
 
     @NativeAccess
-    public void destroySurface(UltralightSurface surface) {
-        delegate.destroySurface(surface);
+    public void destroySurface(JNIUlSurface surface) {
+        delegate.destroySurface(surface.getDelegate());
     }
 }
