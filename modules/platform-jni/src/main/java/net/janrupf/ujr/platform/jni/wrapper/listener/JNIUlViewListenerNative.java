@@ -11,9 +11,6 @@ import net.janrupf.ujr.platform.jni.impl.JNIUlView;
 
 public class JNIUlViewListenerNative implements UltralightViewListener {
     @NativeAccess
-    private final long view;
-
-    @NativeAccess
     private final long handle;
 
     private JNIUlViewListenerNative() {
@@ -21,35 +18,36 @@ public class JNIUlViewListenerNative implements UltralightViewListener {
     }
 
     @Override
-    public void onChangeTitle(String title) {
-        nativeOnChangeTitle(title);
+    public void onChangeTitle(UltralightView view, String title) {
+        nativeOnChangeTitle((JNIUlView) view.getImplementation(), title);
     }
 
-    private native void nativeOnChangeTitle(String title);
+    private native void nativeOnChangeTitle(JNIUlView implementation, String title);
 
     @Override
-    public void onChangeURL(String url) {
-        nativeOnChangeURL(url);
+    public void onChangeURL(UltralightView view, String url) {
+        nativeOnChangeURL((JNIUlView) view.getImplementation(), url);
     }
 
-    private native void nativeOnChangeURL(String url);
+    private native void nativeOnChangeURL(JNIUlView implementation, String url);
 
     @Override
-    public void onChangeTooltip(String tooltip) {
-        nativeOnChangeTooltip(tooltip);
+    public void onChangeTooltip(UltralightView view, String tooltip) {
+        nativeOnChangeTooltip((JNIUlView) view.getImplementation(), tooltip);
     }
 
-    private native void nativeOnChangeTooltip(String tooltip);
+    private native void nativeOnChangeTooltip(JNIUlView implementation, String tooltip);
 
     @Override
-    public void onChangeCursor(UlCursor cursor) {
-        nativeOnChangeCursor(cursor);
+    public void onChangeCursor(UltralightView view, UlCursor cursor) {
+        nativeOnChangeCursor((JNIUlView) view.getImplementation(), cursor);
     }
 
-    private native void nativeOnChangeCursor(UlCursor cursor);
+    private native void nativeOnChangeCursor(JNIUlView implementation, UlCursor cursor);
 
     @Override
     public void onAddConsoleMessage(
+            UltralightView view,
             UlMessageSource source,
             UlMessageLevel level,
             String message,
@@ -57,10 +55,19 @@ public class JNIUlViewListenerNative implements UltralightViewListener {
             long columnNumber,
             String sourceId
     ) {
-        nativeOnAddConsoleMessage(source, level, message, lineNumber, columnNumber, sourceId);
+        nativeOnAddConsoleMessage(
+                (JNIUlView) view.getImplementation(),
+                source,
+                level,
+                message,
+                lineNumber,
+                columnNumber,
+                sourceId
+        );
     }
 
     private native void nativeOnAddConsoleMessage(
+            JNIUlView implementation,
             UlMessageSource source,
             UlMessageLevel level,
             String message,
@@ -70,23 +77,45 @@ public class JNIUlViewListenerNative implements UltralightViewListener {
     );
 
     @Override
-    public UltralightView onCreateChildView(String openerUrl, String targetUrl, boolean isPopup, IntRect popupRect) {
-        return new UltralightView(nativeOnCreateChildView(openerUrl, targetUrl, isPopup, popupRect));
+    public UltralightView onCreateChildView(
+            UltralightView view,
+            String openerUrl,
+            String targetUrl,
+            boolean isPopup,
+            IntRect popupRect
+    ) {
+        return new UltralightView(nativeOnCreateChildView(
+                (JNIUlView) view.getImplementation(),
+                openerUrl,
+                targetUrl,
+                isPopup,
+                popupRect
+        ));
     }
 
-    private native JNIUlView nativeOnCreateChildView(String openerUrl, String targetUrl, boolean isPopup, IntRect popupRect);
+    private native JNIUlView nativeOnCreateChildView(
+            JNIUlView implementation,
+            String openerUrl,
+            String targetUrl,
+            boolean isPopup,
+            IntRect popupRect
+    );
 
     @Override
-    public UltralightView onCreateInspectorView(boolean isLocal, String inspectedUrl) {
-        return new UltralightView(nativeOnCreateInspectorView(isLocal, inspectedUrl));
+    public UltralightView onCreateInspectorView(UltralightView view, boolean isLocal, String inspectedUrl) {
+        return new UltralightView(nativeOnCreateInspectorView(
+                (JNIUlView) view.getImplementation(),
+                isLocal,
+                inspectedUrl
+        ));
     }
 
-    private native JNIUlView nativeOnCreateInspectorView(boolean isLocal, String inspectedUrl);
+    private native JNIUlView nativeOnCreateInspectorView(JNIUlView implementation, boolean isLocal, String inspectedUrl);
 
     @Override
-    public void onRequestClose() {
-        nativeOnRequestClose();
+    public void onRequestClose(UltralightView view) {
+        nativeOnRequestClose((JNIUlView) view.getImplementation());
     }
 
-    private native void nativeOnRequestClose();
+    private native void nativeOnRequestClose(JNIUlView implementation);
 }

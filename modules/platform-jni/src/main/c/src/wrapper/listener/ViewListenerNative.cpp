@@ -11,64 +11,67 @@
 
 #include <stdexcept>
 
-#include "ujr/support/GC.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
 #include "ujr/View.hpp"
 
 JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativeOnChangeTitle(
-    JNIEnv *env, jobject self, jstring title
+    JNIEnv *env, jobject self, jobject view, jstring title
 ) {
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlViewListenerNative;
+        using ujr::native_access::JNIUlView;
 
         auto j_title = env.wrap_argument(title);
 
         auto *listener = reinterpret_cast<ultralight::ViewListener *>(JNIUlViewListenerNative::HANDLE.get(env, self));
-        auto *view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
+        auto *ul_view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, view));
 
-        listener->OnChangeTitle(view, j_title.to_utf16());
+        listener->OnChangeTitle(ul_view, j_title.to_utf16());
     });
 }
 
 JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativeOnChangeURL(
-    JNIEnv *env, jobject self, jstring url
+    JNIEnv *env, jobject self, jobject view, jstring url
 ) {
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlViewListenerNative;
+        using ujr::native_access::JNIUlView;
 
         auto j_url = env.wrap_argument(url);
 
         auto *listener = reinterpret_cast<ultralight::ViewListener *>(JNIUlViewListenerNative::HANDLE.get(env, self));
-        auto *view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
+        auto *ul_view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, view));
 
-        listener->OnChangeURL(view, j_url.to_utf16());
+        listener->OnChangeURL(ul_view, j_url.to_utf16());
     });
 }
 
 JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativeOnChangeTooltip(
-    JNIEnv *env, jobject self, jstring tooltip
+    JNIEnv *env, jobject self, jobject view, jstring tooltip
 ) {
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlViewListenerNative;
+        using ujr::native_access::JNIUlView;
 
         auto j_tooltip = env.wrap_argument(tooltip);
 
         auto *listener = reinterpret_cast<ultralight::ViewListener *>(JNIUlViewListenerNative::HANDLE.get(env, self));
-        auto *view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
+        auto *ul_view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, view));
 
-        listener->OnChangeTooltip(view, j_tooltip.to_utf16());
+        listener->OnChangeTooltip(ul_view, j_tooltip.to_utf16());
     });
 }
 
 JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativeOnChangeCursor(
-    JNIEnv *env, jobject self, jobject cursor
+    JNIEnv *env, jobject self, jobject view, jobject cursor
 ) {
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlViewListenerNative;
         using ujr::native_access::UlCursor;
+        using ujr::native_access::JNIUlView;
 
         auto *listener = reinterpret_cast<ultralight::ViewListener *>(JNIUlViewListenerNative::HANDLE.get(env, self));
-        auto *view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
+        auto *ul_view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, view));
 
         auto j_cursor = env.wrap_argument(cursor);
 
@@ -166,7 +169,7 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlV
             throw std::runtime_error("Unknown cursor type");
         }
 
-        listener->OnChangeCursor(view, ul_cursor);
+        listener->OnChangeCursor(ul_view, ul_cursor);
     });
 }
 
@@ -174,6 +177,7 @@ JNIEXPORT void JNICALL
 Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativeOnAddConsoleMessage(
     JNIEnv *env,
     jobject self,
+    jobject view,
     jobject source,
     jobject level,
     jstring message,
@@ -185,12 +189,13 @@ Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativ
         using ujr::native_access::JNIUlViewListenerNative;
         using ujr::native_access::UlMessageSource;
         using ujr::native_access::UlMessageLevel;
+        using ujr::native_access::JNIUlView;
 
         auto j_message = env.wrap_argument(message);
         auto j_source_id = env.wrap_argument(source_id);
 
         auto *listener = reinterpret_cast<ultralight::ViewListener *>(JNIUlViewListenerNative::HANDLE.get(env, self));
-        auto *view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
+        auto *ul_view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, view));
 
         ultralight::MessageSource ul_source;
 
@@ -237,7 +242,7 @@ Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativ
         }
 
         listener->OnAddConsoleMessage(
-            view,
+            ul_view,
             ul_source,
             ul_level,
             j_message.to_utf16(),
@@ -250,7 +255,13 @@ Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativ
 
 JNIEXPORT jobject JNICALL
 Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativeOnCreateChildView(
-    JNIEnv *env, jobject self, jstring opener_url, jstring target_url, jboolean is_popup, jobject popup_rect
+    JNIEnv *env,
+    jobject self,
+    jobject view,
+    jstring opener_url,
+    jstring target_url,
+    jboolean is_popup,
+    jobject popup_rect
 ) {
     return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
         using ujr::native_access::JNIUlViewListenerNative;
@@ -262,7 +273,7 @@ Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativ
         auto j_popup_rect = env.wrap_argument(popup_rect);
 
         auto *listener = reinterpret_cast<ultralight::ViewListener *>(JNIUlViewListenerNative::HANDLE.get(env, self));
-        auto *ul_view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
+        auto *ul_view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, view));
 
         ultralight::IntRect rect { IntRect::LEFT.get(env, j_popup_rect),
                                    IntRect::TOP.get(env, j_popup_rect),
@@ -276,14 +287,14 @@ Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativ
             return nullptr;
         }
 
-        auto view = ujr::View::wrap(env, ultralight::RefPtr(ul_view));
-        return view.leak();
+        auto j_view = ujr::View::wrap(env, ultralight::RefPtr(ul_view));
+        return j_view.leak();
     });
 }
 
 JNIEXPORT jobject JNICALL
 Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativeOnCreateInspectorView(
-    JNIEnv *env, jobject self, jboolean is_local, jstring inspected_url
+    JNIEnv *env, jobject self, jobject view, jboolean is_local, jstring inspected_url
 ) {
     return ujr::jni_entry_guard(env, [&](auto env) -> jobject {
         using ujr::native_access::JNIUlViewListenerNative;
@@ -292,36 +303,29 @@ Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativ
         auto j_inspected_url = env.wrap_argument(inspected_url);
 
         auto *listener = reinterpret_cast<ultralight::ViewListener *>(JNIUlViewListenerNative::HANDLE.get(env, self));
-        auto *view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
+        auto *ul_view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, view));
 
-        auto inspector_view = listener->OnCreateInspectorView(view, is_local, j_inspected_url.to_utf16());
+        auto inspector_view = listener->OnCreateInspectorView(ul_view, is_local, j_inspected_url.to_utf16());
 
         if (!inspector_view) {
             return nullptr;
         }
 
-        auto *view_ref = inspector_view.LeakRef(); // We will take over reference counting ourselves
-
-        auto j_view = JNIUlView::CLAZZ.alloc_object(env);
-        JNIUlView::HANDLE.set(env, j_view, reinterpret_cast<jlong>(view_ref));
-
-        auto *collector = new ujr::ViewCollector(view_ref);
-        ujr::GCSupport::attach_collector(env, j_view, collector);
-        JNIUlView::NATIVE_COLLECTOR.set(env, j_view, reinterpret_cast<jlong>(collector));
-
+        auto j_view = ujr::View::wrap(env, inspector_view);
         return j_view.leak();
     });
 }
 
 JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativeOnRequestClose(
-    JNIEnv *env, jobject self
+    JNIEnv *env, jobject self, jobject view
 ) {
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIUlViewListenerNative;
+        using ujr::native_access::JNIUlView;
 
         auto *listener = reinterpret_cast<ultralight::ViewListener *>(JNIUlViewListenerNative::HANDLE.get(env, self));
-        auto *view = reinterpret_cast<ultralight::View *>(JNIUlViewListenerNative::VIEW.get(env, self));
+        auto *ul_view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, view));
 
-        listener->OnRequestClose(view);
+        listener->OnRequestClose(ul_view);
     });
 }

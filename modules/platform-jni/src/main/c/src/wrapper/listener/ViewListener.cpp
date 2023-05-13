@@ -8,6 +8,8 @@
 
 #include <Ultralight/View.h>
 
+#include "ujr/View.hpp"
+
 namespace ujr {
     ViewListener::ViewListener(JniGlobalRef<jobject> j_listener)
         : j_listener(std::move(j_listener)) {}
@@ -15,37 +17,45 @@ namespace ujr {
     void ViewListener::OnChangeTitle(ultralight::View *caller, const ultralight::String &title) {
         auto env = JniEnv::require_existing_from_thread();
 
+        auto j_view = ujr::View::wrap(env, ultralight::RefPtr(caller));
+
         // Translate the title
         auto j_title = JniLocalRef<jstring>::from_utf16(env, title.utf16());
 
         // Call the Java instance
-        native_access::JNIUlViewListener::ON_CHANGE_TITLE.invoke(env, j_listener, j_title);
+        native_access::JNIUlViewListener::ON_CHANGE_TITLE.invoke(env, j_listener, j_view, j_title);
     }
 
     void ViewListener::OnChangeURL(ultralight::View *caller, const ultralight::String &url) {
         auto env = JniEnv::require_existing_from_thread();
 
+        auto j_view = ujr::View::wrap(env, ultralight::RefPtr(caller));
+
         // Translate the url
         auto j_url = JniLocalRef<jstring>::from_utf16(env, url.utf16());
 
         // Call the Java instance
-        native_access::JNIUlViewListener::ON_CHANGE_URL.invoke(env, j_listener, j_url);
+        native_access::JNIUlViewListener::ON_CHANGE_URL.invoke(env, j_listener, j_view, j_url);
     }
 
     void ViewListener::OnChangeTooltip(ultralight::View *caller, const ultralight::String &tooltip) {
         auto env = JniEnv::require_existing_from_thread();
 
+        auto j_view = ujr::View::wrap(env, ultralight::RefPtr(caller));
+
         // Translate the tooltip
         auto j_tooltip = JniLocalRef<jstring>::from_utf16(env, tooltip.utf16());
 
         // Call the Java instance
-        native_access::JNIUlViewListener::ON_CHANGE_TOOLTIP.invoke(env, j_listener, j_tooltip);
+        native_access::JNIUlViewListener::ON_CHANGE_TOOLTIP.invoke(env, j_listener, j_view, j_tooltip);
     }
 
     void ViewListener::OnChangeCursor(ultralight::View *caller, ultralight::Cursor cursor) {
         using native_access::UlCursor;
 
         auto env = JniEnv::require_existing_from_thread();
+
+        auto j_view = ujr::View::wrap(env, ultralight::RefPtr(caller));
 
         // Translate the cursor
         auto j_cursor = JniLocalRef<jobject>::null(env);
@@ -185,7 +195,7 @@ namespace ujr {
         }
 
         // Call the Java instance
-        native_access::JNIUlViewListener::ON_CHANGE_CURSOR.invoke(env, j_listener, j_cursor);
+        native_access::JNIUlViewListener::ON_CHANGE_CURSOR.invoke(env, j_listener, j_view, j_cursor);
     }
 
     void ViewListener::OnAddConsoleMessage(
@@ -201,6 +211,8 @@ namespace ujr {
         using native_access::UlMessageSource;
 
         auto env = JniEnv::require_existing_from_thread();
+
+        auto j_view = ujr::View::wrap(env, ultralight::RefPtr(caller));
 
         // Translate the source
         auto j_source = JniLocalRef<jobject>::null(env);
@@ -269,6 +281,7 @@ namespace ujr {
         native_access::JNIUlViewListener::ON_ADD_CONSOLE_MESSAGE.invoke(
             env,
             j_listener,
+            j_view,
             j_source,
             j_level,
             j_message,
@@ -291,6 +304,8 @@ namespace ujr {
 
         auto env = JniEnv::require_existing_from_thread();
 
+        auto j_view = ujr::View::wrap(env, ultralight::RefPtr(caller));
+
         // Translate the opener url
         auto j_opener_url = JniLocalRef<jstring>::from_utf16(env, opener_url.utf16());
 
@@ -305,9 +320,15 @@ namespace ujr {
         IntRect::BOTTOM.set(env, j_popup_rect, popup_rect.bottom);
 
         // Call the Java instance
-        auto j_child_view
-            = JNIUlViewListener::ON_CREATE_CHILD_VIEW
-                  .invoke(env, j_listener, j_opener_url, j_target_url, static_cast<jboolean>(is_popup), j_popup_rect);
+        auto j_child_view = JNIUlViewListener::ON_CREATE_CHILD_VIEW.invoke(
+            env,
+            j_listener,
+            j_view,
+            j_opener_url,
+            j_target_url,
+            static_cast<jboolean>(is_popup),
+            j_popup_rect
+        );
 
         if (!j_child_view.is_valid()) {
             return { nullptr };
@@ -327,12 +348,14 @@ namespace ujr {
 
         auto env = JniEnv::require_existing_from_thread();
 
+        auto j_view = ujr::View::wrap(env, ultralight::RefPtr(caller));
+
         // Translate the inspected url
         auto j_inspected_url = JniLocalRef<jstring>::from_utf16(env, inspected_url.utf16());
 
         // Call the Java instance
         auto j_child_view = JNIUlViewListener::ON_CREATE_INSPECTOR_VIEW
-                                .invoke(env, j_listener, static_cast<jboolean>(is_local), j_inspected_url);
+                                .invoke(env, j_listener, j_view, static_cast<jboolean>(is_local), j_inspected_url);
 
         if (!j_child_view.is_valid()) {
             return { nullptr };
@@ -349,8 +372,10 @@ namespace ujr {
 
         auto env = JniEnv::require_existing_from_thread();
 
+        auto j_view = ujr::View::wrap(env, ultralight::RefPtr(caller));
+
         // Call the Java instance
-        JNIUlViewListener::ON_REQUEST_CLOSE.invoke(env, j_listener);
+        JNIUlViewListener::ON_REQUEST_CLOSE.invoke(env, j_listener, j_view);
     }
 
     const JniGlobalRef<jobject> &ViewListener::get_j_listener() const { return j_listener; }

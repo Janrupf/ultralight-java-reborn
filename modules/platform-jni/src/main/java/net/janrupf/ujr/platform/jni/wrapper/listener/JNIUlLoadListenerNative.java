@@ -1,12 +1,11 @@
 package net.janrupf.ujr.platform.jni.wrapper.listener;
 
+import net.janrupf.ujr.api.UltralightView;
 import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
+import net.janrupf.ujr.platform.jni.impl.JNIUlView;
 
 public class JNIUlLoadListenerNative implements UltralightLoadListener {
-    @NativeAccess
-    private final long view;
-
     @NativeAccess
     private final long handle;
 
@@ -15,21 +14,22 @@ public class JNIUlLoadListenerNative implements UltralightLoadListener {
     }
 
     @Override
-    public void onBeginLoading(long frameId, boolean isMainFrame, String url) {
-        nativeOnBeginLoading(frameId, isMainFrame, url);
+    public void onBeginLoading(UltralightView view, long frameId, boolean isMainFrame, String url) {
+        nativeOnBeginLoading((JNIUlView) view.getImplementation(), frameId, isMainFrame, url);
     }
 
-    private native void nativeOnBeginLoading(long frameId, boolean isMainFrame, String url);
+    private native void nativeOnBeginLoading(JNIUlView view, long frameId, boolean isMainFrame, String url);
 
     @Override
-    public void onFinishLoading(long frameId, boolean isMainFrame, String url) {
-        nativeOnFinishLoading(frameId, isMainFrame, url);
+    public void onFinishLoading(UltralightView view, long frameId, boolean isMainFrame, String url) {
+        nativeOnFinishLoading((JNIUlView) view.getImplementation(), frameId, isMainFrame, url);
     }
 
-    private native void nativeOnFinishLoading(long frameId, boolean isMainFrame, String url);
+    private native void nativeOnFinishLoading(JNIUlView implementation, long frameId, boolean isMainFrame, String url);
 
     @Override
     public void onFailLoading(
+            UltralightView view,
             long frameId,
             boolean isMainFrame,
             String url,
@@ -37,10 +37,11 @@ public class JNIUlLoadListenerNative implements UltralightLoadListener {
             String errorDomain,
             int errorCode
     ) {
-        nativeOnFailLoading(frameId, isMainFrame, url, description, errorDomain, errorCode);
+        nativeOnFailLoading((JNIUlView) view.getImplementation(), frameId, isMainFrame, url, description, errorDomain, errorCode);
     }
 
     private native void nativeOnFailLoading(
+            JNIUlView implementation,
             long frameId,
             boolean isMainFrame,
             String url,
@@ -50,23 +51,28 @@ public class JNIUlLoadListenerNative implements UltralightLoadListener {
     );
 
     @Override
-    public void onWindowObjectReady(long frameId, boolean isMainFrame, String url) {
-        nativeOnWindowObjectReady(frameId, isMainFrame, url);
+    public void onWindowObjectReady(UltralightView view, long frameId, boolean isMainFrame, String url) {
+        nativeOnWindowObjectReady((JNIUlView) view.getImplementation(), frameId, isMainFrame, url);
     }
 
-    private native void nativeOnWindowObjectReady(long frameId, boolean isMainFrame, String url);
+    private native void nativeOnWindowObjectReady(
+            JNIUlView implementation,
+            long frameId,
+            boolean isMainFrame,
+            String url
+    );
 
     @Override
-    public void onDOMReady(long frameId, boolean isMainFrame, String url) {
-        nativeOnDOMReady(frameId, isMainFrame, url);
+    public void onDOMReady(UltralightView view, long frameId, boolean isMainFrame, String url) {
+        nativeOnDOMReady((JNIUlView) view.getImplementation(), frameId, isMainFrame, url);
     }
 
-    private native void nativeOnDOMReady(long frameId, boolean isMainFrame, String url);
+    private native void nativeOnDOMReady(JNIUlView implementation, long frameId, boolean isMainFrame, String url);
 
     @Override
-    public void onUpdateHistory() {
-        nativeOnUpdateHistory();
+    public void onUpdateHistory(UltralightView view) {
+        nativeOnUpdateHistory((JNIUlView) view.getImplementation());
     }
 
-    private native void nativeOnUpdateHistory();
+    private native void nativeOnUpdateHistory(JNIUlView implementation);
 }

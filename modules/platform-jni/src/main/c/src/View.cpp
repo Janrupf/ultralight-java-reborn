@@ -533,12 +533,9 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeViewListener(JNIEnv *env,
             return jni_listener->get_j_listener().get();
         }
 
-        auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
-
         // We have to construct a Java listener wrapper
         auto jni_listener_ref = JNIUlViewListenerNative::CLAZZ.alloc_object(env);
         JNIUlViewListenerNative::HANDLE.set(env, jni_listener_ref, reinterpret_cast<jlong>(collector->view_listener));
-        JNIUlViewListenerNative::VIEW.set(env, jni_listener_ref, reinterpret_cast<jlong>(view));
 
         return jni_listener_ref.leak();
     });
@@ -589,12 +586,9 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeLoadListener(JNIEnv *env,
             return jni_listener->get_j_listener().get();
         }
 
-        auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
-
         // We have to construct a Java listener wrapper
         auto jni_listener_ref = JNIUlLoadListenerNative::CLAZZ.alloc_object(env);
         JNIUlLoadListenerNative::HANDLE.set(env, jni_listener_ref, reinterpret_cast<jlong>(collector->load_listener));
-        JNIUlLoadListenerNative::VIEW.set(env, jni_listener_ref, reinterpret_cast<jlong>(view));
 
         return jni_listener_ref.leak();
     });
