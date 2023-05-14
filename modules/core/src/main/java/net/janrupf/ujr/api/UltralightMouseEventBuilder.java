@@ -73,6 +73,19 @@ public class UltralightMouseEventBuilder extends UlMouseEvent {
     }
 
     /**
+     * Sets the button of the event.
+     * <p>
+     * See {@link UlMouseEvent#button} for more information.
+     *
+     * @param button the button
+     * @return this
+     */
+    public UltralightMouseEventBuilder button(UlMouseButton button) {
+        this.button = button;
+        return this;
+    }
+
+    /**
      * Finishes building the event.
      * <p>
      * This method is a no-op and is only present for consistency with the other builders.

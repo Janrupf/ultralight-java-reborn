@@ -360,9 +360,9 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeFireKeyEvent(JNIEnv *env,
             ul_event.type = ultralight::KeyEvent::kType_KeyDown;
         } else if (j_type == UlKeyEventType::UP.get(env)) {
             ul_event.type = ultralight::KeyEvent::kType_KeyUp;
-        } else if (j_event == UlKeyEventType::RAW_DOWN.get(env)) {
+        } else if (j_type == UlKeyEventType::RAW_DOWN.get(env)) {
             ul_event.type = ultralight::KeyEvent::kType_RawKeyDown;
-        } else if (j_event == UlKeyEventType::CHAR.get(env)) {
+        } else if (j_type == UlKeyEventType::CHAR.get(env)) {
             ul_event.type = ultralight::KeyEvent::kType_Char;
         } else {
             throw std::runtime_error("Invalid key event type");
@@ -374,7 +374,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeFireKeyEvent(JNIEnv *env,
             auto modifiers_size = env->GetArrayLength(j_modifiers_array);
 
             for (jint i = 0; i < modifiers_size; i++) {
-                auto j_modifier = env->GetObjectArrayElement(j_modifiers_array, i);
+                auto j_modifier = env.wrap_argument(env->GetObjectArrayElement(j_modifiers_array, i));
                 if (j_modifier == UlKeyEventModifiers::ALT.get(env)) {
                     ul_event.modifiers |= ultralight::KeyEvent::kMod_AltKey;
                 } else if (j_modifier == UlKeyEventModifiers::CTRL.get(env)) {
@@ -447,6 +447,8 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeFireMouseEvent(JNIEnv *en
                 ul_event.button = ultralight::MouseEvent::kButton_Middle;
             } else if (j_button == UlMouseButton::RIGHT.get(env)) {
                 ul_event.button = ultralight::MouseEvent::kButton_Right;
+            } else if (j_button == UlMouseButton::NONE.get(env)) {
+                ul_event.button = ultralight::MouseEvent::kButton_None;
             } else {
                 throw std::runtime_error("Invalid mouse event button");
             }

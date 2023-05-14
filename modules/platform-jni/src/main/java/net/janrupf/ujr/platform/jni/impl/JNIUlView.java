@@ -13,6 +13,7 @@ import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 import net.janrupf.ujr.platform.jni.wrapper.listener.JNIUlLoadListener;
 import net.janrupf.ujr.platform.jni.wrapper.listener.JNIUlViewListener;
+import net.janrupf.ujr.platform.jni.wrapper.surface.JNIUlSurface;
 
 import java.util.Objects;
 
@@ -92,16 +93,18 @@ public class JNIUlView implements UlView {
 
     @Override
     public UltralightSurface surface() {
-        UltralightSurface surface = nativeSurface();
+        Object surface = nativeSurface();
 
         if (surface instanceof JNIUlBitmapSurface) {
             surface = new UltralightBitmapSurface((UlBitmapSurface) surface);
+        } else if (surface instanceof JNIUlSurface) {
+            return ((JNIUlSurface) surface).getDelegate();
         }
 
-        return surface;
+        return (UltralightSurface) surface;
     }
 
-    private native UltralightSurface nativeSurface();
+    private native Object nativeSurface();
 
     @Override
     public void loadHTML(String html, String url, boolean addToHistory) {
