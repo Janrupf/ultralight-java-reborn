@@ -12,4 +12,6 @@ public interface WindowStateListener {
     void onCharMods(int codepoint, int mods);
 
     void onKey(int key, int scancode, int action, int mods);
+
+    void onFocusChange(boolean isFocused);
 }

@@ -203,4 +203,13 @@ public class WebWindow implements WindowStateListener {
             );
         }
     }
+
+    @Override
+    public void onFocusChange(boolean isFocused) {
+        if (isFocused) {
+            view.focus();
+        } else {
+            view.unfocus();
+        }
+    }
 }

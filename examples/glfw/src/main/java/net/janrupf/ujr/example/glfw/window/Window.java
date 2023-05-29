@@ -51,6 +51,8 @@ public class Window {
         ));
 
         disposeResource(GLFW.glfwSetWindowCloseCallback(handle, (window) -> this.onClose()));
+
+        disposeResource(GLFW.glfwSetWindowFocusCallback(handle, (window, isFocused) -> this.onFocusChange(isFocused)));
     }
 
     public void setStateListener(WindowStateListener stateListener) {
@@ -106,6 +108,11 @@ public class Window {
         }
     }
 
+    private void onFocusChange(boolean isFocused) {
+        if (stateListener != null) {
+            stateListener.onFocusChange(isFocused);
+        }
+    }
 
     private void onClose() {
         // Reset all the callbacks to prevent dangling references
@@ -117,6 +124,7 @@ public class Window {
         disposeResource(GLFW.glfwSetCharModsCallback(handle, null));
         disposeResource(GLFW.glfwSetKeyCallback(handle, null));
         disposeResource(GLFW.glfwSetWindowCloseCallback(handle, null));
+        disposeResource(GLFW.glfwSetWindowFocusCallback(handle, null));
 
         windowController.notifyClose(this);
     }
