@@ -6,6 +6,7 @@ import net.janrupf.ujr.core.platform.abstraction.UlRenderer;
 import net.janrupf.ujr.core.platform.abstraction.UlSession;
 import net.janrupf.ujr.core.platform.abstraction.UlView;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
+import net.janrupf.ujr.platform.jni.gc.ObjectCollector;
 
 import java.net.InetAddress;
 import java.util.Objects;
@@ -42,6 +43,9 @@ public class JNIUlRenderer implements UlRenderer {
     @Override
     public void update() {
         nativeUpdate();
+
+        // Do garbage collection after each update
+        ObjectCollector.processRound();
     }
 
     private native void nativeUpdate();
