@@ -18,6 +18,7 @@ fun addModule(name: String) {
     }
 }
 
+addExample("glfw")
 addExample("png")
 
 addModule("core")
