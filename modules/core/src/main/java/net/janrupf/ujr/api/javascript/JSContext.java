@@ -2,6 +2,8 @@ package net.janrupf.ujr.api.javascript;
 
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSContext;
 
+import java.util.Objects;
+
 public class JSContext {
     private final JSCJSContext context;
 
@@ -30,5 +32,18 @@ public class JSContext {
     // Internal use only
     public JSCJSContext getContext() {
         return context;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JSContext)) return false;
+        JSContext jsContext = (JSContext) o;
+        return Objects.equals(context, jsContext.context);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(context);
     }
 }

@@ -1,9 +1,10 @@
 package net.janrupf.ujr.api.javascript;
 
-import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSClass;
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSGlobalContext;
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSGlobalContextFactory;
 import net.janrupf.ujr.core.util.ApiProvider;
+
+import java.util.Objects;
 
 /**
  * A global JavaScript execution context.
@@ -65,5 +66,19 @@ public class JSGlobalContext extends JSContext {
     @Override
     public JSCJSGlobalContext getContext() {
         return context;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JSGlobalContext)) return false;
+        if (!super.equals(o)) return false;
+        JSGlobalContext that = (JSGlobalContext) o;
+        return Objects.equals(context, that.context);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), context);
     }
 }

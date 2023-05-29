@@ -4,6 +4,8 @@ import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSContextGroup;
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSContextGroupFactory;
 import net.janrupf.ujr.core.util.ApiProvider;
 
+import java.util.Objects;
+
 /**
  * A group that associates JavaScript contexts with one another.
  * Contexts in the same group may share and exchange JavaScript objects.
@@ -36,5 +38,18 @@ public class JSContextGroup {
     // Internal use only
     public JSCJSContextGroup getGroup() {
         return group;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JSContextGroup)) return false;
+        JSContextGroup that = (JSContextGroup) o;
+        return Objects.equals(group, that.group);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(group);
     }
 }
