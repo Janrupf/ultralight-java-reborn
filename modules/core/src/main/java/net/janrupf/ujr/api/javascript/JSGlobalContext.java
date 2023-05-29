@@ -1,5 +1,6 @@
 package net.janrupf.ujr.api.javascript;
 
+import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSClass;
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSGlobalContext;
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSGlobalContextFactory;
 import net.janrupf.ujr.core.util.ApiProvider;
@@ -19,7 +20,7 @@ public class JSGlobalContext extends JSContext {
      * @param clazz the class of the global object
      */
     public JSGlobalContext(JSClass clazz) {
-        this(FACTORY_PROVIDER.require().create(clazz.getClazz()));
+        this(FACTORY_PROVIDER.require().create(clazz != null ? clazz.getClazz() : null));
     }
 
     /**
@@ -29,7 +30,7 @@ public class JSGlobalContext extends JSContext {
      * @param clazz the class of the global object
      */
     public JSGlobalContext(JSContextGroup group, JSClass clazz) {
-        this(FACTORY_PROVIDER.require().createInGroup(group.getGroup(), clazz.getClazz()));
+        this(FACTORY_PROVIDER.require().createInGroup(group.getGroup(), clazz != null ? clazz.getClazz() : null));
     }
 
     public JSGlobalContext(JSCJSGlobalContext context) {

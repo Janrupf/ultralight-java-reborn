@@ -11,7 +11,13 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJ
     return ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIJSCJSClass;
 
-        auto js_global_class = reinterpret_cast<JSClassRef>(JNIJSCJSClass::HANDLE.get(env, global_class));
+        auto j_global_class = env.wrap_argument(global_class);
+
+        JSClassRef js_global_class = nullptr;
+        if (j_global_class.is_valid()) {
+            js_global_class = reinterpret_cast<JSClassRef>(JNIJSCJSClass::HANDLE.get(env, global_class));
+        }
+
         auto context = JSGlobalContextCreate(js_global_class);
 
         return ujr::JSGlobalContext::wrap(env, context).leak();
@@ -26,7 +32,13 @@ Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSGlobalContextFactory_n
         using ujr::native_access::JNIJSCJSClass;
         using ujr::native_access::JNIJSCJSContextGroup;
 
-        auto js_global_class = reinterpret_cast<JSClassRef>(JNIJSCJSClass::HANDLE.get(env, global_class));
+        auto j_global_class = env.wrap_argument(global_class);
+
+        JSClassRef js_global_class = nullptr;
+        if (j_global_class.is_valid()) {
+            js_global_class = reinterpret_cast<JSClassRef>(JNIJSCJSClass::HANDLE.get(env, global_class));
+        }
+
         auto js_group = reinterpret_cast<JSContextGroupRef>(JNIJSCJSContextGroup::HANDLE.get(env, group));
         auto context = JSGlobalContextCreateInGroup(js_group, js_global_class);
 

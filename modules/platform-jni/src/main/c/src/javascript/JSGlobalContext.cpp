@@ -12,10 +12,14 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJ
     ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIJSCJSContext;
 
-        auto j_new_name = env.wrap_argument(new_name);
-
         auto context = reinterpret_cast<JSGlobalContextRef>(JNIJSCJSContext::HANDLE.get(env, self));
-        JSGlobalContextSetName(context, ujr::JSString::from_java(env, j_new_name));
+
+        auto j_new_name = env.wrap_argument(new_name);
+        if (j_new_name.is_valid()) {
+            JSGlobalContextSetName(context, ujr::JSString::from_java(env, j_new_name));
+        } else {
+            JSGlobalContextSetName(context, nullptr);
+        }
     });
 }
 
@@ -24,10 +28,14 @@ Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSGlobalContext_nativeGe
     return ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIJSCJSContext;
 
+        auto j_name = ujr::JniLocalRef<jstring>::null(env);
+
         auto context = reinterpret_cast<JSGlobalContextRef>(JNIJSCJSContext::HANDLE.get(env, self));
         auto js_name = JSGlobalContextCopyName(context);
-        auto j_name = ujr::JSString::to_java(env, js_name);
-        JSStringRelease(js_name);
+        if (js_name) {
+            j_name = ujr::JSString::to_java(env, js_name);
+            JSStringRelease(js_name);
+        }
 
         return j_name.leak();
     });
