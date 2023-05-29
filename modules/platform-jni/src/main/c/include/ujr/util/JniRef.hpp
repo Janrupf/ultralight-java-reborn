@@ -536,6 +536,21 @@ namespace ujr {
             auto java_s = env->NewString(reinterpret_cast<const jchar *>(s.data()), static_cast<jint>(s.length()));
             return JniLocalRef::wrap(std::move(env), java_s);
         }
+
+        /**
+         * Creates a new local reference from a UTF-16 string.
+         *
+         * @param env the JNI environment
+         * @param chars the UTF-16 string characters
+         * @param length the UTF-16 string length
+         * @return the local reference
+         */
+        static JniLocalRef from_utf16(JniEnv env, const jchar *chars, jint length)
+            requires std::is_same_v<typename JniType<T>::Type, jstring>
+        {
+            auto java_s = env->NewString(chars, length);
+            return JniLocalRef::wrap(std::move(env), java_s);
+        }
     };
 
     /**

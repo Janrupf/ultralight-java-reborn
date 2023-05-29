@@ -66,6 +66,13 @@ endif()
 # Add CMake targets #
 #####################
 set(UJR_SOURCES
+        src/javascript/JSContext.cpp
+        src/javascript/JSContextGroup.cpp
+        src/javascript/JSContextGroupFactory.cpp
+        src/javascript/JSGlobalContext.cpp
+        src/javascript/JSGlobalContextFactory.cpp
+        src/javascript/JSString.cpp
+
         src/support/GC.cpp
 
         src/util/JniClass.cpp

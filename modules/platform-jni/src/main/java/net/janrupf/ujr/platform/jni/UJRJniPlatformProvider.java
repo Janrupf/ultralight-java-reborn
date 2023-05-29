@@ -3,6 +3,8 @@ package net.janrupf.ujr.platform.jni;
 import net.janrupf.ujr.core.platform.InvalidPlatformEnvironmentException;
 import net.janrupf.ujr.core.platform.PlatformFeatures;
 import net.janrupf.ujr.core.platform.abstraction.*;
+import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSContextGroupFactory;
+import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSGlobalContextFactory;
 import net.janrupf.ujr.core.platform.option.PlatformEnvironmentOptionContainer;
 import net.janrupf.ujr.core.platform.option.std.CommonPlatformOptions;
 import net.janrupf.ujr.core.platform.provider.PlatformEnvironmentProvider;
@@ -10,6 +12,8 @@ import net.janrupf.ujr.platform.jni.bundled.BundledNatives;
 import net.janrupf.ujr.platform.jni.bundled.HashedNative;
 import net.janrupf.ujr.platform.jni.gc.ObjectCollector;
 import net.janrupf.ujr.platform.jni.impl.*;
+import net.janrupf.ujr.platform.jni.impl.javascript.JNIJSCJSContextGroupFactory;
+import net.janrupf.ujr.platform.jni.impl.javascript.JNIJSCJSGlobalContextFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -124,8 +128,7 @@ public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
     public <T> T tryProvideApi(Class<T> interfaceClass) {
         if (interfaceClass == UlPlatformProvider.class) {
             return interfaceClass.cast(new JNIUlPlatformProvider());
-        }
-        if (interfaceClass == UlResourceProvider.class) {
+        } else if (interfaceClass == UlResourceProvider.class) {
             return interfaceClass.cast(new JNIUlResourceProvider());
         } else if (interfaceClass == UlKeyboard.class) {
             return interfaceClass.cast(new JNIUlKeyboard());
@@ -133,6 +136,10 @@ public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
             return interfaceClass.cast(new JNIUlBitmapSurfaceFactoryProvider());
         } else if (interfaceClass == UlBitmapFactory.class) {
             return interfaceClass.cast(new JNIUlBitmapFactory());
+        } else if (interfaceClass == JSCJSContextGroupFactory.class) {
+            return interfaceClass.cast(new JNIJSCJSContextGroupFactory());
+        } else if (interfaceClass == JSCJSGlobalContextFactory.class) {
+            return interfaceClass.cast(new JNIJSCJSGlobalContextFactory());
         } else {
             return null;
         }
