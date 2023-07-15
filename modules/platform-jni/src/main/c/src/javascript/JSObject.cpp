@@ -333,7 +333,9 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJ
         auto object = reinterpret_cast<JSObjectRef>(JNIJSCJSValue::HANDLE.get(env, self));
         auto context = reinterpret_cast<JSContextRef>(JNIJSCJSValue::CONTEXT.get(env, self));
 
-        auto this_object_value = reinterpret_cast<JSObjectRef>(JNIJSCJSValue::HANDLE.get(env, j_this_object));
+        auto this_object_value = j_this_object.is_valid()
+            ? reinterpret_cast<JSObjectRef>(JNIJSCJSValue::HANDLE.get(env, j_this_object))
+            : nullptr;
         auto js_arguments = arguments_to_js(env, j_arguments);
 
         JSValueRef exception = nullptr;

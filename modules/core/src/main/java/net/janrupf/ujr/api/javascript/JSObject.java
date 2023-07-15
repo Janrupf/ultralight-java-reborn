@@ -202,7 +202,8 @@ public class JSObject extends JSValue {
             engineArguments[i] = arguments[i].getValue();
         }
 
-        return new JSValue(getObject().callAsFunction(thisObject.getObject(), engineArguments));
+        JSCJSObject thisObjectNative = thisObject == null ? null : thisObject.getObject();
+        return new JSValue(getObject().callAsFunction(thisObjectNative, engineArguments));
     }
 
     /**

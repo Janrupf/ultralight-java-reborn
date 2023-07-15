@@ -1,6 +1,7 @@
 package net.janrupf.ujr.api.javascript;
 
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSContext;
+import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSObject;
 
 import java.util.Objects;
 
@@ -97,6 +98,53 @@ public class JSContext {
         return new JSValue(context.makeFromJSONString(jsonValue));
     }
 
+    /**
+     * Evaluates a JavaScript script.
+     *
+     * @param script             the script source code
+     * @param thisObject         the object to be used as the this object, or {@code null} for the global object as this
+     * @param sourceURL          the URL of the script's source file, if any
+     * @param startingLineNumber the base line number to use for error reporting (starting with 1)
+     * @return the result of the script evaluation
+     * @throws JavaScriptValueException if an exception is thrown during the script evaluation
+     */
+    public JSValue evaluateScript(
+            String script,
+            JSObject thisObject,
+            String sourceURL,
+            int startingLineNumber
+    ) throws JavaScriptValueException {
+        JSCJSObject thisObjectNative = thisObject != null ? thisObject.getObject() : null;
+
+        return new JSValue(context.evaluateScript(script, thisObjectNative, sourceURL, startingLineNumber));
+    }
+
+    /**
+     * Checks if a JavaScript script is syntactically valid.
+     *
+     * @param script             the script source code
+     * @param sourceURL          the URL of the script's source file, if any
+     * @param startingLineNumber the base line number to use for error reporting (starting with 1)
+     * @throws JavaScriptValueException if syntax errors are found
+     */
+    public void checkScriptSyntax(
+            String script,
+            String sourceURL,
+            int startingLineNumber
+    ) throws JavaScriptValueException {
+        context.checkScriptSyntax(script, sourceURL, startingLineNumber);
+    }
+
+    /**
+     * Performs an explicit garbage collection.
+     * <p>
+     * This method is not required to be called, as the garbage collection is
+     * performed automatically. In case of memory pressure, this method can be
+     * used to force a garbage collection.
+     */
+    public void collectGarbage() {
+        context.collectGarbage();
+    }
 
     // Internal use only
     public JSCJSContext getContext() {

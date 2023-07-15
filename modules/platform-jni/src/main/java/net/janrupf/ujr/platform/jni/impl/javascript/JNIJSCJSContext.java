@@ -1,9 +1,7 @@
 package net.janrupf.ujr.platform.jni.impl.javascript;
 
-import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSContext;
-import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSContextGroup;
-import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSGlobalContext;
-import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSValue;
+import net.janrupf.ujr.api.javascript.JavaScriptValueException;
+import net.janrupf.ujr.core.platform.abstraction.javascript.*;
 import net.janrupf.ujr.platform.jni.ffi.NativeAccess;
 
 import java.util.Objects;
@@ -78,6 +76,27 @@ public class JNIJSCJSContext implements JSCJSContext {
     }
 
     private native JNIJSCJSValue nativeMakeFromJSONString(String jsonValue);
+
+    @Override
+    public JSCJSValue evaluateScript(String script, JSCJSObject thisObject, String sourceURL, int startingLineNumber) throws JavaScriptValueException {
+        return nativeEvaluateScript(script, thisObject, sourceURL, startingLineNumber);
+    }
+
+    private native JNIJSCJSValue nativeEvaluateScript(String script, JSCJSObject thisObject, String sourceURL, int startingLineNumber);
+
+    @Override
+    public void checkScriptSyntax(String script, String sourceURL, int startingLineNumber) throws JavaScriptValueException {
+        nativeCheckScriptSyntax(script, sourceURL, startingLineNumber);
+    }
+
+    private native void nativeCheckScriptSyntax(String script, String sourceURL, int startingLineNumber);
+
+    @Override
+    public void collectGarbage() {
+        nativeCollectGarbage();
+    }
+
+    private native void nativeCollectGarbage();
 
     @Override
     public boolean equals(Object o) {
