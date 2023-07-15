@@ -1,9 +1,14 @@
 package net.janrupf.ujr.nap.util;
 
+import java.util.Collections;
+import java.util.Set;
+
 /**
  * Helper for remapping identifiers.
  */
 public class NameMapper {
+    private static final Set<String> FORBIDDEN_KEYWORDS = Collections.singleton("NULL");
+
     /**
      * Converts the given input to screaming snake case.
      *
@@ -38,6 +43,10 @@ public class NameMapper {
 
             lastWasUpperCase = Character.isUpperCase(c);
             lastWasLower = Character.isLowerCase(c);
+        }
+
+        if (FORBIDDEN_KEYWORDS.contains(builder.toString())) {
+            builder.append('_');
         }
 
         return builder.toString();

@@ -6,7 +6,7 @@
 #include "net_janrupf_ujr_api_event_UlMouseEventType_native_access.hpp"
 #include "net_janrupf_ujr_api_event_UlScrollEvent_native_access.hpp"
 #include "net_janrupf_ujr_api_event_UlScrollEventType_native_access.hpp"
-#include "net_janrupf_ujr_platform_jni_exception_JniJavascriptException_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_exception_JniJavaScriptException_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlBitmapSurface_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlView.h"
 #include "net_janrupf_ujr_platform_jni_impl_JNIUlView_native_access.hpp"
@@ -215,7 +215,7 @@ JNIEXPORT jstring JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeEvaluateScript(JNIEnv *env, jobject self, jstring script) {
     return ujr::jni_entry_guard(env, [&](auto env) -> jstring {
         using ujr::native_access::JNIUlView;
-        using ujr::native_access::JniJavascriptException;
+        using ujr::native_access::JniJavaScriptException;
 
         auto j_script = env.wrap_argument(script).require_non_null_argument("script");
 
@@ -225,7 +225,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeEvaluateScript(JNIEnv *en
         ultralight::String result = view->EvaluateScript(j_script.to_utf16(), &exception);
 
         if (!exception.empty()) {
-            auto j_exception = JniJavascriptException::CONSTRUCTOR.invoke(
+            auto j_exception = JniJavaScriptException::CONSTRUCTOR.invoke(
                 env,
                 ujr::JniLocalRef<jstring>::from_utf16(env, exception.utf16())
             );

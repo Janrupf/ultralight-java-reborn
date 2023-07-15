@@ -6,7 +6,7 @@ import net.janrupf.ujr.api.config.UlViewConfig;
 import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
-import net.janrupf.ujr.api.exception.JavascriptException;
+import net.janrupf.ujr.api.javascript.JavaScriptException;
 import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.api.listener.UltralightViewListener;
@@ -212,12 +212,12 @@ public class UltralightView {
      *
      * @param script a string of Javascript to evaluate in the main frame
      * @return the javascript result typecast to a String
-     * @throws JavascriptException if an exception occurred while evaluating the script
+     * @throws JavaScriptException if an exception occurred while evaluating the script
      * @implNote You do not need to lock the JS context, it is done automatically.
      * @apiNote If you need lower-level access to native JavaScript values, you should instead lock
      * the JS context and call JSEvaluateScript() in the JavaScriptCore C API.
      */
-    public String evaluateScript(String script) throws JavascriptException {
+    public String evaluateScript(String script) throws JavaScriptException {
         return view.evaluateScript(script);
     }
 

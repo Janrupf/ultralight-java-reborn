@@ -2,6 +2,7 @@ package net.janrupf.ujr.example.javascript;
 
 import net.janrupf.ujr.api.javascript.JSClass;
 import net.janrupf.ujr.api.javascript.JSGlobalContext;
+import net.janrupf.ujr.api.javascript.JSValue;
 import net.janrupf.ujr.core.UltralightJavaReborn;
 import net.janrupf.ujr.core.platform.PlatformEnvironment;
 import org.apache.logging.log4j.LogManager;

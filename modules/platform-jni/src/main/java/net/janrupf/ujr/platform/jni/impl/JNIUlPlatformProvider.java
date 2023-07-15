@@ -7,6 +7,8 @@ import net.janrupf.ujr.api.config.UlFontHinting;
 import net.janrupf.ujr.api.config.UlViewConfig;
 import net.janrupf.ujr.api.cursor.UlCursor;
 import net.janrupf.ujr.api.event.*;
+import net.janrupf.ujr.api.javascript.JSType;
+import net.janrupf.ujr.api.javascript.JSTypedArrayType;
 import net.janrupf.ujr.api.listener.UlMessageLevel;
 import net.janrupf.ujr.api.listener.UlMessageSource;
 import net.janrupf.ujr.api.logger.UltralightLogLevel;
@@ -42,7 +44,11 @@ import net.janrupf.ujr.platform.jni.ffi.NativeAccessOther;
         IntRect.class,
 
         // Bitmap formats
-        UlBitmapFormat.class
+        UlBitmapFormat.class,
+
+        // JavaScript interop
+        JSType.class,
+        JSTypedArrayType.class,
 })
 public class JNIUlPlatformProvider implements UlPlatformProvider {
     private JNIUlPlatform platform;

@@ -3,7 +3,7 @@ package net.janrupf.ujr.core.platform.abstraction;
 import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
-import net.janrupf.ujr.api.exception.JavascriptException;
+import net.janrupf.ujr.api.javascript.JavaScriptException;
 import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.api.listener.UltralightViewListener;
 import net.janrupf.ujr.api.surface.UltralightSurface;
@@ -41,7 +41,7 @@ public interface UlView {
 
     // Skipped: JavaScriptVM
 
-    String evaluateScript(String script) throws JavascriptException;
+    String evaluateScript(String script) throws JavaScriptException;
 
     boolean canGoBack();
 

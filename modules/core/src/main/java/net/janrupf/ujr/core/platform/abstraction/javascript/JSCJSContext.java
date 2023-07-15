@@ -4,4 +4,18 @@ public interface JSCJSContext {
     JSCJSGlobalContext getGlobalContext();
 
     JSCJSContextGroup getGroup();
+
+    JSCJSValue makeUndefined();
+
+    JSCJSValue makeNull();
+
+    JSCJSValue makeBoolean(boolean value);
+
+    JSCJSValue makeNumber(double value);
+
+    JSCJSValue makeString(String value);
+
+    JSCJSValue makeSymbol(String description);
+
+    JSCJSValue makeFromJSONString(String jsonValue);
 }

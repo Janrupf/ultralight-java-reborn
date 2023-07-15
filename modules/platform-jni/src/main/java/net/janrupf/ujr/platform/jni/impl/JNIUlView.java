@@ -4,7 +4,7 @@ import net.janrupf.ujr.api.bitmap.UltralightBitmapSurface;
 import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
-import net.janrupf.ujr.api.exception.JavascriptException;
+import net.janrupf.ujr.api.javascript.JavaScriptException;
 import net.janrupf.ujr.api.listener.UltralightLoadListener;
 import net.janrupf.ujr.api.listener.UltralightViewListener;
 import net.janrupf.ujr.api.surface.UltralightSurface;
@@ -128,11 +128,11 @@ public class JNIUlView implements UlView {
     private native void nativeResize(long width, long height);
 
     @Override
-    public String evaluateScript(String script) throws JavascriptException {
+    public String evaluateScript(String script) throws JavaScriptException {
         return nativeEvaluateScript(script);
     }
 
-    private native String nativeEvaluateScript(String script) throws JavascriptException;
+    private native String nativeEvaluateScript(String script) throws JavaScriptException;
 
     @Override
     public boolean canGoBack() {
