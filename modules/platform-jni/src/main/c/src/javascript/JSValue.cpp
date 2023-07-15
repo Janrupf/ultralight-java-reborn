@@ -7,6 +7,7 @@
 
 #include "ujr/javascript/JniJavaScriptValueException.hpp"
 #include "ujr/javascript/JSContext.hpp"
+#include "ujr/javascript/JSObject.hpp"
 #include "ujr/javascript/JSString.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
 
@@ -329,8 +330,8 @@ Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSValue_nativeToNumber(J
     });
 }
 
-JNIEXPORT jstring JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSValue_nativeToString
-    (JNIEnv *env, jobject self) {
+JNIEXPORT jstring JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSValue_nativeToString(JNIEnv *env, jobject self) {
     return ujr::jni_entry_guard(env, [&](auto env) {
         using ujr::native_access::JNIJSCJSValue;
 
@@ -350,7 +351,18 @@ JNIEXPORT jstring JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJ
 
 JNIEXPORT jobject JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSValue_nativeToObject(JNIEnv *env, jobject self) {
-    return nullptr; // TODO
+    return ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIJSCJSValue;
+
+        auto value = reinterpret_cast<JSValueRef>(JNIJSCJSValue::HANDLE.get(env, self));
+        auto context = reinterpret_cast<JSContextRef>(JNIJSCJSValue::CONTEXT.get(env, self));
+
+        JSValueRef exception = nullptr;
+        auto object = JSValueToObject(context, value, &exception);
+        ujr::JniJavaScriptValueException::throw_if_valid(context, exception);
+
+        return ujr::JSObject::wrap(env, context, object).leak();
+    });
 }
 
 JNIEXPORT jobject JNICALL
