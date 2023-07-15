@@ -9,6 +9,7 @@
 #include "ujr/javascript/JniJavaScriptValueException.hpp"
 #include "ujr/javascript/JSContext.hpp"
 #include "ujr/javascript/JSString.hpp"
+#include "ujr/javascript/JSUtil.hpp"
 #include "ujr/javascript/JSValue.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
 
@@ -35,25 +36,6 @@ namespace {
         }
 
         return js_attributes;
-    }
-
-    std::vector<JSValueRef> arguments_to_js(const ujr::JniEnv &env, const ujr::JniLocalRef<jobjectArray> &arguments) {
-        std::vector<JSValueRef> js_arguments;
-
-        if (!arguments.is_valid()) {
-            return js_arguments;
-        }
-
-        js_arguments.reserve(env->GetArrayLength(arguments));
-
-        for (jsize i = 0; i < env->GetArrayLength(arguments); i++) {
-            auto argument = env->GetObjectArrayElement(arguments, i);
-            js_arguments.push_back(
-                reinterpret_cast<JSValueRef>(ujr::native_access::JNIJSCJSValue::HANDLE.get(env, argument))
-            );
-        }
-
-        return js_arguments;
     }
 } // namespace
 
@@ -336,7 +318,7 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJ
         auto this_object_value = j_this_object.is_valid()
             ? reinterpret_cast<JSObjectRef>(JNIJSCJSValue::HANDLE.get(env, j_this_object))
             : nullptr;
-        auto js_arguments = arguments_to_js(env, j_arguments);
+        auto js_arguments = ujr::JSUtil::value_array_to_vector(env, j_arguments);
 
         JSValueRef exception = nullptr;
         auto result = JSObjectCallAsFunction(
@@ -344,7 +326,7 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJ
             object,
             this_object_value,
             js_arguments.size(),
-            js_arguments.data(),
+            js_arguments.size() > 0 ? js_arguments.data() : nullptr,
             &exception
         );
 
@@ -379,10 +361,16 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJ
         auto object = reinterpret_cast<JSObjectRef>(JNIJSCJSValue::HANDLE.get(env, self));
         auto context = reinterpret_cast<JSContextRef>(JNIJSCJSValue::CONTEXT.get(env, self));
 
-        auto js_arguments = arguments_to_js(env, j_arguments);
+        auto js_arguments = ujr::JSUtil::value_array_to_vector(env, j_arguments);
 
         JSValueRef exception = nullptr;
-        auto result = JSObjectCallAsConstructor(context, object, js_arguments.size(), js_arguments.data(), &exception);
+        auto result = JSObjectCallAsConstructor(
+            context,
+            object,
+            js_arguments.size(),
+            js_arguments.size() > 0 ? js_arguments.data() : nullptr,
+            &exception
+        );
 
         ujr::JniJavaScriptValueException::throw_if_valid(context, exception);
 

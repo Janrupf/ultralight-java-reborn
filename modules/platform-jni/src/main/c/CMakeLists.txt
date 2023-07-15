@@ -75,6 +75,7 @@ set(UJR_SOURCES
         src/javascript/JSGlobalContextFactory.cpp
         src/javascript/JSObject.cpp
         src/javascript/JSString.cpp
+        src/javascript/JSUtil.cpp
         src/javascript/JSValue.cpp
 
         src/support/GC.cpp

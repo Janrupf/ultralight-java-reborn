@@ -2,6 +2,7 @@ package net.janrupf.ujr.api.javascript;
 
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSContext;
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSObject;
+import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSValue;
 
 import java.util.Objects;
 
@@ -96,6 +97,102 @@ public class JSContext {
      */
     public JSValue makeFromJSONString(String jsonValue) {
         return new JSValue(context.makeFromJSONString(jsonValue));
+    }
+
+    /**
+     * Creates a JavaScript array.
+     *
+     * @param values the values to be added to the array
+     * @return the created array
+     * @throws JavaScriptValueException if an exception is thrown during the array creation
+     */
+    public JSObject makeArray(JSValue... values) throws JavaScriptValueException {
+        JSCJSValue[] nativeValues = new JSCJSValue[values.length];
+        for (int i = 0; i < values.length; i++) {
+            nativeValues[i] = values[i].getValue();
+        }
+
+        return new JSObject(context.makeArray(nativeValues));
+    }
+
+    /**
+     * Creates a JavaScript date.
+     *
+     * @param arguments the arguments to be passed to the date constructor
+     * @return the created date
+     * @throws JavaScriptValueException if an exception is thrown during the date creation
+     */
+    public JSObject makeDate(JSValue... arguments) throws JavaScriptValueException {
+        JSCJSValue[] nativeArguments = new JSCJSValue[arguments.length];
+        for (int i = 0; i < arguments.length; i++) {
+            nativeArguments[i] = arguments[i].getValue();
+        }
+
+        return new JSObject(context.makeDate(nativeArguments));
+    }
+
+    /**
+     * Creates a JavaScript error.
+     *
+     * @param message the error message
+     * @return the created error
+     * @throws JavaScriptValueException if an exception is thrown during the error creation
+     */
+    public JSObject makeError(String message) throws JavaScriptValueException {
+        return makeError(makeString(message));
+    }
+
+    /**
+     * Creates a JavaScript error.
+     *
+     * @param arguments the arguments to be passed to the error constructor
+     * @return the created error
+     * @throws JavaScriptValueException if an exception is thrown during the error creation
+     */
+    public JSObject makeError(JSValue... arguments) throws JavaScriptValueException {
+        JSCJSValue[] nativeArguments = new JSCJSValue[arguments.length];
+        for (int i = 0; i < arguments.length; i++) {
+            nativeArguments[i] = arguments[i].getValue();
+        }
+
+        return new JSObject(context.makeError(nativeArguments));
+    }
+
+    /**
+     * Creates a JavaScript regular expression.
+     *
+     * @param arguments the arguments to be passed to the regular expression constructor
+     * @return the created regular expression
+     * @throws JavaScriptValueException if an exception is thrown during the regular expression creation
+     */
+    public JSObject makeRegExp(JSValue... arguments) throws JavaScriptValueException {
+        JSCJSValue[] nativeArguments = new JSCJSValue[arguments.length];
+        for (int i = 0; i < arguments.length; i++) {
+            nativeArguments[i] = arguments[i].getValue();
+        }
+
+        return new JSObject(context.makeRegExp(nativeArguments));
+    }
+
+    /**
+     * Creates a JavaScript function.
+     *
+     * @param name               the function name, or {@code null} for anonymous functions
+     * @param parameterNames     the parameter names
+     * @param body               the function body
+     * @param sourceURL          the URL of the script's source file, if any
+     * @param startingLineNumber the base line number to use for error reporting (starting with 1)
+     * @return the created function
+     * @throws JavaScriptValueException if an exception is thrown during the function creation
+     */
+    public JSObject makeFunction(
+            String name,
+            String[] parameterNames,
+            String body,
+            String sourceURL,
+            int startingLineNumber
+    ) throws JavaScriptValueException {
+        return new JSObject(context.makeFunction(name, parameterNames, body, sourceURL, startingLineNumber));
     }
 
     /**

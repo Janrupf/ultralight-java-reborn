@@ -282,6 +282,13 @@ namespace ujr {
         }
 
         /**
+         * Determines whether this reference is valid.
+         *
+         * @return true if the reference is valid, false otherwise
+         */
+        [[nodiscard]] bool is_valid(const JniEnv &env) const { return !env->IsSameObject(this->ref, nullptr); }
+
+        /**
          * Throws an IllegalArgumentException if this reference is null.
          *
          * @param env the JNI environment to use for checking

@@ -78,18 +78,53 @@ public class JNIJSCJSContext implements JSCJSContext {
     private native JNIJSCJSValue nativeMakeFromJSONString(String jsonValue);
 
     @Override
+    public JSCJSObject makeArray(JSCJSValue[] nativeValues) throws JavaScriptValueException {
+        return nativeMakeArray(nativeValues);
+    }
+
+    private native JNIJSCJSObject nativeMakeArray(JSCJSValue[] nativeValues) throws JavaScriptValueException;
+
+    @Override
+    public JSCJSObject makeDate(JSCJSValue[] nativeArguments) throws JavaScriptValueException {
+        return nativeMakeDate(nativeArguments);
+    }
+
+    private native JNIJSCJSObject nativeMakeDate(JSCJSValue[] nativeArguments) throws JavaScriptValueException;
+
+    @Override
+    public JSCJSObject makeError(JSCJSValue[] nativeArguments) throws JavaScriptValueException {
+        return nativeMakeError(nativeArguments);
+    }
+
+    private native JNIJSCJSObject nativeMakeError(JSCJSValue[] nativeArguments) throws JavaScriptValueException;
+
+    @Override
+    public JSCJSObject makeRegExp(JSCJSValue[] nativeArguments) throws JavaScriptValueException {
+        return nativeMakeRegExp(nativeArguments);
+    }
+
+    private native JNIJSCJSObject nativeMakeRegExp(JSCJSValue[] nativeArguments) throws JavaScriptValueException;
+
+    @Override
+    public JSCJSObject makeFunction(String name, String[] parameterNames, String body, String sourceURL, int startingLineNumber) throws JavaScriptValueException {
+        return nativeMakeFunction(name, parameterNames, body, sourceURL, startingLineNumber);
+    }
+
+    private native JNIJSCJSObject nativeMakeFunction(String name, String[] parameterNames, String body, String sourceURL, int startingLineNumber) throws JavaScriptValueException;
+
+    @Override
     public JSCJSValue evaluateScript(String script, JSCJSObject thisObject, String sourceURL, int startingLineNumber) throws JavaScriptValueException {
         return nativeEvaluateScript(script, thisObject, sourceURL, startingLineNumber);
     }
 
-    private native JNIJSCJSValue nativeEvaluateScript(String script, JSCJSObject thisObject, String sourceURL, int startingLineNumber);
+    private native JNIJSCJSValue nativeEvaluateScript(String script, JSCJSObject thisObject, String sourceURL, int startingLineNumber) throws JavaScriptValueException;
 
     @Override
     public void checkScriptSyntax(String script, String sourceURL, int startingLineNumber) throws JavaScriptValueException {
         nativeCheckScriptSyntax(script, sourceURL, startingLineNumber);
     }
 
-    private native void nativeCheckScriptSyntax(String script, String sourceURL, int startingLineNumber);
+    private native void nativeCheckScriptSyntax(String script, String sourceURL, int startingLineNumber) throws JavaScriptValueException;
 
     @Override
     public void collectGarbage() {

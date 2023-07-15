@@ -6,7 +6,9 @@
 #include "ujr/javascript/JniJavaScriptValueException.hpp"
 #include "ujr/javascript/JSContextGroup.hpp"
 #include "ujr/javascript/JSGlobalContext.hpp"
+#include "ujr/javascript/JSObject.hpp"
 #include "ujr/javascript/JSString.hpp"
+#include "ujr/javascript/JSUtil.hpp"
 #include "ujr/javascript/JSValue.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
 
@@ -134,6 +136,158 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJ
         JSStringRelease(js_string);
 
         return ujr::JSValue::wrap(env, context, js_value).leak();
+    });
+}
+
+JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext_nativeMakeArray(
+    JNIEnv *env, jobject self, jobjectArray arguments
+) {
+    return ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIJSCJSContext;
+
+        auto j_arguments = env.wrap_argument(arguments);
+
+        auto context = reinterpret_cast<JSContextRef>(JNIJSCJSContext::HANDLE.get(env, self));
+        auto js_arguments = ujr::JSUtil::value_array_to_vector(env, j_arguments);
+
+        JSValueRef exception = nullptr;
+        auto js_array = JSObjectMakeArray(
+            context,
+            js_arguments.size(),
+            js_arguments.size() > 0 ? js_arguments.data() : nullptr,
+            &exception
+        );
+
+        ujr::JniJavaScriptValueException::throw_if_valid(context, exception);
+
+        return ujr::JSObject::wrap(env, context, js_array).leak();
+    });
+}
+
+JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext_nativeMakeDate(
+    JNIEnv *env, jobject self, jobjectArray arguments
+) {
+    return ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIJSCJSContext;
+
+        auto j_arguments = env.wrap_argument(arguments);
+
+        auto context = reinterpret_cast<JSContextRef>(JNIJSCJSContext::HANDLE.get(env, self));
+        auto js_arguments = ujr::JSUtil::value_array_to_vector(env, j_arguments);
+
+        JSValueRef exception = nullptr;
+        auto js_date = JSObjectMakeDate(
+            context,
+            js_arguments.size(),
+            js_arguments.size() > 0 ? js_arguments.data() : nullptr,
+            &exception
+        );
+
+        ujr::JniJavaScriptValueException::throw_if_valid(context, exception);
+
+        return ujr::JSObject::wrap(env, context, js_date).leak();
+    });
+}
+
+JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext_nativeMakeError(
+    JNIEnv *env, jobject self, jobjectArray arguments
+) {
+    return ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIJSCJSContext;
+
+        auto j_arguments = env.wrap_argument(arguments);
+
+        auto context = reinterpret_cast<JSContextRef>(JNIJSCJSContext::HANDLE.get(env, self));
+        auto js_arguments = ujr::JSUtil::value_array_to_vector(env, j_arguments);
+
+        JSValueRef exception = nullptr;
+        auto js_error = JSObjectMakeError(
+            context,
+            js_arguments.size(),
+            js_arguments.size() > 0 ? js_arguments.data() : nullptr,
+            &exception
+        );
+
+        ujr::JniJavaScriptValueException::throw_if_valid(context, exception);
+
+        return ujr::JSObject::wrap(env, context, js_error).leak();
+    });
+}
+
+JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext_nativeMakeRegExp(
+    JNIEnv *env, jobject self, jobjectArray arguments
+) {
+    return ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIJSCJSContext;
+
+        auto j_arguments = env.wrap_argument(arguments);
+
+        auto context = reinterpret_cast<JSContextRef>(JNIJSCJSContext::HANDLE.get(env, self));
+        auto js_arguments = ujr::JSUtil::value_array_to_vector(env, j_arguments);
+
+        JSValueRef exception = nullptr;
+        auto js_regexp = JSObjectMakeRegExp(
+            context,
+            js_arguments.size(),
+            js_arguments.size() > 0 ? js_arguments.data() : nullptr,
+            &exception
+        );
+
+        ujr::JniJavaScriptValueException::throw_if_valid(context, exception);
+
+        return ujr::JSObject::wrap(env, context, js_regexp).leak();
+    });
+}
+
+JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext_nativeMakeFunction(
+    JNIEnv *env,
+    jobject self,
+    jstring name,
+    jobjectArray parameter_names,
+    jstring body,
+    jstring source_url,
+    jint starting_line_number
+) {
+    return ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIJSCJSContext;
+
+        auto j_name = env.wrap_argument(name);
+        auto j_parameter_names = env.wrap_argument(parameter_names);
+        auto j_body = env.wrap_argument(body);
+        auto j_source_url = env.wrap_argument(source_url);
+
+        auto context = reinterpret_cast<JSContextRef>(JNIJSCJSContext::HANDLE.get(env, self));
+
+        jsize js_parameter_names_length = env->GetArrayLength(j_parameter_names);
+
+        auto *js_parameter_names = js_parameter_names_length > 0 ? new JSStringRef[js_parameter_names_length] : nullptr;
+        for (jsize i = 0; i < js_parameter_names_length; i++) {
+            auto j_parameter_name
+                = env.wrap_argument(reinterpret_cast<jstring>(env->GetObjectArrayElement(j_parameter_names, i)));
+            js_parameter_names[i] = ujr::JSString::from_java(env, j_parameter_name);
+        }
+
+        auto js_name = j_name.is_valid() ? ujr::JSString::from_java(env, j_name) : nullptr;
+        auto js_body = ujr::JSString::from_java(env, j_body);
+        auto js_source_url = j_source_url.is_valid() ? ujr::JSString::from_java(env, j_source_url) : nullptr;
+
+        JSValueRef exception = nullptr;
+        auto js_function = JSObjectMakeFunction(
+            context,
+            js_name,
+            js_parameter_names_length,
+            js_parameter_names_length > 0 ? js_parameter_names : nullptr,
+            js_body,
+            js_source_url,
+            starting_line_number,
+            &exception
+        );
+
+        delete[] js_parameter_names;
+
+        ujr::JniJavaScriptValueException::throw_if_valid(context, exception);
+
+        return ujr::JSObject::wrap(env, context, js_function).leak();
     });
 }
 
