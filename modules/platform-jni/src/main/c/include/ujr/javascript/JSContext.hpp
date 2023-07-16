@@ -5,9 +5,9 @@
 #include <JavaScriptCore/JSContextRef.h>
 
 namespace ujr {
-    class JSCContext {
+    class JSContext {
     public:
-        explicit JSCContext() = delete;
+        explicit JSContext() = delete;
 
         static JniLocalRef<jobject> wrap(const JniEnv &env, JSContextRef context);
     };

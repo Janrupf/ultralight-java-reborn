@@ -125,6 +125,10 @@ namespace ujr {
          * @return the cloned weak reference
          */
         JniWeakRef<T> clone_as_weak(JniEnv target_env) const {
+            if (this->is_null(target_env)) {
+                return JniWeakRef<T>::null();
+            }
+
             auto weak = reinterpret_cast<typename JniType<T>::Type>(target_env->NewWeakGlobalRef(this->ref));
             JniExceptionCheck::throw_if_pending(target_env);
 
@@ -138,6 +142,10 @@ namespace ujr {
          * @return the cloned strong local reference
          */
         JniLocalRef<T> clone_as_local(JniEnv target_env) const {
+            if (this->is_null(target_env)) {
+                return JniLocalRef<T>::null(target_env);
+            }
+
             auto local = reinterpret_cast<typename JniType<T>::Type>(target_env->NewLocalRef(this->ref));
             JniExceptionCheck::throw_if_pending(target_env);
 
@@ -151,6 +159,10 @@ namespace ujr {
          * @return the cloned strong global reference
          */
         JniGlobalRef<T> clone_as_global(const JniEnv &target_env) const {
+            if (this->is_null(target_env)) {
+                return JniGlobalRef<T>::null();
+            }
+
             auto global = reinterpret_cast<typename JniType<T>::Type>(target_env->NewGlobalRef(this->ref));
             JniExceptionCheck::throw_if_pending(target_env);
 

@@ -10,6 +10,18 @@ namespace ujr {
         return j_string;
     }
 
+    std::string JSString::to_cpp(JSStringRef string) {
+        auto utf8_length = JSStringGetMaximumUTF8CStringSize(string);
+
+        std::string out;
+        out.resize(utf8_length);
+
+        auto actual_length = JSStringGetUTF8CString(string, out.data(), utf8_length);
+        out.resize(actual_length - 1);
+
+        return out;
+    }
+
     JSStringRef JSString::from_java(const JniEnv &env, const JniStrongRef<jstring> &string) {
         auto *java_chars = env->GetStringCritical(string, nullptr);
         auto js_string = JSStringCreateWithCharacters(java_chars, static_cast<size_t>(env->GetStringLength(string)));

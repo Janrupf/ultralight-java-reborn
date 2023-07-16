@@ -3,6 +3,7 @@ package net.janrupf.ujr.platform.jni;
 import net.janrupf.ujr.core.platform.InvalidPlatformEnvironmentException;
 import net.janrupf.ujr.core.platform.PlatformFeatures;
 import net.janrupf.ujr.core.platform.abstraction.*;
+import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSClassFactory;
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSContextGroupFactory;
 import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSGlobalContextFactory;
 import net.janrupf.ujr.core.platform.option.PlatformEnvironmentOptionContainer;
@@ -12,6 +13,7 @@ import net.janrupf.ujr.platform.jni.bundled.BundledNatives;
 import net.janrupf.ujr.platform.jni.bundled.HashedNative;
 import net.janrupf.ujr.platform.jni.gc.ObjectCollector;
 import net.janrupf.ujr.platform.jni.impl.*;
+import net.janrupf.ujr.platform.jni.impl.javascript.JNIJSCJSClassFactory;
 import net.janrupf.ujr.platform.jni.impl.javascript.JNIJSCJSContextGroupFactory;
 import net.janrupf.ujr.platform.jni.impl.javascript.JNIJSCJSGlobalContextFactory;
 
@@ -140,6 +142,8 @@ public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
             return interfaceClass.cast(new JNIJSCJSContextGroupFactory());
         } else if (interfaceClass == JSCJSGlobalContextFactory.class) {
             return interfaceClass.cast(new JNIJSCJSGlobalContextFactory());
+        } else if (interfaceClass == JSCJSClassFactory.class) {
+            return interfaceClass.cast(new JNIJSCJSClassFactory());
         } else {
             return null;
         }

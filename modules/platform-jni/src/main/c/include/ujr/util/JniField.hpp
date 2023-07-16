@@ -65,6 +65,16 @@ namespace ujr {
         DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jclass);
         DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jthrowable);
 
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jbooleanArray);
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jbyteArray);
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jshortArray);
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jintArray);
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jlongArray);
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jcharArray);
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jfloatArray);
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jdoubleArray);
+        DEFINE_JNI_OBJECT_FIELD_ACCESSOR(jobjectArray);
+
 #undef DEFINE_JNI_OBJECT_FIELD_ACCESSOR
     } // namespace _internal
 

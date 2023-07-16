@@ -2,6 +2,8 @@
 
 #include <JavaScriptCore/JSStringRef.h>
 
+#include <string>
+
 #include "ujr/util/JniEnv.hpp"
 #include "ujr/util/JniRef.hpp"
 
@@ -18,6 +20,14 @@ namespace ujr {
          * @return the Java string
          */
         static JniLocalRef<jstring> to_java(const JniEnv &env, JSStringRef string);
+
+        /**
+         * Converts a JavaScript string to a C++ string.
+         *
+         * @param string the JavaScript string to convert
+         * @return the C++ string
+         */
+        static std::string to_cpp(JSStringRef string);
 
         /**
          * Converts a Java string to a JavaScript string.

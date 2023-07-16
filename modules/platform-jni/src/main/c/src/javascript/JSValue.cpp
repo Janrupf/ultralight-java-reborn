@@ -371,7 +371,7 @@ Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSValue_nativeGetContext
         using ujr::native_access::JNIJSCJSValue;
 
         auto context = reinterpret_cast<JSContextRef>(JNIJSCJSValue::CONTEXT.get(env, self));
-        return ujr::JSCContext::wrap(env, context).leak();
+        return ujr::JSContext::wrap(env, context).leak();
     });
 }
 

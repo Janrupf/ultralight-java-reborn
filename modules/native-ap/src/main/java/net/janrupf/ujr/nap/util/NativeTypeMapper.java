@@ -3,6 +3,8 @@ package net.janrupf.ujr.nap.util;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 /**
@@ -40,6 +42,10 @@ public class NativeTypeMapper {
     public String toJniType(TypeElement element, boolean enableJniWrapperTypes) {
         TypeMirror type = element.asType();
 
+        if (type.getKind() == TypeKind.ARRAY) {
+            return toJniArrayType((ArrayType) type);
+        }
+
         // First check for primitive types
         String primitive = toPrimitiveJniType(type);
         if (primitive != null) {
@@ -63,6 +69,37 @@ public class NativeTypeMapper {
             return "jclass";
         } else {
             return "jobject";
+        }
+    }
+
+    /**
+     * Converts the given array type to a JNI array type.
+     *
+     * @param type the type to convert
+     * @return the JNI array type
+     */
+    public String toJniArrayType(ArrayType type) {
+        TypeMirror componentType = type.getComponentType();
+
+        switch (componentType.getKind()) {
+            case BOOLEAN:
+                return "jbooleanArray";
+            case BYTE:
+                return "jbyteArray";
+            case SHORT:
+                return "jshortArray";
+            case INT:
+                return "jintArray";
+            case LONG:
+                return "jlongArray";
+            case CHAR:
+                return "jcharArray";
+            case FLOAT:
+                return "jfloatArray";
+            case DOUBLE:
+                return "jdoubleArray";
+            default:
+                return "jobjectArray";
         }
     }
 
@@ -92,6 +129,8 @@ public class NativeTypeMapper {
                 return "jdouble";
             case VOID:
                 return "void";
+            case ARRAY:
+                return toJniArrayType((ArrayType) type);
             default:
                 return null;
         }

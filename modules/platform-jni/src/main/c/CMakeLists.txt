@@ -68,11 +68,14 @@ endif()
 set(UJR_SOURCES
         src/javascript/JniJavaScriptValueException.cpp
         src/javascript/JSClass.cpp
+        src/javascript/JSClassFactory.cpp
         src/javascript/JSContext.cpp
         src/javascript/JSContextGroup.cpp
         src/javascript/JSContextGroupFactory.cpp
         src/javascript/JSGlobalContext.cpp
         src/javascript/JSGlobalContextFactory.cpp
+        src/javascript/JSJavaClassCallbacks.cpp
+        src/javascript/JSJavaPrivateData.cpp
         src/javascript/JSObject.cpp
         src/javascript/JSString.cpp
         src/javascript/JSUtil.cpp

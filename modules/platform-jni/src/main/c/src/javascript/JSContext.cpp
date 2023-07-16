@@ -360,7 +360,7 @@ Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext_nativeCollectG
 }
 
 namespace ujr {
-    JniLocalRef<jobject> JSCContext::wrap(const JniEnv &env, JSContextRef context) {
+    JniLocalRef<jobject> JSContext::wrap(const JniEnv &env, JSContextRef context) {
         using native_access::JNIJSCJSContext;
 
         auto j_context = JNIJSCJSContext::CLAZZ.alloc_object(env);

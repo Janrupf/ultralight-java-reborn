@@ -13,32 +13,6 @@
 #include "ujr/javascript/JSValue.hpp"
 #include "ujr/util/JniEntryGuard.hpp"
 
-namespace {
-    unsigned property_attributes_to_js(const ujr::JniEnv &env, const ujr::JniLocalRef<jobjectArray> &attributes) {
-        using ujr::native_access::JSPropertyAttribute;
-
-        if (!attributes.is_valid()) {
-            return kJSPropertyAttributeNone;
-        }
-
-        unsigned js_attributes = kJSPropertyAttributeNone;
-
-        for (jsize i = 0; i < env->GetArrayLength(attributes); i++) {
-            auto attribute = env->GetObjectArrayElement(attributes, i);
-
-            if (attribute == JSPropertyAttribute::READ_ONLY.get(env)) {
-                js_attributes |= kJSPropertyAttributeReadOnly;
-            } else if (attribute == JSPropertyAttribute::DONT_ENUM.get(env)) {
-                js_attributes |= kJSPropertyAttributeDontEnum;
-            } else if (attribute == JSPropertyAttribute::DONT_DELETE.get(env)) {
-                js_attributes |= kJSPropertyAttributeDontDelete;
-            }
-        }
-
-        return js_attributes;
-    }
-} // namespace
-
 JNIEXPORT jobject JNICALL
 Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSObject_nativeGetPrototype(JNIEnv *env, jobject self) {
     return ujr::jni_entry_guard(env, [&](auto env) {
@@ -107,6 +81,7 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJ
 
         ujr::JniJavaScriptValueException::throw_if_valid(context, exception);
 
+        JSValueProtect(context, result);
         return ujr::JSValue::wrap(env, context, result).leak();
     });
 }
@@ -128,7 +103,7 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJ
 
         auto name_string = ujr::JSString::from_java(env, j_name);
         auto value_value = reinterpret_cast<JSValueRef>(JNIJSCJSValue::HANDLE.get(env, j_value));
-        auto js_attributes = property_attributes_to_js(env, j_attributes);
+        auto js_attributes = ujr::JSUtil::property_attributes_to_js(env, j_attributes);
 
         JSObjectSetProperty(context, object, name_string, value_value, js_attributes, &exception);
         JSStringRelease(name_string);
@@ -220,7 +195,7 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJ
 
         auto key_value = reinterpret_cast<JSValueRef>(JNIJSCJSValue::HANDLE.get(env, j_key));
         auto value_value = reinterpret_cast<JSValueRef>(JNIJSCJSValue::HANDLE.get(env, j_value));
-        auto js_attributes = property_attributes_to_js(env, j_attributes);
+        auto js_attributes = ujr::JSUtil::property_attributes_to_js(env, j_attributes);
 
         JSValueRef exception = nullptr;
         JSObjectSetPropertyForKey(context, object, key_value, value_value, js_attributes, &exception);
@@ -415,17 +390,20 @@ namespace ujr {
             return JniLocalRef<jobject>::null(env);
         }
 
-        JSGlobalContextRef global_ctx = JSContextGetGlobalContext(context);
-        JSGlobalContextRetain(global_ctx);
-
         auto j_value = JNIJSCJSObject::CLAZZ.alloc_object(env);
         JNIJSCJSValue::HANDLE.set(env, j_value, reinterpret_cast<jlong>(value));
-        JNIJSCJSValue::CONTEXT.set(env, j_value, reinterpret_cast<jlong>(global_ctx));
 
-        auto *collector = new JSValueCollector(global_ctx, value);
-        JNIJSCJSValue::COLLECTOR.set(env, j_value, reinterpret_cast<jlong>(collector));
+        if (context) {
+            JSGlobalContextRef global_ctx = JSContextGetGlobalContext(context);
+            JSGlobalContextRetain(global_ctx);
 
-        GCSupport::attach_collector(env, j_value, collector);
+            JNIJSCJSValue::CONTEXT.set(env, j_value, reinterpret_cast<jlong>(global_ctx));
+
+            auto *collector = new JSValueCollector(global_ctx, value);
+            JNIJSCJSValue::COLLECTOR.set(env, j_value, reinterpret_cast<jlong>(collector));
+
+            GCSupport::attach_collector(env, j_value, collector);
+        }
 
         return j_value;
     }

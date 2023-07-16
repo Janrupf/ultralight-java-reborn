@@ -23,5 +23,23 @@ namespace ujr {
          * @return the vector of JSValueRef
          */
         static std::vector<JSValueRef> value_array_to_vector(const JniEnv &env, const JniStrongRef<jobjectArray> &array);
+
+        /**
+         * Converts a java JSPropertyAttribute array to a JSPropertyAttributes bit mask.
+         *
+         * @param env the JNI environment
+         * @param attributes the java JSPropertyAttribute array
+         * @return the JSPropertyAttributes bit mask
+         */
+        static unsigned property_attributes_to_js(const JniEnv &env, const JniStrongRef<jobjectArray> &attributes);
+
+        /**
+         * Converts a java JSClassAttribute array to a JSClassAttributes bit mask.
+         *
+         * @param env the JNI environment
+         * @param attributes the java JSClassAttribute array
+         * @return the JSClassAttributes bit mask
+         */
+        static unsigned class_attributes_to_js(const JniEnv &env, const JniStrongRef<jobjectArray> &attributes);
     };
 } // namespace ujr

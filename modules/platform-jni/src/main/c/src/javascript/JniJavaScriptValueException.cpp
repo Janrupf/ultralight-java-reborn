@@ -1,9 +1,8 @@
 #include "ujr/javascript/JniJavaScriptValueException.hpp"
-
-#include "ujr/util/JniEnv.hpp"
-#include "ujr/javascript/JSValue.hpp"
-
 #include "net_janrupf_ujr_platform_jni_exception_JniJavaScriptValueException_native_access.hpp"
+
+#include "ujr/javascript/JSValue.hpp"
+#include "ujr/util/JniEnv.hpp"
 
 namespace ujr {
     void JniJavaScriptValueException::throw_if_valid(JSContextRef context, JSValueRef exception) {
@@ -32,4 +31,8 @@ namespace ujr {
 
         return JniJavaScriptValueException::CONSTRUCTOR.invoke(env, j_js_value);
     }
+
+    JSGlobalContextRef JniJavaScriptValueException::get_context() const { return context; }
+
+    JSValueRef JniJavaScriptValueException::get_value() const { return value; }
 } // namespace ujr
