@@ -7,6 +7,8 @@ public interface JSCJSContext {
 
     JSCJSContextGroup getGroup();
 
+    JSCJSObject getGlobalObject();
+
     JSCJSValue makeUndefined();
 
     JSCJSValue makeNull();
@@ -20,6 +22,8 @@ public interface JSCJSContext {
     JSCJSValue makeSymbol(String description);
 
     JSCJSValue makeFromJSONString(String jsonValue);
+
+    JSCJSObject makeObject(JSCJSClass jscjsClass);
 
     JSCJSObject makeArray(JSCJSValue[] nativeValues) throws JavaScriptValueException;
 

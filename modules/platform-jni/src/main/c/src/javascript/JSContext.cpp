@@ -1,6 +1,8 @@
 #include "ujr/javascript/JSContext.hpp"
+#include "net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSClass_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext.h"
 #include "net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext_native_access.hpp"
+#include "net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSObject_native_access.hpp"
 #include "net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSValue_native_access.hpp"
 
 #include "ujr/javascript/JniJavaScriptValueException.hpp"
@@ -35,6 +37,19 @@ Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext_nativeGetGroup
 
         JSContextGroupRetain(group);
         return ujr::JSContextGroup::wrap(env, group).leak();
+    });
+}
+
+JNIEXPORT jobject JNICALL
+Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext_nativeGetGlobalObject(JNIEnv *env, jobject self) {
+    return ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIJSCJSContext;
+
+        auto context = reinterpret_cast<JSContextRef>(JNIJSCJSContext::HANDLE.get(env, self));
+        auto global_object = JSContextGetGlobalObject(context);
+
+        JSValueProtect(context, global_object);
+        return ujr::JSObject::wrap(env, context, global_object).leak();
     });
 }
 
@@ -136,6 +151,30 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJ
         JSStringRelease(js_string);
 
         return ujr::JSValue::wrap(env, context, js_value).leak();
+    });
+}
+
+JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSContext_nativeMakeObject(
+    JNIEnv *env, jobject self, jobject clazz
+) {
+    return ujr::jni_entry_guard(env, [&](auto env) {
+        using ujr::native_access::JNIJSCJSContext;
+        using ujr::native_access::JNIJSCJSObject;
+        using ujr::native_access::JNIJSCJSClass;
+
+        auto j_clazz = env.wrap_argument(clazz);
+        auto context = reinterpret_cast<JSContextRef>(JNIJSCJSContext::HANDLE.get(env, self));
+
+        JSClassRef js_class = nullptr;
+        if (j_clazz.is_valid()) {
+            js_class = reinterpret_cast<JSClassRef>(JNIJSCJSClass::HANDLE.get(env, clazz));
+        }
+
+        auto js_object = JSObjectMake(context, js_class, nullptr);
+
+        auto j_object = ujr::JSObject::wrap(env, context, js_object).leak();
+
+        return j_object;
     });
 }
 

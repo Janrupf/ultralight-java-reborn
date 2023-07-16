@@ -22,8 +22,9 @@ namespace ujr {
      *
      * @tparam Name the name of the class, in java binary notation
      * @tparam ObjectType the C++ JNI type of the object this class represents
+     * @tparam IsArray whether the class represents an array
      */
-    template<JniClassName Name, typename ObjectType = jobject>
+    template<JniClassName Name, typename ObjectType = jobject, size_t ArrayDepth = 0>
         requires IsJniType<ObjectType>
     class JniClass {
     public:
@@ -35,7 +36,7 @@ namespace ujr {
         /**
          * The JNI binary name of the class.
          */
-        static constexpr JniClassName AsJniName = JniClassSignature<Name>::Signature;
+        static constexpr JniClassName AsJniName = JniClassSignature<Name, ArrayDepth>::Signature;
 
     private:
         std::mutex clazz_mutex;

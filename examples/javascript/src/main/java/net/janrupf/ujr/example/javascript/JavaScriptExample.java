@@ -27,6 +27,23 @@ public class JavaScriptExample {
 
             // We can set a name for the context. This is only useful for debugging.
             context.setName("TestContext");
+
+            try {
+                // Create the custom object and make it available on the global object
+                JSObject customObject = context.makeObject(CustomJavaScriptClass.getJavaScriptClass());
+                context.getGlobalObject().setProperty("customObject", customObject);
+
+                // Evaluate some JavaScript code
+                context.evaluateScript("customObject.test = 42;\n" +
+                        "\n" +
+                        "new customObject();\n" +
+                        "customObject();\n" +
+                        "\n" +
+                        "delete customObject.test;\n" +
+                        "delete customObject;\n", null, null, 1);
+            } catch (JavaScriptValueException e) {
+                logger.error("Failed to run demo JavaScript code", e);
+            }
         }
     }
 

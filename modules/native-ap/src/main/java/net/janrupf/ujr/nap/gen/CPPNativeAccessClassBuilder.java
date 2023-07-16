@@ -7,6 +7,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class CPPNativeAccessClassBuilder {
     public void addClass(TypeElement clazz) {
         // Add the class
         content.append("    static inline ")
-                .append(typeMapper.toJniClassType(clazz))
+                .append(typeMapper.toJniClassType(clazz.asType()))
                 .append(" CLAZZ")
                 .append("{};\n");
     }
@@ -101,8 +102,8 @@ public class CPPNativeAccessClassBuilder {
         TypeElement fieldClazz = (TypeElement) environment.getTypeUtils().asElement(fieldType);
 
         String jniType;
-        if (fieldClazz != null) {
-            jniType = typeMapper.toJniType(fieldClazz);
+        if (fieldClazz != null || fieldType.getKind() == TypeKind.ARRAY) {
+            jniType = typeMapper.toJniType(fieldType);
         } else {
             // Primitive types don't have an associated element
             jniType = typeMapper.toPrimitiveJniType(fieldType);
@@ -136,28 +137,14 @@ public class CPPNativeAccessClassBuilder {
      */
     public void addMethod(ExecutableElement method, String declarationName) {
         TypeMirror returnType = method.getReturnType();
-        TypeElement returnClazz = (TypeElement) environment.getTypeUtils().asElement(returnType);
 
-        String jniReturnType;
-        if (returnClazz != null) {
-            jniReturnType = typeMapper.toJniType(returnClazz);
-        } else {
-            // Primitive types don't have an associated element
-            jniReturnType = typeMapper.toPrimitiveJniType(returnType);
-        }
+        String jniReturnType = typeMapper.toJniType(returnType);
 
         List<String> jniParameterTypes = new ArrayList<>();
         for (VariableElement parameter : method.getParameters()) {
             TypeMirror parameterType = parameter.asType();
-            TypeElement parameterClazz = (TypeElement) environment.getTypeUtils().asElement(parameterType);
 
-            String jniType;
-            if (parameterClazz != null) {
-                jniType = typeMapper.toJniType(parameterClazz);
-            } else {
-                // Primitive types don't have an associated element
-                jniType = typeMapper.toPrimitiveJniType(parameterType);
-            }
+            String jniType = typeMapper.toJniType(parameterType);
 
             jniParameterTypes.add(jniType);
         }

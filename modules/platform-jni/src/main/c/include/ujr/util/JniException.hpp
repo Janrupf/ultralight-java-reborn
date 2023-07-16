@@ -15,7 +15,7 @@ namespace ujr {
     class JniException : public std::exception {
     private:
         // The underlying exception
-        std::variant<JniLocalRef<jthrowable>, std::exception_ptr> exception;
+        std::variant<JniGlobalRef<jthrowable>, std::exception_ptr> exception;
 
     protected:
         /**
@@ -31,7 +31,7 @@ namespace ujr {
          *
          * @param exception the existing exception
          */
-        explicit JniException(std::variant<JniLocalRef<jthrowable>, std::exception_ptr> exception);
+        explicit JniException(std::variant<JniGlobalRef<jthrowable>, std::exception_ptr> exception);
 
     public:
         JniException(const JniException &other) = delete;
@@ -54,7 +54,7 @@ namespace ujr {
          * @param env the JNI environment to use
          * @return the exception as a Java exception
          */
-        [[nodiscard]] virtual JniLocalRef<jthrowable> translate_to_java() const;
+        [[nodiscard]] virtual JniGlobalRef<jthrowable> translate_to_java() const;
 
         /**
          * Throws a C++ exception if a JNI exception is pending.
@@ -68,7 +68,7 @@ namespace ujr {
          *
          * @param exception the exception to throw
          */
-        [[noreturn]] static void throw_java_as_cpp(JniLocalRef<jthrowable> exception);
+        [[noreturn]] static void throw_java_as_cpp(const JniLocalRef<jthrowable>& exception);
 
         /**
          * Constructs a JNI exception from a C++ exception.
@@ -84,7 +84,7 @@ namespace ujr {
          * @param exception the Java exception to construct the JNI exception from
          * @return the JNI exception
          */
-        [[nodiscard]] static JniException from_java(JniLocalRef<jthrowable> exception);
+        [[nodiscard]] static JniException from_java(const JniLocalRef<jthrowable>& exception);
 
         /**
          * Determines whether this exception is a Java exception and an instance of CPPException.

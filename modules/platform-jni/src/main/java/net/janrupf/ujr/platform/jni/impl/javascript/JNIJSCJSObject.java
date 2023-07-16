@@ -43,7 +43,8 @@ public class JNIJSCJSObject extends JNIJSCJSValue implements JSCJSObject {
 
     @Override
     public void setProperty(String name, JSCJSValue value, Set<JSPropertyAttribute> attributes) throws JavaScriptValueException {
-        nativeSetProperty(name, value, attributes.toArray(new JSPropertyAttribute[0]));
+        JSPropertyAttribute[] nativeAttributes = attributes != null ? attributes.toArray(new JSPropertyAttribute[0]) : null;
+        nativeSetProperty(name, value, nativeAttributes);
     }
 
     private native void nativeSetProperty(String name, JSCJSValue value, JSPropertyAttribute[] attributes) throws JavaScriptValueException;

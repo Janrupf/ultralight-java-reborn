@@ -12,12 +12,12 @@ namespace ujr {
         : argument(std::move(argument))
         , message(std::move(message)) {}
 
-    JniLocalRef<jthrowable> JniIllegalArgumentException::translate_to_java() const {
+    JniGlobalRef<jthrowable> JniIllegalArgumentException::translate_to_java() const {
         auto env = JniEnv::require_existing_from_thread();
 
         auto final_message = this->argument + ": " + this->message;
         auto j_message = JniLocalRef<jstring>::from_utf8(env, final_message.c_str());
 
-        return ILLEGAL_ARGUMENT_EXCEPTION_CONSTRUCTOR.invoke(env, j_message);
+        return ILLEGAL_ARGUMENT_EXCEPTION_CONSTRUCTOR.invoke(env, j_message).clone_as_global();
     }
 } // namespace ujr

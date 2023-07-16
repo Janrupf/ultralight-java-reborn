@@ -22,6 +22,6 @@ namespace ujr {
          */
         explicit JniIllegalArgumentException(std::string argument, std::string message);
 
-        [[nodiscard]] JniLocalRef<jthrowable> translate_to_java() const override;
+        [[nodiscard]] JniGlobalRef<jthrowable> translate_to_java() const override;
     };
 } // namespace ujr

@@ -115,6 +115,24 @@ namespace ujr {
         template<size_t N> constexpr CompileTimeString<N> jni_type_name(JniClassName<N> name) {
             return CompileTimeString<N>(name.buffer);
         }
+
+        /**
+         * Helper struct for constructing JNI type signatures.
+         *
+         * @tparam Name the JNI type name
+         * @tparam ArrayDepth the array depth of the JNI type
+         */
+        template<JniClassName Name, size_t ArrayDepth> struct JniTypeSignature {
+            static constexpr CompileTimeString Signature = concat_compile_time_strings(
+                CompileTimeString("["), JniTypeSignature<Name, ArrayDepth - 1>::Signature
+            );
+        };
+
+        template<JniClassName Name> struct JniTypeSignature<Name, 0> {
+            static constexpr CompileTimeString Signature
+                = concat_compile_time_strings(CompileTimeString("L"), jni_type_name(Name), CompileTimeString(";"));
+        };
+
     } // namespace _internal
 
     /**
@@ -139,11 +157,7 @@ namespace ujr {
      *
      * @tparam T the JNI class name
      */
-    template<JniClassName T> struct JniClassSignature {
-        static constexpr JniClassName Signature
-            = _internal::concat_compile_time_strings(
-                  _internal::CompileTimeString("L"), _internal::jni_type_name(T), _internal::CompileTimeString(";")
-            )
-                  .as_class_name();
+    template<JniClassName T, size_t ArrayDepth> struct JniClassSignature {
+        static constexpr JniClassName Signature = _internal::JniTypeSignature<T, ArrayDepth>::Signature.as_class_name();
     };
 } // namespace ujr

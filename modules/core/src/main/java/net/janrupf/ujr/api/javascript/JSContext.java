@@ -23,6 +23,17 @@ public class JSContext {
     }
 
     /**
+     * Retrieves the global object of this context.
+     * <p>
+     * For web contexts, this is the window object.
+     *
+     * @return the global object
+     */
+    public JSObject getGlobalObject() {
+        return new JSObject(context.getGlobalObject());
+    }
+
+    /**
      * Retrieves the global context of this context.
      *
      * @return the global context
@@ -90,13 +101,23 @@ public class JSContext {
     }
 
     /**
-     * Creates a JavaScript value from a JSON fromatted string.
+     * Creates a JavaScript value from a JSON formatted string.
      *
      * @param jsonValue the JSON value to be parsed
      * @return the created value
      */
     public JSValue makeFromJSONString(String jsonValue) {
         return new JSValue(context.makeFromJSONString(jsonValue));
+    }
+
+    /**
+     * Creates a JavaScript object of a specified class.
+     *
+     * @param clazz the class of the object
+     * @return the created object
+     */
+    public JSObject makeObject(JSClass clazz) {
+        return new JSObject(context.makeObject(clazz != null ? clazz.getClazz() : null));
     }
 
     /**

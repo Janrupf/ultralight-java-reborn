@@ -2,6 +2,8 @@
 
 #include <jni.h>
 
+#include <iostream>
+
 #include "ujr/util/JniEnv.hpp"
 #include "ujr/util/JniException.hpp"
 

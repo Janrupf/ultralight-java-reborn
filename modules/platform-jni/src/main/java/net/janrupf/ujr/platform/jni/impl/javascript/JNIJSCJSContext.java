@@ -29,6 +29,13 @@ public class JNIJSCJSContext implements JSCJSContext {
     private native JNIJSCJSContextGroup nativeGetGroup();
 
     @Override
+    public JSCJSObject getGlobalObject() {
+        return nativeGetGlobalObject();
+    }
+
+    private native JNIJSCJSObject nativeGetGlobalObject();
+
+    @Override
     public JSCJSValue makeUndefined() {
         return nativeMakeUndefined();
     }
@@ -76,6 +83,13 @@ public class JNIJSCJSContext implements JSCJSContext {
     }
 
     private native JNIJSCJSValue nativeMakeFromJSONString(String jsonValue);
+
+    @Override
+    public JSCJSObject makeObject(JSCJSClass clazz) {
+        return nativeMakeObject(Objects.requireNonNull(clazz));
+    }
+
+    private native JNIJSCJSObject nativeMakeObject(JSCJSClass jscjsClass);
 
     @Override
     public JSCJSObject makeArray(JSCJSValue[] nativeValues) throws JavaScriptValueException {

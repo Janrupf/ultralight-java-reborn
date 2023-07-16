@@ -25,42 +25,42 @@ public class NativeTypeMapper {
     /**
      * Converts the given type element to a native type.
      *
-     * @param element the element to convert
+     * @param type the type to convert
      * @return the JNI type
      */
-    public String toJniType(TypeElement element) {
-        return toJniType(element, true);
+    public String toJniType(TypeMirror type) {
+        return toJniType(type, true);
     }
 
     /**
      * Converts the given type element to a native type.
      *
-     * @param element               the element to convert
+     * @param type                  the type to convert
      * @param enableJniWrapperTypes whether to enable C++ JNI wrapper types
      * @return the JNI type
      */
-    public String toJniType(TypeElement element, boolean enableJniWrapperTypes) {
-        TypeMirror type = element.asType();
-
-        if (type.getKind() == TypeKind.ARRAY) {
-            return toJniArrayType((ArrayType) type);
-        }
-
+    public String toJniType(TypeMirror type, boolean enableJniWrapperTypes) {
         // First check for primitive types
         String primitive = toPrimitiveJniType(type);
         if (primitive != null) {
             return primitive;
         }
 
-        PackageElement pkg = environment.getElementUtils().getPackageOf(element);
-        if (pkg != null && pkg.getQualifiedName().toString().startsWith("java.lang.")) {
-            // Disable JNI wrapper types for Java builtin types
-            enableJniWrapperTypes = false;
+        TypeElement element = (TypeElement) environment.getTypeUtils().asElement(type);
+
+        if (element != null) {
+            PackageElement pkg = environment.getElementUtils().getPackageOf(element);
+            if (pkg != null && pkg.getQualifiedName().toString().startsWith("java.lang.")) {
+                // Disable JNI wrapper types for Java builtin types
+                enableJniWrapperTypes = false;
+            }
         }
 
         // Non-primitive type
         if (enableJniWrapperTypes) {
-            return toJniClassType(element);
+            return toJniClassType(type);
+        } else if (type.getKind() == TypeKind.ARRAY) {
+            return toJniArrayType((ArrayType) type);
         } else if (isInstanceOf(element, "java.lang.String")) {
             return "jstring";
         } else if (isInstanceOf(element, "java.lang.Throwable")) {
@@ -129,8 +129,6 @@ public class NativeTypeMapper {
                 return "jdouble";
             case VOID:
                 return "void";
-            case ARRAY:
-                return toJniArrayType((ArrayType) type);
             default:
                 return null;
         }
@@ -155,13 +153,89 @@ public class NativeTypeMapper {
     /**
      * Converts a type element to a JNI class type.
      *
-     * @param clazz the element to convert
+     * @param type the type to convert
      * @return the JNI class type
      */
-    public String toJniClassType(TypeElement clazz) {
-        String binaryClassName = environment.getElementUtils().getBinaryName(clazz).toString();
-        String jniType = toJniType(clazz, false);
+    public String toJniClassType(TypeMirror type) {
+        boolean isArray = type.getKind() == TypeKind.ARRAY;
 
-        return "::ujr::JniClass<\"" + binaryClassName.replace('.', '/') + "\", " + jniType + ">";
+        String binaryClassName = toJavaBinaryTypeName(type);
+
+        String jniType = toJniType(type, false);
+
+        return "::ujr::JniClass" +
+                "<\"" + binaryClassName + "\"," +
+                " " + jniType + ", " +
+                arrayDepth(type) +
+                ">";
+    }
+
+    /**
+     * Calculates the depth of the given array type.
+     *
+     * @param type the type to calculate the depth for
+     * @return the depth of the given array type
+     */
+    public int arrayDepth(TypeMirror type) {
+        int depth = 0;
+
+        while (type.getKind() == TypeKind.ARRAY) {
+            type = ((ArrayType) type).getComponentType();
+            depth++;
+        }
+
+        return depth;
+    }
+
+    /**
+     * Converts the given type to a Java binary type name.
+     * <p>
+     * Please note that this functions strips the array type from the given type.
+     *
+     * @param type the type to convert
+     * @return the Java binary type name
+     */
+    public String toJavaBinaryTypeName(TypeMirror type) {
+        StringBuilder binaryClassName = new StringBuilder();
+
+        while (type.getKind() == TypeKind.ARRAY) {
+            type = ((ArrayType) type).getComponentType();
+        }
+
+        switch (type.getKind()) {
+            case BOOLEAN:
+                binaryClassName.append("Z");
+                break;
+            case BYTE:
+                binaryClassName.append("B");
+                break;
+            case SHORT:
+                binaryClassName.append("S");
+                break;
+            case INT:
+                binaryClassName.append("I");
+                break;
+            case LONG:
+                binaryClassName.append("J");
+                break;
+            case CHAR:
+                binaryClassName.append("C");
+                break;
+            case FLOAT:
+                binaryClassName.append("F");
+                break;
+            case DOUBLE:
+                binaryClassName.append("D");
+                break;
+            case VOID:
+                binaryClassName.append("V");
+                break;
+            default:
+                TypeElement element = (TypeElement) environment.getTypeUtils().asElement(type);
+                binaryClassName.append(environment.getElementUtils().getBinaryName(element).toString().replace('.', '/'));
+                break;
+        }
+
+        return binaryClassName.toString();
     }
 }

@@ -6,7 +6,7 @@
 
 namespace ujr {
     void JniJavaScriptValueException::throw_if_valid(JSContextRef context, JSValueRef exception) {
-        if (exception) {
+        if (context && exception) {
             JSGlobalContextRef global_context = JSContextGetGlobalContext(context);
             JSGlobalContextRetain(global_context);
 
@@ -23,13 +23,13 @@ namespace ujr {
         JSGlobalContextRelease(context);
     }
 
-    JniLocalRef<jthrowable> JniJavaScriptValueException::translate_to_java() const {
+    JniGlobalRef<jthrowable> JniJavaScriptValueException::translate_to_java() const {
         using native_access::JniJavaScriptValueException;
 
         auto env = JniEnv::require_existing_from_thread();
         auto j_js_value = JSValue::wrap(env, context, value);
 
-        return JniJavaScriptValueException::CONSTRUCTOR.invoke(env, j_js_value);
+        return JniJavaScriptValueException::CONSTRUCTOR.invoke(env, j_js_value).clone_as_global();
     }
 
     JSGlobalContextRef JniJavaScriptValueException::get_context() const { return context; }
