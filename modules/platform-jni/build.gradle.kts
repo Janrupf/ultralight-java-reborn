@@ -70,6 +70,7 @@ if (!disableNativeBuild) {
     val cmakeSource = file("src/main/c").path
     val cmakeBinaryDir = cmakeRunDir.toString()
     val installDir = nativeDir.resolve("prefix").toString()
+    val libsDir = file("$installDir/lib")
     val compactedDir = nativeDir.resolve("compacted")
 
     val buildNativeTask = tasks.register<Exec>("buildNative") {
@@ -105,7 +106,6 @@ if (!disableNativeBuild) {
             data class FileInformation(val path: Path, val names: MutableList<String>)
 
             val knownFiles = hashMapOf<String, FileInformation>()
-            val libsDir = file("$installDir/lib")
             val systemIdent = Files.readAllLines(libsDir.toPath().resolve("ultralight.ident")).first()
 
             // Find all files in the lib directory
@@ -162,6 +162,14 @@ if (!disableNativeBuild) {
         }
         from("$installDir/share") {
             into("META-INF/resources/ultralight/pkg")
+        }
+    }
+
+    tasks.jar {
+        doFirst {
+            // Make sure to set the archive classifier to the system identifier
+            val systemIdent = Files.readAllLines(libsDir.toPath().resolve("ultralight.ident")).first()
+            archiveClassifier.set(systemIdent)
         }
     }
 
