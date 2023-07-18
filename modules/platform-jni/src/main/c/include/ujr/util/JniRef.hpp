@@ -497,10 +497,10 @@ namespace ujr {
         [[nodiscard]] std::string to_utf8() const
             requires std::is_same_v<typename JniType<T>::Type, jstring>
         {
-            auto utf8_length = static_cast<size_t>(env->GetStringUTFLength(this->ref));
+            auto utf8_length = env->GetStringUTFLength(this->ref);
 
             std::string result;
-            result.resize(utf8_length);
+            result.resize(static_cast<size_t>(utf8_length));
 
             env->GetStringUTFRegion(this->ref, 0, utf8_length, result.data());
             JniExceptionCheck::throw_if_pending(env);

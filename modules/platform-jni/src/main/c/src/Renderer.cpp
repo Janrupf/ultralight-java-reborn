@@ -169,7 +169,7 @@ JNIEXPORT jboolean JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_
         auto address_str = j_address.to_utf8();
 
         auto *renderer = reinterpret_cast<ultralight::Renderer *>(JNIUlRenderer::HANDLE.get(env, self));
-        return renderer->StartRemoteInspectorServer(address_str.data(), port);
+        return renderer->StartRemoteInspectorServer(address_str.data(), static_cast<uint16_t>(port));
     });
 }
 
@@ -183,7 +183,12 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlRenderer_nati
         auto id_str = j_id.to_utf8();
 
         auto *renderer = reinterpret_cast<ultralight::Renderer *>(JNIUlRenderer::HANDLE.get(env, self));
-        renderer->SetGamepadDetails(index, id_str.data(), axis_count, button_count);
+        renderer->SetGamepadDetails(
+            static_cast<uint32_t>(index),
+            id_str.data(),
+            static_cast<uint32_t>(axis_count),
+            static_cast<uint32_t>(button_count)
+        );
     });
 }
 

@@ -32,7 +32,12 @@ public class BundledNatives {
     }
 
     private String platformKey(PlatformIdentification identification) {
-        return identification.getName().toLowerCase() + "-" + identification.getArch().toLowerCase();
+        String osName = identification.getName().toLowerCase();
+        if (osName.equals("windows")) {
+            osName = "win"; // Ultralight uses "win" as the platform name
+        }
+
+        return osName + "-" + identification.getArch().toLowerCase();
     }
 
     /**

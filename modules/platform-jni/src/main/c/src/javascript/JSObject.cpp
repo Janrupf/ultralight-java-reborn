@@ -366,13 +366,13 @@ Java_net_janrupf_ujr_platform_jni_impl_javascript_JNIJSCJSObject_nativeGetProper
         JSPropertyNameArrayRef property_names = JSObjectCopyPropertyNames(context, object);
         size_t count = JSPropertyNameArrayGetCount(property_names);
 
-        auto result = env->NewObjectArray(count, env->FindClass("java/lang/String"), nullptr);
+        auto result = env->NewObjectArray(static_cast<jsize>(count), env->FindClass("java/lang/String"), nullptr);
 
         for (size_t i = 0; i < count; i++) {
             auto property_name = JSPropertyNameArrayGetNameAtIndex(property_names, i);
             auto j_property_name = ujr::JSString::to_java(env, property_name);
 
-            env->SetObjectArrayElement(result, i, j_property_name);
+            env->SetObjectArrayElement(result, static_cast<jsize>(i), j_property_name);
         }
 
         JSPropertyNameArrayRelease(property_names);

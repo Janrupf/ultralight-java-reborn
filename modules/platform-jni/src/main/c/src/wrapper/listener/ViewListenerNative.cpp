@@ -246,8 +246,8 @@ Java_net_janrupf_ujr_platform_jni_wrapper_listener_JNIUlViewListenerNative_nativ
             ul_source,
             ul_level,
             j_message.to_utf16(),
-            line_number,
-            column_number,
+            static_cast<uint32_t>(line_number),
+            static_cast<uint32_t>(column_number),
             j_source_id.to_utf16()
         );
     });

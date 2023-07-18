@@ -207,7 +207,7 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlView_nativeResize(JNIEnv *env, jobje
 
         auto *view = reinterpret_cast<ultralight::View *>(JNIUlView::HANDLE.get(env, self));
 
-        view->Resize(width, height);
+        view->Resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
     });
 }
 

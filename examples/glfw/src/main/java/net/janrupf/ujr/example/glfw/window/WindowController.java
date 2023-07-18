@@ -6,6 +6,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengles.GLES;
 import org.lwjgl.opengles.GLES32;
 import org.lwjgl.opengles.GLESCapabilities;
+import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryUtil;
 
 import java.util.HashMap;
@@ -46,7 +47,12 @@ public class WindowController implements AutoCloseable {
         GLFW.glfwMakeContextCurrent(rootWindow);
         GLFW.glfwSwapInterval(1);
 
-        // Initialize OpenGLES
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            // Most windows systems don't have OpenGLES available - however, for this
+            // example just using the OpenGL library works fine
+            Configuration.OPENGLES_LIBRARY_NAME.set("opengl32");
+        }
+
         GLESCapabilities capabilities = GLES.createCapabilities();
         LOGGER.info("OpenGL ES initialized!");
 

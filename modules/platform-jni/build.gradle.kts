@@ -59,8 +59,24 @@ dependencies {
 
 // Sometimes we want to disable the native build, for example when cross-compiling
 val disableNativeBuild = project.properties["ujr.disableNativeBuild"]?.toString()?.toBoolean() ?: false
+val jarPlatformClassifier = project.properties["ujr.jarPlatformClassifier"]?.toString()?.toBoolean() ?: false
 
 if (!disableNativeBuild) {
+    val nativeConfiguration = if (project.properties["ujr.nativeReleaseBuild"]?.toString()?.toBoolean() == true) "Release" else "Debug"
+
+    tasks.named<JavaCompile>("compileJava") {
+        val minCompilerVersion = JavaVersion.VERSION_11
+
+        if (javaCompiler.get()
+                .metadata
+                .languageVersion.asInt() < JavaLanguageVersion.of(minCompilerVersion.majorVersion).asInt()) {
+            throw GradleException("Do to a bug in the Java 8 compiler, you need to use at least Java 11 to compile this project even though Java 8 is supported at runtime")
+        }
+    }
+
+    tasks.getByName<JavaCompile>("compileJava")
+            .javaCompiler.get()
+
     // During gradle configuration, also perform CMake configuration
     val nativeDir = buildDir.toPath().resolve("native")
 
@@ -79,6 +95,7 @@ if (!disableNativeBuild) {
         args = listOf(
                 "--build", cmakeBinaryDir,
                 "--parallel", Runtime.getRuntime().availableProcessors().toString(),
+                "--config", nativeConfiguration,
         )
     }
 
@@ -89,6 +106,7 @@ if (!disableNativeBuild) {
         args = listOf(
                 "--install", cmakeBinaryDir,
                 "--prefix", installDir,
+                "--config", nativeConfiguration,
         )
     }
 
@@ -165,11 +183,13 @@ if (!disableNativeBuild) {
         }
     }
 
-    tasks.jar {
-        doFirst {
-            // Make sure to set the archive classifier to the system identifier
-            val systemIdent = Files.readAllLines(libsDir.toPath().resolve("ultralight.ident")).first()
-            archiveClassifier.set(systemIdent)
+    if (jarPlatformClassifier) {
+        tasks.jar {
+            doFirst {
+                // Make sure to set the archive classifier to the system identifier
+                val systemIdent = Files.readAllLines(libsDir.toPath().resolve("ultralight.ident")).first()
+                archiveClassifier.set(systemIdent)
+            }
         }
     }
 
@@ -189,7 +209,7 @@ if (!disableNativeBuild) {
                     "-B", cmakeBinaryDir,
                     "-DUJR_JNI_HEADER_DIR=${tasks.getByName<JavaCompile>("compileJava").options.headerOutputDirectory.get()}",
                     "-DJAVA_HOME=$javaHome",
-                    "-DCMAKE_BUILD_TYPE=Debug",
+                    "-DCMAKE_BUILD_TYPE=$nativeConfiguration",
             )
         }
     }

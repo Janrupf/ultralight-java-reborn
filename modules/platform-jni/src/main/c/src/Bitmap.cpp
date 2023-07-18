@@ -116,13 +116,19 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlBitmap_nativeLockPixels(JNIEnv *env,
         }
 
         // Direct buffers not supported, use a byte array
-        auto indirect_array = ujr::JniLocalRef<jbyteArray>::wrap(env, env->NewByteArray(ul_surface->size()));
+        auto indirect_array
+            = ujr::JniLocalRef<jbyteArray>::wrap(env, env->NewByteArray(static_cast<jsize>(ul_surface->size())));
         if (!indirect_array.is_valid() || env->ExceptionCheck()) {
             return static_cast<jobject>(indirect_array.leak());
         }
 
         // Copy the data from the pixel buffer to the array and store the original pointer
-        env->SetByteArrayRegion(indirect_array.get(), 0, ul_surface->size(), reinterpret_cast<jbyte *>(pixels));
+        env->SetByteArrayRegion(
+            indirect_array.get(),
+            0,
+            static_cast<jsize>(ul_surface->size()),
+            reinterpret_cast<jbyte *>(pixels)
+        );
         JNIUlBitmap::LOCKED_PIXELS.set(env, self, reinterpret_cast<jlong>(pixels));
 
         return static_cast<jobject>(indirect_array.leak());
@@ -263,4 +269,4 @@ namespace ujr {
         : bitmap(bitmap) {}
 
     void BitmapCollector::collect() { bitmap->Release(); } // namespace ujr
-}
+} // namespace ujr

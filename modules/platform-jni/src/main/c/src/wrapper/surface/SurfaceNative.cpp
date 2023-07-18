@@ -61,13 +61,19 @@ Java_net_janrupf_ujr_platform_jni_wrapper_surface_JNIUlSurfaceNative_nativeLockP
         }
 
         // Direct buffers not supported, use a byte array
-        auto indirect_array = ujr::JniLocalRef<jbyteArray>::wrap(env, env->NewByteArray(ul_surface->size()));
+        auto indirect_array
+            = ujr::JniLocalRef<jbyteArray>::wrap(env, env->NewByteArray(static_cast<jsize>(ul_surface->size())));
         if (!indirect_array.is_valid() || env->ExceptionCheck()) {
             return static_cast<jobject>(indirect_array.leak());
         }
 
         // Copy the data from the pixel buffer to the array and store the original pointer
-        env->SetByteArrayRegion(indirect_array.get(), 0, ul_surface->size(), reinterpret_cast<jbyte *>(pixels));
+        env->SetByteArrayRegion(
+            indirect_array.get(),
+            0,
+            static_cast<jsize>(ul_surface->size()),
+            reinterpret_cast<jbyte *>(pixels)
+        );
         JNIUlSurfaceNative::LOCKED_PIXELS.set(env, self, reinterpret_cast<jlong>(pixels));
 
         return static_cast<jobject>(indirect_array.leak());
@@ -101,7 +107,7 @@ JNIEXPORT void JNICALL Java_net_janrupf_ujr_platform_jni_wrapper_surface_JNIUlSu
         using ujr::native_access::JNIUlSurfaceNative;
 
         auto *ul_surface = reinterpret_cast<ultralight::Surface *>(JNIUlSurfaceNative::HANDLE.get(env, self));
-        ul_surface->Resize(width, height);
+        ul_surface->Resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
     });
 }
 

@@ -18,7 +18,7 @@ Java_net_janrupf_ujr_platform_jni_wrapper_surface_JNIUlSurfaceFactoryNative_nati
 
         auto *surface
             = reinterpret_cast<ultralight::SurfaceFactory *>(JNIUlSurfaceFactoryNative::HANDLE.get(env, self));
-        auto *ul_surface = surface->CreateSurface(width, height);
+        auto *ul_surface = surface->CreateSurface(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 
         auto j_ul_surface = ujr::JniLocalRef<jobject>::null(env);
 

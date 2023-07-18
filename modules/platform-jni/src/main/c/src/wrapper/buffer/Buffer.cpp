@@ -1,12 +1,20 @@
 #include "ujr/wrapper/buffer/Buffer.hpp"
 #include "net_janrupf_ujr_platform_jni_wrapper_buffer_JNIUlDelegatedBuffer_native_access.hpp"
 
+#include <cstdlib>
 #include <cstring>
-#include <functional>
 #include <memory>
 
 #include "ujr/util/JniClass.hpp"
 #include "ujr/util/JniMethod.hpp"
+
+#if _MSC_VER
+#define ALIGNED_MALLOC(size, alignment) _aligned_malloc((size), (alignment))
+#define ALIGNED_FREE(ptr) _aligned_free((ptr))
+#else
+#define ALIGNED_MALLOC(size, alignment) ::std::aligned_malloc((alignment), (size))
+#define ALIGNED_FREE(ptr) ::std::free((ptr))
+#endif
 
 namespace ujr {
     namespace {
@@ -247,7 +255,7 @@ namespace ujr {
                 } catch (...) {
                     // If something goes wrong, lets at least free the memory
                     if (holder->copy_region) {
-                        std::free(holder->copy_region);
+                        ALIGNED_FREE(holder->copy_region);
                     }
 
                     if (holder->elements) {
@@ -308,7 +316,7 @@ namespace ujr {
                 }
 
                 // Copy the data to an aligned buffer
-                void *copy_region = std::aligned_alloc(16, buffer_length);
+                void *copy_region = ALIGNED_MALLOC(buffer_length, 16);
                 std::memcpy(copy_region, real_data, buffer_length);
 
                 auto *holder = new DelegatedBufferHolder(

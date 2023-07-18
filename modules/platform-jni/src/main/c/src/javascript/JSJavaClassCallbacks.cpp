@@ -377,7 +377,7 @@ namespace ujr {
             auto *shared_data = reinterpret_cast<const JSClassJavaSharedData *>(JSClassGetPrivate(js_class));
 
             if (shared_data->call_as_function_callback.is_valid(env)) {
-                env->PushLocalFrame(argument_count + 16);
+                env->PushLocalFrame(static_cast<jsize>(argument_count + 16));
 
                 JSValueRef result;
                 try {
@@ -389,13 +389,13 @@ namespace ujr {
                     auto j_function = JSObject::wrap(env, ctx, function);
                     auto j_this_object = JSObject::wrap(env, ctx, this_object);
 
-                    auto j_arguments
-                        = env.wrap_argument(env->NewObjectArray(argument_count, JNIJSCJSValue::CLAZZ.get(env), nullptr)
-                        );
+                    auto j_arguments = env.wrap_argument(
+                        env->NewObjectArray(static_cast<jsize>(argument_count), JNIJSCJSValue::CLAZZ.get(env), nullptr)
+                    );
                     for (size_t i = 0; i < argument_count; i++) {
                         JSValueProtect(ctx, arguments[i]);
                         auto j_argument = JSValue::wrap(env, ctx, arguments[i]);
-                        env->SetObjectArrayElement(j_arguments, i, j_argument);
+                        env->SetObjectArrayElement(j_arguments, static_cast<jsize>(i), j_argument);
                     }
 
                     auto j_result = JNIJSCJSObjectCallAsFunctionCallback::CALL_AS_FUNCTION.invoke(
@@ -437,7 +437,7 @@ namespace ujr {
             auto *shared_data = reinterpret_cast<const JSClassJavaSharedData *>(JSClassGetPrivate(js_class));
 
             if (shared_data->call_as_constructor_callback.is_valid(env)) {
-                env->PushLocalFrame(argument_count + 16);
+                env->PushLocalFrame(static_cast<jsize>(argument_count + 16));
 
                 JSObjectRef result;
                 try {
@@ -446,13 +446,13 @@ namespace ujr {
                     auto j_context = JSContext::wrap(env, ctx);
                     auto j_constructor = JSObject::wrap(env, ctx, constructor);
 
-                    auto j_arguments
-                        = env.wrap_argument(env->NewObjectArray(argument_count, JNIJSCJSValue::CLAZZ.get(env), nullptr)
-                        );
+                    auto j_arguments = env.wrap_argument(
+                        env->NewObjectArray(static_cast<jsize>(argument_count), JNIJSCJSValue::CLAZZ.get(env), nullptr)
+                    );
                     for (size_t i = 0; i < argument_count; i++) {
                         JSValueProtect(ctx, arguments[i]);
                         auto j_argument = JSValue::wrap(env, ctx, arguments[i]);
-                        env->SetObjectArrayElement(j_arguments, i, j_argument);
+                        env->SetObjectArrayElement(j_arguments, static_cast<jsize>(i), j_argument);
                     }
 
                     auto j_result = JNIJSCJSObjectCallAsConstructorCallback::CALL_AS_CONSTRUCTOR.invoke(

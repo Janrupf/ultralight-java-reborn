@@ -72,14 +72,14 @@ Java_net_janrupf_ujr_platform_jni_impl_JNIUlPlatform_nativeSetConfig(JNIEnv *env
         native_config.animation_timer_delay = UlConfig::ANIMATION_TIMER_DELAY.get(env, config);
         native_config.scroll_timer_delay = UlConfig::SCROLL_TIMER_DELAY.get(env, config);
         native_config.recycle_delay = UlConfig::RECYCLE_DELAY.get(env, config);
-        native_config.memory_cache_size = UlConfig::MEMORY_CACHE_SIZE.get(env, config);
-        native_config.page_cache_size = UlConfig::PAGE_CACHE_SIZE.get(env, config);
-        native_config.override_ram_size = UlConfig::OVERRIDE_RAM_SIZE.get(env, config);
-        native_config.min_large_heap_size = UlConfig::MIN_LARGE_HEAP_SIZE.get(env, config);
-        native_config.min_small_heap_size = UlConfig::MIN_SMALL_HEAP_SIZE.get(env, config);
-        native_config.num_renderer_threads = UlConfig::NUM_RENDERER_THREADS.get(env, config);
+        native_config.memory_cache_size = static_cast<uint32_t>(UlConfig::MEMORY_CACHE_SIZE.get(env, config));
+        native_config.page_cache_size = static_cast<uint32_t>(UlConfig::PAGE_CACHE_SIZE.get(env, config));
+        native_config.override_ram_size = static_cast<uint32_t>(UlConfig::OVERRIDE_RAM_SIZE.get(env, config));
+        native_config.min_large_heap_size = static_cast<uint32_t>(UlConfig::MIN_LARGE_HEAP_SIZE.get(env, config));
+        native_config.min_small_heap_size = static_cast<uint32_t>(UlConfig::MIN_SMALL_HEAP_SIZE.get(env, config));
+        native_config.num_renderer_threads = static_cast<uint32_t>(UlConfig::NUM_RENDERER_THREADS.get(env, config));
         native_config.max_update_time = UlConfig::MAX_UPDATE_TIME.get(env, config);
-        native_config.bitmap_alignment = UlConfig::BITMAP_ALIGNMENT.get(env, config);
+        native_config.bitmap_alignment = static_cast<uint32_t>(UlConfig::BITMAP_ALIGNMENT.get(env, config));
 
         reinterpret_cast<ultralight::Platform *>(JNIUlPlatform::HANDLE.get(env, self))->set_config(native_config);
     });

@@ -98,12 +98,12 @@ public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
         // Specific load order
         List<String> librariesToLoad = Arrays.asList(
                 "UltralightCore", // Core library, no dependencies
-                "glib-2.0", // GLib, no dependencies
-                "gio-2.0", // GIO, depends on GLib
-                "gobject-2.0", // GObject, depends on GLib
-                "gmodule-2.0", // GModule, depends on GLib
-                "gthread-2.0", // GThread, depends on GLib
-                "gstreamer-full-1.0", // GStreamer, depends on GLib
+                "glib-2.0", "glib-2.0-0", // GLib, no dependencies
+                "gobject-2.0", "gobject-2.0-0",// GObject, depends on GLib
+                "gmodule-2.0", "gmodule-2.0-0", // GModule, depends on GLib
+                "gthread-2.0", "gthread-2.0-0", // GThread, depends on GLib
+                "gio-2.0", "gio-2.0-0", // GIO, depends on GLib, GObject and GModule
+                "gstreamer-full-1.0", "gstreamer-full-1.0-0", // GStreamer, depends on GLib
                 "WebCore", // WebCore, depends on all previous libraries
                 "Ultralight", // Main library, depends on all previous libraries
                 "AppCore", // AppCore, depends on all previous libraries

@@ -97,6 +97,16 @@ namespace ujr {
     JNI_VALUE_TYPE_SPECIALIZATION(jfloat, "F");
     JNI_VALUE_TYPE_SPECIALIZATION(jdouble, "D");
 
+#if _MSC_VER
+    // Weird special case on MSVC: since long is 32bit even on 64bit Windows, JniType<jint> fails to specialize properly
+
+    template<> struct JniType<int> {
+        using Type = jint;
+
+        static constexpr JniClassName Name = "I";
+    };
+#endif
+
 #undef JNI_VALUE_TYPE_SPECIALIZATION
 
 #define JNI_REFERENCE_TYPE_SPECIALIZATION(j_type, class_name)                                                          \

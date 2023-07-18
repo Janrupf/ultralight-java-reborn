@@ -36,7 +36,11 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlBitmapFact
 ) {
     return ujr::jni_entry_guard(env, [&](auto env) {
         auto j_format = env.wrap_argument(format);
-        auto ul_bitmap = ultralight::Bitmap::Create(width, height, java_format_to_native(j_format));
+        auto ul_bitmap = ultralight::Bitmap::Create(
+            static_cast<uint32_t>(width),
+            static_cast<uint32_t>(height),
+            java_format_to_native(j_format)
+        );
 
         auto bitmap = ujr::Bitmap::wrap(env, ul_bitmap);
         return bitmap.leak();
@@ -48,7 +52,12 @@ JNIEXPORT jobject JNICALL Java_net_janrupf_ujr_platform_jni_impl_JNIUlBitmapFact
 ) {
     return ujr::jni_entry_guard(env, [&](auto env) {
         auto j_format = env.wrap_argument(format);
-        auto ul_bitmap = ultralight::Bitmap::Create(width, height, java_format_to_native(j_format), alignment);
+        auto ul_bitmap = ultralight::Bitmap::Create(
+            static_cast<uint32_t>(width),
+            static_cast<uint32_t>(height),
+            java_format_to_native(j_format),
+            static_cast<uint32_t>(alignment)
+        );
 
         auto bitmap = ujr::Bitmap::wrap(env, ul_bitmap);
         return bitmap.leak();

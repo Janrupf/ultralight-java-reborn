@@ -2,9 +2,11 @@
 
 namespace ujr {
     JniLocalRef<jstring> JSString::to_java(const JniEnv &env, JSStringRef string) {
+        static_assert(sizeof(JSChar) == sizeof(jchar));
+
         auto j_string = JniLocalRef<jstring>::from_utf16(
             env,
-            JSStringGetCharactersPtr(string),
+            reinterpret_cast<const jchar *>(JSStringGetCharactersPtr(string)),
             static_cast<jint>(JSStringGetLength(string))
         );
         return j_string;
@@ -24,7 +26,10 @@ namespace ujr {
 
     JSStringRef JSString::from_java(const JniEnv &env, const JniStrongRef<jstring> &string) {
         auto *java_chars = env->GetStringCritical(string, nullptr);
-        auto js_string = JSStringCreateWithCharacters(java_chars, static_cast<size_t>(env->GetStringLength(string)));
+        auto js_string = JSStringCreateWithCharacters(
+            reinterpret_cast<const JSChar *>(java_chars),
+            static_cast<size_t>(env->GetStringLength(string))
+        );
         env->ReleaseStringCritical(string, java_chars);
 
         return js_string;
