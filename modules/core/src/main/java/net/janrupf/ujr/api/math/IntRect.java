@@ -265,10 +265,11 @@ public class IntRect {
 
     /**
      * Determines whether this rectangle intersects with the given rectangle.
+     * <p>
+     * Intersections are only considered, if the width and height of the intersection are >= 1.
      *
      * @param other the rectangle to check
      * @return true if this rectangle intersects with the given rectangle, false otherwise
-     * @implNote Intersections are only considered, if the width and height of the intersection are >= 1.
      */
     public boolean intersects(IntRect other) {
         return !(other.left > right - 1 || other.right < left || other.top > bottom - 1 || other.bottom < top);

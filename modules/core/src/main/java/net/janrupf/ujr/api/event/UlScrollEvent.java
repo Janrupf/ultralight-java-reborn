@@ -5,7 +5,7 @@ package net.janrupf.ujr.api.event;
 /**
  * A generic scroll event.
  *
- * @see View::FireScrollEvent
+ * @see net.janrupf.ujr.api.UltralightView#fireScrollEvent(UlScrollEvent)
  */
 public class UlScrollEvent {
     /**

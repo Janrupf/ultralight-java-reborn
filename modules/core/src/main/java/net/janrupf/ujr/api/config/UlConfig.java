@@ -84,8 +84,8 @@ public class UlConfig {
 
     /**
      * Size of WebCore's memory cache in bytes.
-     *
-     * @implNote You should increase this if you anticipate handling pages with large resources, Safari
+     * <p>
+     * You should increase this if you anticipate handling pages with large resources, Safari
      * typically uses 128+ MiB for its cache.
      */
     @Native
@@ -93,8 +93,8 @@ public class UlConfig {
 
     /**
      * Number of pages to keep in the cache. Defaults to 0 (none).
-     *
-     * @implNote Safari typically caches about 5 pages and maintains an on-disk cache to support
+     * <p>
+     * Safari typically caches about 5 pages and maintains an on-disk cache to support
      * typical web-browsing activities. If you increase this, you should probably increase
      * the memory cache size as well.
      */
@@ -129,8 +129,8 @@ public class UlConfig {
      * The number of threads to use in the Renderer (for parallel painting on the CPU, etc.).
      * <p>
      * You can set this to a certain number to limit the number of threads to spawn.
-     *
-     * @implNote If this value is 0 (the default), the number of threads will be determined at runtime
+     * <p>
+     * If this value is 0 (the default), the number of threads will be determined at runtime
      * using the following formula:
      * {@code max(Runtime.getRuntime().availableProcessors() - 1, 1)}
      */

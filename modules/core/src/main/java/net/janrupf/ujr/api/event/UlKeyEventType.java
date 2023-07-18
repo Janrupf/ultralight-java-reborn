@@ -6,8 +6,8 @@ package net.janrupf.ujr.api.event;
 public enum UlKeyEventType {
     /**
      * Key-Down event type. (Does not trigger accelerator commands in WebCore)
-     *
-     * @apiNote You should probably use {@link #RAW_DOWN} instead when a physical key is pressed.
+     * <p>
+     * You should probably use {@link #RAW_DOWN} instead when a physical key is pressed.
      * This type is only here for historic compatibility with WebCore's key event types.
      */
     DOWN,
@@ -19,8 +19,8 @@ public enum UlKeyEventType {
 
     /**
      * Raw Key-Down type. Use this when a physical key is pressed.
-     *
-     * @apiNote You should use this for physical key presses since it allows the renderer to
+     * <p>
+     * You should use this for physical key presses since it allows the renderer to
      * handle accelerator command translation.
      */
     RAW_DOWN,

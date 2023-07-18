@@ -9,8 +9,8 @@ import java.util.Objects;
 /**
  * A group that associates JavaScript contexts with one another.
  * Contexts in the same group may share and exchange JavaScript objects.
- *
- * @implNote Instances of this class represent JavaScript VM's
+ * <p>
+ * Instances of this class represent JavaScript VM's
  */
 public class JSContextGroup {
     private static final ApiProvider<JSCJSContextGroupFactory> FACTORY_PROVIDER =

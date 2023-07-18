@@ -8,8 +8,9 @@ package net.janrupf.ujr.api.surface;
  * This can be used to wrap a platform-specific GPU texture, Windows DIB, macOS CGImage, or any
  * other pixel buffer target for display on screen.
  * <p>
- * The default factory creates/destroys a {@link UltralightBitmapSurface} but you can override this by providing your
- * own factory to {@link Platform::set_surface_factory}.
+ * The default factory creates/destroys a {@link net.janrupf.ujr.api.bitmap.UltralightBitmapSurface}
+ * but you can override this by providing your own factory to
+ * {@link net.janrupf.ujr.api.UltralightPlatform#setSurfaceFactory(UltralightSurfaceFactory)}.
  */
 public interface UltralightSurfaceFactory {
     /**

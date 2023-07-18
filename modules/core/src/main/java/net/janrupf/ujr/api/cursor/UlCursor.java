@@ -1,9 +1,11 @@
 package net.janrupf.ujr.api.cursor;
 
+import net.janrupf.ujr.api.UltralightView;
+
 /**
  * Cursor types.
  *
- * @see net.janrupf.ujr.api.listener.UltralightViewListener#onChangeCursor(UlCursor)
+ * @see net.janrupf.ujr.api.listener.UltralightViewListener#onChangeCursor(UltralightView, UlCursor)
  */
 public enum UlCursor {
     POINTER,

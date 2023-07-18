@@ -130,11 +130,12 @@ public class UltralightPlatform {
      * Set the {@link UltralightSurfaceFactory}.
      * <p>
      * This can be used to provide a platform-specific bitmap surface for View to paint into when
-     * the CPU renderer is enabled. See {@link View::surface()}.
+     * the CPU renderer is enabled. See {@link UltralightView#surface()}.
+     * <p>
+     * A default BitmapSurfaceFactory is defined if you never call this,  {@link UltralightView#surface()} can
+     * be safely cast to {@link net.janrupf.ujr.api.bitmap.UltralightBitmapSurface}.
      *
      * @param surfaceFactory the surface factory to use
-     * @implNote A default BitmapSurfaceFactory is defined if you never call this, View::surface() can
-     * be safely cast to BitmapSurface.
      */
     public void setSurfaceFactory(UltralightSurfaceFactory surfaceFactory) {
         platform.setSurfaceFactory(surfaceFactory);

@@ -5,7 +5,8 @@ package net.janrupf.ujr.api.clipboard;
  * <p>
  * This is used for reading and writing data to the platform Clipboard.
  * <p>
- * You will need to provide your own implementation of this. {@link Platform::set_clipboard()}.
+ * You will need to provide your own implementation of this.
+ * {@link net.janrupf.ujr.api.UltralightPlatform#setClipboard(UltralightClipboard)}.
  */
 public interface UltralightClipboard {
     /**

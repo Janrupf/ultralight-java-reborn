@@ -6,7 +6,7 @@ package net.janrupf.ujr.api.event;
 /**
  * A generic mouse event.
  *
- * @see View::FireMouseEvent
+ * @see net.janrupf.ujr.api.UltralightView#fireMouseEvent(UlMouseEvent)
  */
 public class UlMouseEvent {
     /**

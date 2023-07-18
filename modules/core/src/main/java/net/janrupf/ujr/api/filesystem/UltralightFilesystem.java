@@ -13,8 +13,8 @@ import java.io.IOException;
  * loaded from your own pipeline (useful if you would like to encrypt/compress your file assets or
  * ship it in a custom format).
  * <p>
- * If you are using {@link Renderer::Create()} instead, you will need to provide your own implementation
- * via {@link net.janrupf.ujr.api.UltralightPlatform#setFilesystem(UltralightFilesystem)}.
+ * You will need to provide your own implementation via
+ * {@link net.janrupf.ujr.api.UltralightPlatform#setFilesystem(UltralightFilesystem)}.
  */
 public interface UltralightFilesystem {
     /**

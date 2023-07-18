@@ -18,8 +18,8 @@ public class UlViewConfig {
 
     /**
      * Whether or not this View should support transparency.
-     *
-     * @apiNote Make sure to also set the following CSS on the page:
+     * <p>
+     * Make sure to also set the following CSS on the page:
      * {@code html, body { background: transparent; }}
      */
     public boolean isTransparent = false;
@@ -27,8 +27,8 @@ public class UlViewConfig {
     /**
      * The initial device scale, ie. the amount to scale page units to screen pixels. This should
      * be set to the scaling factor of the device that the View is displayed on.
-     *
-     * @apiNote 1.0 is equal to 100% zoom (no scaling), 2.0 is equal to 200% zoom (2x scaling)
+     * <p>
+     * 1.0 is equal to 100% zoom (no scaling), 2.0 is equal to 200% zoom (2x scaling)
      */
     public double initialDeviceScale = 1.0;
 

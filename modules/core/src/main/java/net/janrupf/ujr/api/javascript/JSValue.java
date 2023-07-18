@@ -169,11 +169,12 @@ public class JSValue {
 
     /**
      * Creates a string containing the JSON representation of this value.
+     * <p>
+     * The indentation level is clamped to the range {@code [0, 10]}.
      *
      * @param indent the indentation level
      * @return the JSON string
      * @throws JavaScriptValueException if an error occurs while creating the JSON string
-     * @implNote The indentation level is clamped to the range {@code [0, 10]}.
      */
     public String createJSONString(int indent) throws JavaScriptValueException {
         return value.createJSONString(indent);

@@ -16,11 +16,11 @@ import net.janrupf.ujr.api.util.UltralightBuffer;
  * platform-specific bitmaps).
  * <p>
  * A default Surface implementation, BitmapSurface, is automatically provided by the library when
- * you call {@link UltralightRenderer#getOrCreate()} without defining a custom {@link SurfaceFactory}.
+ * you call {@link UltralightRenderer#getOrCreate()} without defining a custom {@link UltralightSurfaceFactory}.
  * <p>
  * To provide your own custom Surface implementation, you should inherit from this class, handle
- * the member functions, and then define a custom {@link SurfaceFactory} that creates/destroys an
- * instance of your class. After that, you should pass an instance of your custom {@link SurfaceFactory}
+ * the member functions, and then define a custom {@link UltralightSurfaceFactory} that creates/destroys an
+ * instance of your class. After that, you should pass an instance of your custom {@link UltralightSurfaceFactory}
  * class to `Platform::instance().set_font_loader()` before calling App::Create() or
  * Renderer::Create().
  */

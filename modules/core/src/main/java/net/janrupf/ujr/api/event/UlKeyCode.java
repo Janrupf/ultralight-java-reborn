@@ -741,7 +741,7 @@ public final class UlKeyCode {
     public static final int OEM_PLUS = 0xBB;
 
     /**
-     * GK_OEM_COMMA (BC) ',<' any country
+     * GK_OEM_COMMA (BC) ',&lt;' any country
      */
     public static final int OEM_COMMA = 0xBC;
 

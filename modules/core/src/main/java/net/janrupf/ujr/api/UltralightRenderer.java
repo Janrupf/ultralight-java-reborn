@@ -117,8 +117,8 @@ public class UltralightRenderer {
      * <p>
      * You should call this once per frame (usually in synchrony with the
      * monitor's refresh rate).
-     *
-     * @implNote Views are only repainted if they actually need painting.
+     * <p>
+     * Views are only repainted if they actually need painting.
      */
     public void render() {
         renderer.render();
@@ -129,9 +129,10 @@ public class UltralightRenderer {
      * <p>
      * You should call this once per frame (usually in synchrony with the
      * monitor's refresh rate).
+     * <p>
+     * Views are only repainted if they actually need painting.
      *
      * @param views the views to render
-     * @implNote Views are only repainted if they actually need painting.
      */
     public void renderOnly(UltralightView... views) {
         renderer.renderOnly(views);

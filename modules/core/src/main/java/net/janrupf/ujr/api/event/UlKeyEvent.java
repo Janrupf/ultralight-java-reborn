@@ -87,11 +87,12 @@ public class UlKeyEvent {
 
     /**
      * Utility function for generating a key string from a virtual key-code.
+     * <p>
+     * This function assumes a US layout.
      *
      * @param virtualKeyCode the virtual key-code to generate the key from
      * @param shift          whether the shift key is pressed
      * @return the key, or null, if none or the API is not available
-     * @implNote This function assumes a US layout.
      */
     public static String keyFromVirtualKeyCode(int virtualKeyCode, boolean shift) {
         UlKeyboard keyboard = UL_KEYBOARD.tryProvide();

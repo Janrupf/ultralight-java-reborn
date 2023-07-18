@@ -155,12 +155,13 @@ public class JSObject extends JSValue {
 
     /**
      * Retrieves a property of this object at the specified index.
+     * <p>
+     * This is effectively equivalent to calling {@link #getProperty(String)} with the
+     * string representation of the index, but this method is more efficient for numeric property keys.
      *
      * @param index the index of the property
      * @return the property at the specified index
      * @throws JavaScriptValueException if retrieving the property fails
-     * @implNote This is effectively equivalent to calling {@link #getProperty(String)} with the
-     * string representation of the index, but this method is more efficient for numeric property keys.
      */
     public JSValue getPropertyAtIndex(int index) throws JavaScriptValueException {
         return new JSValue(getObject().getPropertyAtIndex(index));
@@ -168,12 +169,13 @@ public class JSObject extends JSValue {
 
     /**
      * Sets a property of this object at the specified index.
+     * <p>
+     * This is effectively equivalent to calling {@link #setProperty(String, JSValue)} with the
+     * string representation of the index, but this method is more efficient for numeric property keys.
      *
      * @param index the index of the property
      * @param value the new value of the property
      * @throws JavaScriptValueException if setting the property fails
-     * @implNote This is effectively equivalent to calling {@link #setProperty(String, JSValue)} with the
-     * string representation of the index, but this method is more efficient for numeric property keys.
      */
     public void setPropertyAtIndex(int index, JSValue value) throws JavaScriptValueException {
         getObject().setPropertyAtIndex(index, value.getValue());
@@ -192,7 +194,7 @@ public class JSObject extends JSValue {
      * Calls this object as a function.
      *
      * @param thisObject the {@code this} object to use when calling this object as a function
-     * @param arguments the arguments to pass to the function
+     * @param arguments  the arguments to pass to the function
      * @return the result of calling this object as a function
      * @throws JavaScriptValueException if calling this object as a function fails or the function throws
      */

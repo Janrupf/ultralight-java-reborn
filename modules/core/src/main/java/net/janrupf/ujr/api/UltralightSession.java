@@ -8,7 +8,7 @@ import net.janrupf.ujr.core.platform.abstraction.UlSession;
  * A Session stores local data such as cookies, local storage, and application cache for
  * one or more Views.
  *
- * @see Renderer::CreateSession
+ * @see UltralightRenderer#createSession
  */
 public class UltralightSession {
     private final UlSession session;

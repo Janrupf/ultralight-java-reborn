@@ -120,9 +120,10 @@ public class UltralightBitmap {
 
     /**
      * Retrieves the size in bytes of the pixel buffer.
+     * <p>
+     * This is equivalent to {@code rowBytes() * height()}.
      *
      * @return the size in bytes of the pixel buffer
-     * @implNote This is equivalent to {@code rowBytes() * height()}.
      */
     public long size() {
         return bitmap.size();
@@ -187,6 +188,10 @@ public class UltralightBitmap {
 
     /**
      * Draw another bitmap to this bitmap.
+     * <p>
+     * Formats do not need to match. Bitmap formats will be converted to one another
+     * automatically. Note that when converting from {@link UlBitmapFormat#BGRA8_UNORM_SRGB} to
+     * {@link UlBitmapFormat#A8_UNORM}, only the blue channel will be used.
      *
      * @param srcRect   the source rectangle, relative to src bitmap
      * @param destRect  the destination rectangle, relative to this bitmap
@@ -195,9 +200,6 @@ public class UltralightBitmap {
      *                  edge pixels from the source bitmap
      * @return true if the operation succeeded, false otherwise (this can fail if srcRect or destRect
      * are invalid)
-     * @implNote Formats do not need to match. Bitmap formats will be converted to one another
-     * automatically. Note that when converting from {@link UlBitmapFormat#BGRA8_UNORM_SRGB} to
-     * {@link UlBitmapFormat#A8_UNORM}, only the blue channel will be used.
      */
     public boolean drawBitmap(IntRect srcRect, IntRect destRect, UltralightBitmap src, boolean padRepeat) {
         return bitmap.drawBitmap(srcRect, destRect, src.bitmap, padRepeat);

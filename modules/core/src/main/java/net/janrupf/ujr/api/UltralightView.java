@@ -6,6 +6,7 @@ import net.janrupf.ujr.api.config.UlViewConfig;
 import net.janrupf.ujr.api.event.UlKeyEvent;
 import net.janrupf.ujr.api.event.UlMouseEvent;
 import net.janrupf.ujr.api.event.UlScrollEvent;
+import net.janrupf.ujr.api.javascript.JSObject;
 import net.janrupf.ujr.api.javascript.JavaScriptException;
 import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.api.listener.UltralightLoadListener;
@@ -30,8 +31,8 @@ import net.janrupf.ujr.core.platform.abstraction.UlView;
  * <p>
  * When using the GPU renderer, you would get the underlying render target and texture information
  * via View::render_target().
- *
- * @implNote The API is not currently thread-safe, all calls must be made on the same thread that the
+ * <p>
+ * The API is not currently thread-safe, all calls must be made on the same thread that the
  * Renderer/App was created on.
  */
 public class UltralightView {
@@ -182,10 +183,11 @@ public class UltralightView {
 
     /**
      * Load a URL, the View will navigate to it as a new page.
+     * <p>
+     * You can use File URLs (eg, file:///page.html) but you must define your own FileSystem
+     * implementation. {@link UltralightPlatform#setFilesystem(UltralightFilesystem)}
      *
      * @param url the URL to load
-     * @implNote You can use File URLs (eg, file:///page.html) but you must define your own FileSystem
-     * implementation. {@link UltralightPlatform#setFilesystem(UltralightFilesystem)}
      */
     public void loadURL(String url) {
         view.loadURL(url);
@@ -209,13 +211,15 @@ public class UltralightView {
 
     /**
      * Helper function to evaluate a raw string of JavaScript and return the result as a String.
+     * <p>
+     * If you need lower-level access to native JavaScript values, you should get a reference to
+     * the JS context and call
+     * {@link net.janrupf.ujr.api.javascript.JSContext#evaluateScript(String, JSObject, String, int)}
+     * in the JavaScriptCore API.
      *
      * @param script a string of Javascript to evaluate in the main frame
      * @return the javascript result typecast to a String
      * @throws JavaScriptException if an exception occurred while evaluating the script
-     * @implNote You do not need to lock the JS context, it is done automatically.
-     * @apiNote If you need lower-level access to native JavaScript values, you should instead lock
-     * the JS context and call JSEvaluateScript() in the JavaScriptCore C API.
      */
     public String evaluateScript(String script) throws JavaScriptException {
         return view.evaluateScript(script);
@@ -319,10 +323,11 @@ public class UltralightView {
 
     /**
      * Fires a keyboard event.
+     * <p>
+     * Only events of the {@link net.janrupf.ujr.api.event.UlKeyEventType#CHAR} type actually generate
+     * text in input fields.
      *
      * @param event the event to fire
-     * @implNote Only events of the {@link net.janrupf.ujr.api.event.UlKeyEventType#CHAR} type actually generate
-     * text in input fields.
      */
     public void fireKeyEvent(UlKeyEvent event) {
         view.fireKeyEvent(event);
@@ -384,11 +389,12 @@ public class UltralightView {
 
     /**
      * Set whether this View should be repainted during the next call to {@link UltralightRenderer#render()}.
+     * <p>
+     * This flag is automatically set whenever the page content changes but you can set it
+     * directly in case you need to force a repaint.
      *
      * @param needsPaint true if this View should be repainted during the next call to {@link UltralightRenderer#render()},
      *                   false otherwise
-     * @implNote This flag is automatically set whenever the page content changes but you can set it
-     * directly in case you need to force a repaint.
      */
     public void setNeedsPaint(boolean needsPaint) {
         view.setNeedsPaint(needsPaint);
