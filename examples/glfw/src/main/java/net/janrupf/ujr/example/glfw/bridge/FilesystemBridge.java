@@ -93,7 +93,7 @@ public class FilesystemBridge implements UltralightFilesystem {
                 }
 
                 // We are done, the resource is in memory
-                return new NioUltralightBuffer(buffer.flip());
+                return new NioUltralightBuffer((ByteBuffer) buffer.flip());
             }
 
             // Size is not known, so we will have to take the slower path of a buffer
