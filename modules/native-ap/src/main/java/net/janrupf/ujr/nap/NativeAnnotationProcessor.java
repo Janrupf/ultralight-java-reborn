@@ -90,7 +90,6 @@ public class NativeAnnotationProcessor implements Processor {
 
                             // Add all fields of the target type to the target collector
                             for (VariableElement field : ElementFilter.fieldsIn(targetClassElement.getEnclosedElements())) {
-                                System.out.println("X");
                                 targetCollector.collectNativeAccess(field);
                             }
                         }

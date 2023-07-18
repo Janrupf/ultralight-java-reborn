@@ -158,10 +158,10 @@ if (!disableNativeBuild) {
     tasks.named<Copy>("processResources") {
         dependsOn(compactNativeTask)
         from(compactedDir) {
-            into("META-INF/resources/native")
+            into("META-INF/resources/ultralight/native")
         }
         from("$installDir/share") {
-            into("META-INF/resources/pkg")
+            into("META-INF/resources/ultralight/pkg")
         }
     }
 

@@ -10,7 +10,7 @@ public class JNIUlResourceProvider implements UlResourceProvider {
     @Override
     public URI getResource(String path) {
         try {
-            URL url = getClass().getResource("/META-INF/resources/pkg/" + path);
+            URL url = getClass().getResource("/META-INF/resources/ultralight/pkg/" + path);
 
             if (url == null) {
                 return null;

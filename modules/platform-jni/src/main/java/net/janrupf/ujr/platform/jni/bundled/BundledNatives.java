@@ -62,7 +62,7 @@ public class BundledNatives {
 
         try (
                 InputStream inputStream = BundledNatives.class.getResourceAsStream(
-                        "/META-INF/resources/native/meta.dat"
+                        "/META-INF/resources/ultralight/native/meta.dat"
                 );
                 BufferedReader reader = new BufferedReader(new InputStreamReader(
                         Objects.requireNonNull(inputStream, "Missing bundled natives meta data")
@@ -104,7 +104,7 @@ public class BundledNatives {
                 }
 
                 URL resourceUrl = BundledNatives.class.getResource(
-                        "/META-INF/resources/native/" + hash
+                        "/META-INF/resources/ultralight/native/" + hash
                 );
                 if (resourceUrl == null) {
                     throw new IllegalStateException("Missing bundled native: " + hash);
