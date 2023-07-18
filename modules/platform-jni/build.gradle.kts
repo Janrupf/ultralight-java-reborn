@@ -174,7 +174,12 @@ if (!disableNativeBuild) {
     }
 
     gradle.afterProject {
-        val javaHome = tasks.getByName<JavaCompile>("compileJava").javaCompiler.get().metadata.installationPath
+        val javaHome = tasks.getByName<JavaCompile>("compileJava")
+                .javaCompiler.get()
+                .metadata
+                .installationPath
+                .toString()
+                .replace(File.separatorChar, '/')
 
         // Run CMake after project evaluation and configuration has finished
         exec {
