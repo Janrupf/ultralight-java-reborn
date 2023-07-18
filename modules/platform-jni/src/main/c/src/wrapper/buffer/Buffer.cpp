@@ -12,7 +12,7 @@
 #define ALIGNED_MALLOC(size, alignment) _aligned_malloc((size), (alignment))
 #define ALIGNED_FREE(ptr) _aligned_free((ptr))
 #else
-#define ALIGNED_MALLOC(size, alignment) ::std::aligned_malloc((alignment), (size))
+#define ALIGNED_MALLOC(size, alignment) ::std::aligned_alloc((alignment), (size))
 #define ALIGNED_FREE(ptr) ::std::free((ptr))
 #endif
 
