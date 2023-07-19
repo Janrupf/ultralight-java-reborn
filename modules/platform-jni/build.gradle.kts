@@ -79,20 +79,9 @@ publishing {
     }
 }
 
-fun fixupFilePath(path: String): String {
-    // Workaround gradle bug
-    //
-    // Gradle doesn't recognize D:a/b/c as an absolute path on Windows, but D:/a/b/c works.
-    if (path.length > 2 && path[1] == ':' && path[2] != '/' && path[2] != '\\') {
-        return path[0] + ":/" + path.substring(2)
-    }
-
-    return path
-}
-
 // Sometimes we want to disable the native build, for example when cross-compiling
 val prebuiltNativesDir =
-    project.properties["ujr.prebuiltNativesDir"]?.toString()?.let { file(fixupFilePath(it)) } ?: file(
+    project.properties["ujr.prebuiltNativesDir"]?.toString()?.let { file(it) } ?: file(
         buildDir.resolve("prebuilt-natives")
     )
 val importPrebuiltNatives = project.properties["ujr.importPrebuiltNatives"]?.toString()?.toBoolean() ?: false
