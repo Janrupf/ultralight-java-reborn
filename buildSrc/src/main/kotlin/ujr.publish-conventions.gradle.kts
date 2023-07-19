@@ -10,7 +10,7 @@ publishing {
     repositories {
         if (githubActor != null && githubToken != null) {
             maven {
-                name = "ultralight-java-reborn Github Maven"
+                name = "github-maven-ultralight-java-reborn"
                 url = uri("https://maven.pkg.github.com/Janrupf/ultralight-java-reborn")
 
                 credentials {
