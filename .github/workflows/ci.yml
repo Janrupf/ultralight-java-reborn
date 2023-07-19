@@ -8,6 +8,9 @@ on:
 
 jobs:
   build-jni:
+    permissions:
+      packages: write
+
     strategy:
       fail-fast: false
       matrix:
@@ -80,6 +83,9 @@ jobs:
           UJR_SIGNING_PASSWORD: ${{ secrets.UJR_SIGNING_PASSWORD }}
 
   build-core:
+    permissions:
+      packages: write
+
     runs-on: ubuntu-latest
     name: Build core
 
