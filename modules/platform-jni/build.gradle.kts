@@ -5,6 +5,7 @@ import java.security.MessageDigest
 
 plugins {
     id("java-library")
+    id("ujr.publish-conventions")
 }
 
 /**
@@ -55,6 +56,22 @@ fun calculateFileHash(file: Path): ByteArray = MessageDigest.getInstance("SHA-25
 dependencies {
     compileOnlyApi(project(":modules:ultralight-java-reborn-core"))
     annotationProcessor(project(":modules:ultralight-java-reborn-native-ap"))
+}
+
+publishing {
+    publications {
+        named<MavenPublication>("mavenJava") {
+            pom {
+                licenses {
+                    license {
+                        name.set("LicenseRef-Ultralight")
+                        url.set("https://github.com/ultralight-ux/Ultralight/blob/master/license/LICENSE.txt")
+                        comments.set("Proprietary Ultralight License")
+                    }
+                }
+            }
+        }
+    }
 }
 
 // Sometimes we want to disable the native build, for example when cross-compiling
