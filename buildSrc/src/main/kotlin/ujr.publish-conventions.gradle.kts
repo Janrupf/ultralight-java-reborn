@@ -18,6 +18,11 @@ publishing {
                     password = githubToken
                 }
             }
+        } else {
+            maven {
+                name = "github-maven-ultralight-java-reborn"
+                url = uri("file://${rootProject.buildDir}/maven-repo")
+            }
         }
     }
 

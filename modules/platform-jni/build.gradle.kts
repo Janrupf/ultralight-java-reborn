@@ -1,3 +1,6 @@
+import net.janrupf.ujr.gradle.UJRGradlePlugin
+import net.janrupf.ujr.gradle.extensions.UJRExtension
+import net.janrupf.ujr.gradle.tasks.ExportConfiguration
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -7,6 +10,8 @@ plugins {
     id("java-library")
     id("ujr.publish-conventions")
 }
+
+apply<UJRGradlePlugin>()
 
 /**
  * Finds a program on the system.
@@ -75,24 +80,29 @@ publishing {
 }
 
 // Sometimes we want to disable the native build, for example when cross-compiling
-val disableNativeBuild = project.properties["ujr.disableNativeBuild"]?.toString()?.toBoolean() ?: false
+val prebuiltNativesDirectory = project.properties["ujr.prebuiltNativesDir"]?.toString()?.let { file(it) } ?: file(
+    buildDir.resolve("prebuilt-natives")
+)
+val importPrebuiltNatives = project.properties["ujr.importPrebuiltNatives"]?.toString()?.toBoolean() ?: false
 val jarPlatformClassifier = project.properties["ujr.jarPlatformClassifier"]?.toString()?.toBoolean() ?: false
 
-if (!disableNativeBuild) {
-    val nativeConfiguration = if (project.properties["ujr.nativeReleaseBuild"]?.toString()?.toBoolean() == true) "Release" else "Debug"
+if (!importPrebuiltNatives) {
+    val nativeConfiguration =
+        if (project.properties["ujr.nativeReleaseBuild"]?.toString()?.toBoolean() == true) "Release" else "Debug"
 
     tasks.named<JavaCompile>("compileJava") {
         val minCompilerVersion = JavaVersion.VERSION_11
 
         if (javaCompiler.get()
                 .metadata
-                .languageVersion.asInt() < JavaLanguageVersion.of(minCompilerVersion.majorVersion).asInt()) {
+                .languageVersion.asInt() < JavaLanguageVersion.of(minCompilerVersion.majorVersion).asInt()
+        ) {
             throw GradleException("Do to a bug in the Java 8 compiler, you need to use at least Java 11 to compile this project even though Java 8 is supported at runtime")
         }
     }
 
     tasks.getByName<JavaCompile>("compileJava")
-            .javaCompiler.get()
+        .javaCompiler.get()
 
     // During gradle configuration, also perform CMake configuration
     val nativeDir = buildDir.toPath().resolve("native")
@@ -110,9 +120,9 @@ if (!disableNativeBuild) {
         mustRunAfter("compileJava")
         executable = cmake.toString()
         args = listOf(
-                "--build", cmakeBinaryDir,
-                "--parallel", Runtime.getRuntime().availableProcessors().toString(),
-                "--config", nativeConfiguration,
+            "--build", cmakeBinaryDir,
+            "--parallel", Runtime.getRuntime().availableProcessors().toString(),
+            "--config", nativeConfiguration,
         )
     }
 
@@ -121,9 +131,9 @@ if (!disableNativeBuild) {
 
         executable = cmake.toString()
         args = listOf(
-                "--install", cmakeBinaryDir,
-                "--prefix", installDir,
-                "--config", nativeConfiguration,
+            "--install", cmakeBinaryDir,
+            "--prefix", installDir,
+            "--config", nativeConfiguration,
         )
     }
 
@@ -146,11 +156,6 @@ if (!disableNativeBuild) {
             // Find all files in the lib directory
             val files = libsDir.listFiles()
             for (file in files!!) {
-                if (file.name == "ultralight.ident") {
-                    // We do not want to include the ident file
-                    continue
-                }
-
                 val hash = calculateFileHash(file.toPath()).joinToString("") { "%02x".format(it) }
                 val knownFile = knownFiles[hash]
 
@@ -200,34 +205,51 @@ if (!disableNativeBuild) {
         }
     }
 
-    if (jarPlatformClassifier) {
-        tasks.jar {
-            doFirst {
-                // Make sure to set the archive classifier to the system identifier
-                val systemIdent = Files.readAllLines(libsDir.toPath().resolve("ultralight.ident")).first()
-                archiveClassifier.set(systemIdent)
-            }
-        }
-    }
-
     gradle.afterProject {
         val javaHome = tasks.getByName<JavaCompile>("compileJava")
-                .javaCompiler.get()
-                .metadata
-                .installationPath
-                .toString()
-                .replace(File.separatorChar, '/')
+            .javaCompiler.get()
+            .metadata
+            .installationPath
+            .toString()
+            .replace(File.separatorChar, '/')
 
         // Run CMake after project evaluation and configuration has finished
         exec {
             executable = cmake.toString()
             args = listOf(
-                    "-S", cmakeSource,
-                    "-B", cmakeBinaryDir,
-                    "-DUJR_JNI_HEADER_DIR=${tasks.getByName<JavaCompile>("compileJava").options.headerOutputDirectory.get()}",
-                    "-DJAVA_HOME=$javaHome",
-                    "-DCMAKE_BUILD_TYPE=$nativeConfiguration",
+                "-S", cmakeSource,
+                "-B", cmakeBinaryDir,
+                "-DUJR_JNI_HEADER_DIR=${tasks.getByName<JavaCompile>("compileJava").options.headerOutputDirectory.get()}",
+                "-DJAVA_HOME=$javaHome",
+                "-DCMAKE_BUILD_TYPE=$nativeConfiguration",
             )
         }
+
+        if (jarPlatformClassifier) {
+            for (task in listOf("jar", "javadocJar", "sourcesJar")) {
+                tasks.named<Jar>(task) {
+                    // Make sure to set the archive classifier to the system identifier
+                    val systemIdent = Files.readAllLines(cmakeRunDir.resolve("ultralight.ident")).first()
+
+                    val currentClassifier = archiveClassifier.get()
+
+                    if (currentClassifier.isNullOrBlank()) {
+                        archiveClassifier.set(systemIdent)
+                    } else {
+                        archiveClassifier.set("${archiveClassifier.get()}-$systemIdent")
+                    }
+                }
+            }
+        }
+
+        tasks.register<ExportConfiguration>("exportPrebuiltJars") {
+            from(configurations.getByName("apiElements"))
+            from(configurations.getByName("runtimeElements"))
+            from(configurations.getByName("sourcesElements"))
+            from(configurations.getByName("javadocElements"))
+            destination.set(prebuiltNativesDirectory)
+        }
     }
+} else {
+    extensions.getByName<UJRExtension>("ujr").importConfigurations(prebuiltNativesDirectory)
 }

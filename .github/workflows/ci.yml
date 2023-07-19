@@ -51,38 +51,27 @@ jobs:
           distribution: temurin
           architecture: ${{ matrix.arch }}
 
-      - name: Build JNI platform
+      - name: Build and export JNI platform libraries
         run: |
           ./gradlew \
+            -Pujr.prebuiltNativesDirectory=${{ runner.temp }}/prebuilt-natives \
             -Pujr.jarPlatformClassifier=true \
             -Pujr.nativeReleaseBuild=true \
             -Pujr.version=${{ env.UJR_VERSION }} \
-            :modules:ultralight-java-reborn-platform-jni:build
+            :modules:ultralight-java-reborn-platform-jni:exportPrebuiltJars
         shell: bash
 
-      - name: Upload built libraries
+      - name: Upload prebuilt libraries
         uses: actions/upload-artifact@v3
         with:
-          name: ultralight-java-reborn-platform-jni
-          path: modules/platform-jni/build/libs/*.jar
-
-      - name: Publish libraries
-        run: |
-          ./gradlew \
-            -Pujr.jarPlatformClassifier=true \
-            -Pujr.nativeReleaseBuild=true \
-            -Pujr.version=${{ env.UJR_VERSION }} \
-            -Pujr.enableSigning=true \
-            :modules:ultralight-java-reborn-platform-jni:publish
-        shell: bash
-        if: env.UJR_PUBLISH
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          UJR_SIGNING_KEY: ${{ secrets.UJR_SIGNING_KEY }}
-          UJR_SIGNING_PASSWORD: ${{ secrets.UJR_SIGNING_PASSWORD }}
+          name: ultralight-java-reborn-platform-jni-prebuilts
+          path: ${{ runner.temp }}/prebuilt-natives
+          if-no-files-found: error
+          retention-days: 1
 
   build-core:
+    needs: [ build-jni ]
+
     permissions:
       packages: write
 
@@ -92,6 +81,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Download prebuilt libraries
+        uses: actions/download-artifact@v3
+        with:
+          name: ultralight-java-reborn-platform-jni-prebuilts
+          path: ${{ runner.temp }}/prebuilt-natives
 
       - name: Set environment variables for publish
         run: |
@@ -110,8 +105,9 @@ jobs:
       - name: Build Core
         run: |
           ./gradlew \
+            -Pujr.prebuiltNativesDirectory=${{ runner.temp }}/prebuilt-natives \
+            -Pujr.importPrebuiltNatives=true \
             -Pujr.version=${{ env.UJR_VERSION }} \
-            -Pujr.disableNativeBuild=true \
             :modules:ultralight-java-reborn-core:build
         shell: bash
 
@@ -119,15 +115,18 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ultralight-java-reborn-core
-          path: modules/core/build/libs/*.jar
+          path: |
+            modules/core/build/libs/*.jar
+            ${{ runner.temp }}/prebuilt-natives/*.jar
 
       - name: Publish libraries
         run: |
           ./gradlew \
             -Pujr.version=${{ env.UJR_VERSION }} \
             -Pujr.enableSigning=true \
-            -Pujr.disableNativeBuild=true \
-            :modules:ultralight-java-reborn-core:publish
+            -Pujr.prebuiltNativesDirectory=${{ runner.temp }}/prebuilt-natives \
+            -Pujr.importPrebuiltNatives=true \
+            publish
         shell: bash
         if: env.UJR_PUBLISH
         env:
