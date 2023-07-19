@@ -3,11 +3,21 @@ plugins {
     signing
 }
 
+val githubActor = System.getenv("GITHUB_ACTOR")?.toString()
+val githubToken = System.getenv("GITHUB_TOKEN")?.toString()
+
 publishing {
     repositories {
-        maven {
-            name = "TestDirectory"
-            url = uri("file://${rootProject.buildDir}/repo")
+        if (githubActor != null && githubToken != null) {
+            maven {
+                name = "ultralight-java-reborn Github Maven"
+                url = uri("https://maven.pkg.github.com/Janrupf/ultralight-java-reborn")
+
+                credentials {
+                    username = githubActor
+                    password = githubToken
+                }
+            }
         }
     }
 
