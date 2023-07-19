@@ -1,0 +1,78 @@
+name: CI
+on: [push]
+
+jobs:
+  build-jni:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ linux, macos, windows ]
+        include:
+          - os: linux
+            image: ubuntu-latest
+            arch: x64
+          - os: macos
+            image: macos-latest
+            arch: x64
+          # - os: windows
+          #   image: windows-latest
+          #   arch: x86
+          - os: windows
+            image: windows-latest
+            arch: x64
+
+    runs-on: ${{ matrix.image }}
+    name: Build JNI for ${{ matrix.os }}-${{ matrix.arch }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17 # Even though we target Java 8, we need Java 17 to build
+          distribution: temurin
+          architecture: ${{ matrix.arch }}
+
+      - name: Build JNI platform
+        run: |
+          ./gradlew \
+            --no-daemon \
+            -Pujr.jarPlatformClassifier=true \
+            -Pujr.nativeReleaseBuild=true \
+            :modules:ultralight-java-reborn-platform-jni:build
+        shell: bash
+
+      - name: Upload built libraries
+        uses: actions/upload-artifact@v3
+        with:
+          name: ultralight-java-reborn-platform-jni
+          path: modules/platform-jni/build/libs/*.jar
+
+  build-core:
+    runs-on: ubuntu-latest
+    name: Build core
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17 # Even though we target Java 8, we need Java 17 to build
+          distribution: temurin
+
+      - name: Build Core
+        run: |
+          ./gradlew \
+            --no-daemon \
+            :modules:ultralight-java-reborn-core:build
+        shell: bash
+
+      - name: Upload built libraries
+        uses: actions/upload-artifact@v3
+        with:
+          name: ultralight-java-reborn-core
+          path: modules/core/build/libs/*.jar
