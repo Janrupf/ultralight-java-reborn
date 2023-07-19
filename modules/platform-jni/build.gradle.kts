@@ -80,7 +80,7 @@ publishing {
 }
 
 // Sometimes we want to disable the native build, for example when cross-compiling
-val prebuiltNativesDirectory = project.properties["ujr.prebuiltNativesDir"]?.toString()?.let { file(it) } ?: file(
+val prebuiltNativesDir = project.properties["ujr.prebuiltNativesDir"]?.toString()?.let { file(it) } ?: file(
     buildDir.resolve("prebuilt-natives")
 )
 val importPrebuiltNatives = project.properties["ujr.importPrebuiltNatives"]?.toString()?.toBoolean() ?: false
@@ -247,11 +247,11 @@ if (!importPrebuiltNatives) {
             from(configurations.getByName("runtimeElements"))
             from(configurations.getByName("sourcesElements"))
             from(configurations.getByName("javadocElements"))
-            destination.set(prebuiltNativesDirectory)
+            destination.set(prebuiltNativesDir)
 
             dependsOn("assemble")
         }
     }
 } else {
-    extensions.getByName<UJRExtension>("ujr").importConfigurations(prebuiltNativesDirectory)
+    extensions.getByName<UJRExtension>("ujr").importConfigurations(prebuiltNativesDir)
 }

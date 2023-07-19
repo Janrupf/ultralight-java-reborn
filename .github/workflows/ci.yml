@@ -54,7 +54,7 @@ jobs:
       - name: Build and export JNI platform libraries
         run: |
           ./gradlew \
-            -Pujr.prebuiltNativesDirectory=${{ runner.temp }}/prebuilt-natives \
+            -Pujr.prebuiltNativesDir=${{ runner.temp }}/prebuilt-natives \
             -Pujr.jarPlatformClassifier=true \
             -Pujr.nativeReleaseBuild=true \
             -Pujr.version=${{ env.UJR_VERSION }} \
@@ -105,7 +105,7 @@ jobs:
       - name: Build Core
         run: |
           ./gradlew \
-            -Pujr.prebuiltNativesDirectory=${{ runner.temp }}/prebuilt-natives \
+            -Pujr.prebuiltNativesDir=${{ runner.temp }}/prebuilt-natives \
             -Pujr.importPrebuiltNatives=true \
             -Pujr.version=${{ env.UJR_VERSION }} \
             :modules:ultralight-java-reborn-core:build
@@ -124,7 +124,7 @@ jobs:
           ./gradlew \
             -Pujr.version=${{ env.UJR_VERSION }} \
             -Pujr.enableSigning=true \
-            -Pujr.prebuiltNativesDirectory=${{ runner.temp }}/prebuilt-natives \
+            -Pujr.prebuiltNativesDir=${{ runner.temp }}/prebuilt-natives \
             -Pujr.importPrebuiltNatives=true \
             publish
         shell: bash
