@@ -248,6 +248,8 @@ if (!importPrebuiltNatives) {
             from(configurations.getByName("sourcesElements"))
             from(configurations.getByName("javadocElements"))
             destination.set(prebuiltNativesDirectory)
+
+            dependsOn("assemble")
         }
     }
 } else {

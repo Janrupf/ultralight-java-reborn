@@ -19,7 +19,6 @@ abstract class ExportConfiguration : DefaultTask() {
 
     fun from(configuration: Configuration) {
         sources.add(configuration)
-        dependsOn(configuration.getTaskDependencyFromProjectDependency(true, "jar"))
     }
 
     @TaskAction
