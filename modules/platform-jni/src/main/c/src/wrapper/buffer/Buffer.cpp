@@ -174,7 +174,7 @@ namespace ujr {
                 if (copy_region) {
                     // Copy back the data from the copy region to the direct region
                     std::memcpy(direct_region, copy_region, region_length);
-                    std::free(copy_region);
+                    ALIGNED_FREE(copy_region);
 
                     copy_region = nullptr;
                 }
