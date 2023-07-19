@@ -126,6 +126,7 @@ jobs:
           ./gradlew \
             -Pujr.version=${{ env.UJR_VERSION }} \
             -Pujr.enableSigning=true \
+            -Pujr.disableNativeBuild=true \
             :modules:ultralight-java-reborn-core:publish
         shell: bash
         if: env.UJR_PUBLISH
