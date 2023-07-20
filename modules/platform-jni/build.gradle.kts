@@ -152,7 +152,7 @@ if (!importPrebuiltNatives) {
             data class FileInformation(val path: Path, val names: MutableList<String>)
 
             val knownFiles = hashMapOf<String, FileInformation>()
-            val systemIdent = Files.readAllLines(libsDir.toPath().resolve("ultralight.ident")).first()
+            val systemIdent = Files.readAllLines(cmakeRunDir.resolve("ultralight.ident")).first()
 
             // Find all files in the lib directory
             val files = libsDir.listFiles()

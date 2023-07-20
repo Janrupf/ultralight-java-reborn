@@ -28,10 +28,10 @@ endif ()
 # Ultralight
 set(ULTRALIGHT_DIR "${CMAKE_CURRENT_BINARY_DIR}/ultralight-${ULTRALIGHT_OS_NAME}-${ULTRALIGHT_ARCH}")
 set(ULTRALIGHT_ARCHIVE "${ULTRALIGHT_DIR}/ultralight.7z")
-# 59796cc11d7960baf820981f771696a2ec9b70df
+# c909371f1047810ad7598745025b646d42635645
 #
-# https://github.com/ultralight-ux/Ultralight/tree/59796cc11d7960baf820981f771696a2ec9b70df
-set(ULTRALIGHT_VERSION "59796cc")
+# https://github.com/ultralight-ux/Ultralight/commit/c909371f1047810ad7598745025b646d42635645
+set(ULTRALIGHT_VERSION "c909371")
 
 # Check the version of ultralight
 set(ULTRALIGHT_VERSION_FILE "${ULTRALIGHT_DIR}/.version")
