@@ -28,6 +28,58 @@ the Ultralight C++ API.
 If you have any questions, feel free to join the [Ultralight Discord](https://chat.ultralig.ht) and ask in the
 `#java` channel.
 
+# Using the library
+
+Snapshot builds are published to https://s01.oss.sonatype.org/content/repositories/snapshots.
+
+## Gradle
+
+Add the repository:
+```kotlin
+repositories {
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
+}
+```
+
+Add the dependencies:
+```kotlin
+dependencies {
+    implementation("net.janrupf.ultralight:ultralight-java-reborn-core:0.0.1-SNAPSHOT")
+    implementation("net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.1-SNAPSHOT:linux-x64")
+    // or windows-x64, macos-x64, or just add all 3 as dependencies
+}
+```
+
+## Maven
+
+Add the repository:
+```xml
+<repositories>
+    <repository>
+        <id>sonatype-snapshots</id>
+        <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+</repositories>
+```
+
+Add the dependencies:
+```xml
+<dependencies>
+    <dependency>
+        <groupId>net.janrupf.ultralight</groupId>
+        <artifactId>ultralight-java-reborn-core</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>net.janrupf.ultralight</groupId>
+        <artifactId>ultralight-java-reborn-platform-jni</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <classifier>linux-x64</classifier>
+        <!-- or windows-x64, macos-x64, or just add all 3 as dependencies -->
+    </dependency>
+</dependencies>
+```
+
 # Licensing
 
 This wrapper is licensed under the LGPLv3 license. See the [LICENSE](LICENSE) file for more information.
