@@ -118,7 +118,7 @@ if (!importPrebuiltNatives) {
     val compactedDir = nativeDir.resolve("compacted")
 
     val buildNativeTask = tasks.register<Exec>("buildNative") {
-        mustRunAfter("compileJava")
+        dependsOn("compileJava")
         executable = cmake.toString()
         args = listOf(
             "--build", cmakeBinaryDir,
