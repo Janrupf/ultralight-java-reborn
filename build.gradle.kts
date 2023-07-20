@@ -1,7 +1,7 @@
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
-group = "net.janrupf"
+group = "net.janrupf.ultralight"
 version = determineProjectVersion()
 
 fun determineProjectVersion(): String {
