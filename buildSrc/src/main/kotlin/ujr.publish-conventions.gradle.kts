@@ -6,12 +6,19 @@ plugins {
 val ossrhUser = System.getenv("UJR_OSSRH_USER")
 val pssrhPassword = System.getenv("UJR_OSSRH_PASSWORD")
 
+val isSnapshot = rootProject.version.toString().endsWith("-SNAPSHOT")
+
 publishing {
     repositories {
         if (ossrhUser != null && pssrhPassword != null) {
             maven {
                 name = "ossrh-ultralight-java-reborn"
-                url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+
+                if (isSnapshot) {
+                    url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                } else {
+                    url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                }
 
                 credentials {
                     username = ossrhUser
