@@ -130,7 +130,7 @@ jobs:
         shell: bash
         if: env.UJR_PUBLISH
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
+          UJR_OSSRH_USER: ${{ secrets.UJR_OSSRH_USER }}
+          UJR_OSSRH_PASSWORD: ${{ secrets.UJR_OSSRH_PASSWORD }}
           UJR_SIGNING_KEY: ${{ secrets.UJR_SIGNING_KEY }}
           UJR_SIGNING_PASSWORD: ${{ secrets.UJR_SIGNING_PASSWORD }}

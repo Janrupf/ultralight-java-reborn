@@ -3,19 +3,19 @@ plugins {
     signing
 }
 
-val githubActor = System.getenv("GITHUB_ACTOR")?.toString()
-val githubToken = System.getenv("GITHUB_TOKEN")?.toString()
+val ossrhUser = System.getenv("UJR_OSSRH_USER")
+val pssrhPassword = System.getenv("UJR_OSSRH_PASSWORD")
 
 publishing {
     repositories {
-        if (githubActor != null && githubToken != null) {
+        if (ossrhUser != null && pssrhPassword != null) {
             maven {
-                name = "github-maven-ultralight-java-reborn"
-                url = uri("https://maven.pkg.github.com/Janrupf/ultralight-java-reborn")
+                name = "ossrh-ultralight-java-reborn"
+                url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 
                 credentials {
-                    username = githubActor
-                    password = githubToken
+                    username = ossrhUser
+                    password = pssrhPassword
                 }
             }
         } else {
