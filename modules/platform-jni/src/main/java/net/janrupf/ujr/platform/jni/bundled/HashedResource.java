@@ -3,7 +3,7 @@ package net.janrupf.ujr.platform.jni.bundled;
 import java.net.URI;
 import java.util.List;
 
-public class HashedNative {
+public class HashedResource {
     private final URI bundledLocation;
     private final String hash;
     private final String type;
@@ -17,10 +17,10 @@ public class HashedNative {
      *
      * @param bundledLocation the location of the native in the bundled jar
      * @param hash the hash of the native
-     * @param type the type of the native (usually "library")
+     * @param type the type of the native
      * @param names the names of the native
      */
-    public HashedNative(URI bundledLocation, String hash, String type, List<String> names) {
+    public HashedResource(URI bundledLocation, String hash, String type, List<String> names) {
         this.bundledLocation = bundledLocation;
         this.hash = hash;
         this.type = type;

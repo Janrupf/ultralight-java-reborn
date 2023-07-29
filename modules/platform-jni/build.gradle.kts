@@ -1,17 +1,13 @@
-import net.janrupf.ujr.gradle.UJRGradlePlugin
-import net.janrupf.ujr.gradle.extensions.UJRExtension
-import net.janrupf.ujr.gradle.tasks.ExportConfiguration
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.MessageDigest
+import kotlin.io.path.isDirectory
 
 plugins {
     id("java-library")
     id("ujr.publish-conventions")
 }
-
-apply<UJRGradlePlugin>()
 
 /**
  * Finds a program on the system.
@@ -79,31 +75,27 @@ publishing {
     }
 }
 
+tasks.named<JavaCompile>("compileJava") {
+    val minCompilerVersion = JavaVersion.VERSION_11
+
+    if (javaCompiler.get()
+            .metadata
+            .languageVersion.asInt() < JavaLanguageVersion.of(minCompilerVersion.majorVersion).asInt()
+    ) {
+        throw GradleException("Do to a bug in the Java 8 compiler, you need to use at least Java 11 to compile this project even though Java 8 is supported at runtime")
+    }
+}
+
 // Sometimes we want to disable the native build, for example when cross-compiling
 val prebuiltNativesDir =
     project.properties["ujr.prebuiltNativesDir"]?.toString()?.let { file(it) } ?: file(
         buildDir.resolve("prebuilt-natives")
     )
 val importPrebuiltNatives = project.properties["ujr.importPrebuiltNatives"]?.toString()?.toBoolean() ?: false
-val jarPlatformClassifier = project.properties["ujr.jarPlatformClassifier"]?.toString()?.toBoolean() ?: false
 
 if (!importPrebuiltNatives) {
     val nativeConfiguration =
         if (project.properties["ujr.nativeReleaseBuild"]?.toString()?.toBoolean() == true) "Release" else "Debug"
-
-    tasks.named<JavaCompile>("compileJava") {
-        val minCompilerVersion = JavaVersion.VERSION_11
-
-        if (javaCompiler.get()
-                .metadata
-                .languageVersion.asInt() < JavaLanguageVersion.of(minCompilerVersion.majorVersion).asInt()
-        ) {
-            throw GradleException("Do to a bug in the Java 8 compiler, you need to use at least Java 11 to compile this project even though Java 8 is supported at runtime")
-        }
-    }
-
-    tasks.getByName<JavaCompile>("compileJava")
-        .javaCompiler.get()
 
     // During gradle configuration, also perform CMake configuration
     val nativeDir = buildDir.toPath().resolve("native")
@@ -149,38 +141,50 @@ if (!importPrebuiltNatives) {
 
         doLast {
             // Helper class which contains the path of the file and the names of the files with the same hash
-            data class FileInformation(val path: Path, val names: MutableList<String>)
+            data class FileInformation(val path: Path, val type: String, val names: MutableList<String>)
 
             val knownFiles = hashMapOf<String, FileInformation>()
             val systemIdent = Files.readAllLines(cmakeRunDir.resolve("ultralight.ident")).first()
 
-            // Find all files in the lib directory
-            val files = libsDir.listFiles()
-            for (file in files!!) {
-                val hash = calculateFileHash(file.toPath()).joinToString("") { "%02x".format(it) }
-                val knownFile = knownFiles[hash]
+            val addFiles = { type: String, dir: File ->
+                val dirPath = dir.toPath()
 
-                if (knownFile != null) {
-                    // We know a file with the same hash already, add its name to the list
-                    knownFile.names.add(file.name)
-                } else {
-                    // New file found, add it to the map
-                    knownFiles[hash] = FileInformation(file.toPath(), mutableListOf(file.name))
+                Files.walk(dirPath).forEach { found ->
+                    if (found.isDirectory()) {
+                        return@forEach
+                    }
+
+                    val hash = calculateFileHash(found).joinToString("") { "%02x".format(it) }
+                    val knownFile = knownFiles[hash]
+
+                    if (knownFile != null) {
+                        // We know a file with the same hash already, add its name to the list
+                        knownFile.names.add(dirPath.relativize(found).toString())
+                    } else {
+                        // New file found, add it to the map
+                        knownFiles[hash] = FileInformation(found, type, mutableListOf(dirPath.relativize(found).toString()))
+                    }
                 }
             }
+
+            // Find all files in the lib and resources directories
+            addFiles("library", libsDir)
+            addFiles("resource", file("$installDir/share"))
 
             if (!Files.isDirectory(compactedDir)) {
                 Files.createDirectories(compactedDir)
             }
 
-            val metaOut = file("$compactedDir/meta.dat").bufferedWriter()
+            val metaOut = file("$compactedDir/ultralight-natives.dat").bufferedWriter()
 
             // Generate a very simple meta information file
             // this text format was chosen, as it does not require any dependencies at runtime to decode
             for ((hash, fileInformation) in knownFiles) {
                 // Write the platform, hash and its file names to the meta file
                 metaOut.write(systemIdent)
-                metaOut.write(" library ")
+                metaOut.write(" ")
+                metaOut.write(fileInformation.type)
+                metaOut.write(" ")
                 metaOut.write(hash)
                 metaOut.write(" ")
                 metaOut.write(fileInformation.names.joinToString(","))
@@ -199,10 +203,7 @@ if (!importPrebuiltNatives) {
     tasks.named<Copy>("processResources") {
         dependsOn(compactNativeTask)
         from(compactedDir) {
-            into("META-INF/resources/ultralight/native")
-        }
-        from("$installDir/share") {
-            into("META-INF/resources/ultralight/pkg")
+            into("META-INF/resources/net.janrupf.ujr")
         }
     }
 
@@ -226,33 +227,12 @@ if (!importPrebuiltNatives) {
             )
         }
 
-        if (jarPlatformClassifier) {
-            for (task in listOf("jar", "javadocJar", "sourcesJar")) {
-                tasks.named<Jar>(task) {
-                    // Make sure to set the archive classifier to the system identifier
-                    val systemIdent = Files.readAllLines(cmakeRunDir.resolve("ultralight.ident")).first()
+        tasks.register<Copy>("exportPrebuiltNatives") {
+            val systemIdent = Files.readAllLines(cmakeRunDir.resolve("ultralight.ident")).first()
+            destinationDir = prebuiltNativesDir.resolve(systemIdent)
 
-                    val currentClassifier = archiveClassifier.get()
-
-                    if (currentClassifier.isNullOrBlank()) {
-                        archiveClassifier.set(systemIdent)
-                    } else {
-                        archiveClassifier.set("${archiveClassifier.get()}-$systemIdent")
-                    }
-                }
-            }
-        }
-
-        tasks.register<ExportConfiguration>("exportPrebuiltJars") {
-            from(configurations.getByName("apiElements"))
-            from(configurations.getByName("runtimeElements"))
-            from(configurations.getByName("sourcesElements"))
-            from(configurations.getByName("javadocElements"))
-            destination.set(prebuiltNativesDir)
-
-            dependsOn("assemble")
+            dependsOn(compactNativeTask)
+            from(compactedDir)
         }
     }
-} else {
-    extensions.getByName<UJRExtension>("ujr").importConfigurations(prebuiltNativesDir)
 }

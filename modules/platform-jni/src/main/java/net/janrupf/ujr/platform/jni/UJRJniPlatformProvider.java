@@ -9,8 +9,8 @@ import net.janrupf.ujr.core.platform.abstraction.javascript.JSCJSGlobalContextFa
 import net.janrupf.ujr.core.platform.option.PlatformEnvironmentOptionContainer;
 import net.janrupf.ujr.core.platform.option.std.CommonPlatformOptions;
 import net.janrupf.ujr.core.platform.provider.PlatformEnvironmentProvider;
-import net.janrupf.ujr.platform.jni.bundled.BundledNatives;
-import net.janrupf.ujr.platform.jni.bundled.HashedNative;
+import net.janrupf.ujr.platform.jni.bundled.BundledResources;
+import net.janrupf.ujr.platform.jni.bundled.HashedResource;
 import net.janrupf.ujr.platform.jni.gc.ObjectCollector;
 import net.janrupf.ujr.platform.jni.impl.*;
 import net.janrupf.ujr.platform.jni.impl.javascript.JNIJSCJSClassFactory;
@@ -36,21 +36,21 @@ import java.util.stream.Stream;
  */
 public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
     private final CommonPlatformOptions commonPlatformOptions;
-    private final BundledNatives bundledNatives;
+    private final BundledResources bundledResources;
 
     UJRJniPlatformProvider(PlatformEnvironmentOptionContainer options) {
         this.commonPlatformOptions = options.require(CommonPlatformOptions.class); // Always present
-        this.bundledNatives = new BundledNatives();
+        this.bundledResources = new BundledResources();
     }
 
     @Override
     public boolean supportsThisEnvironment() {
-        return bundledNatives.supports(this.commonPlatformOptions.platformIdentification());
+        return bundledResources.supports(this.commonPlatformOptions.platformIdentification());
     }
 
     @Override
     public void performLoading() throws InvalidPlatformEnvironmentException {
-        List<HashedNative> natives = bundledNatives.getNatives(this.commonPlatformOptions.platformIdentification());
+        List<HashedResource> natives = bundledResources.getForPlatform(this.commonPlatformOptions.platformIdentification());
 
         // We need to extract the natives to a temporary directory and load them from there
         Path nativesDir = this.commonPlatformOptions.temporaryDirectory().resolve("natives");
@@ -64,7 +64,12 @@ public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
             }
         }
 
-        for (HashedNative nat : natives) {
+        for (HashedResource nat : natives) {
+            if (!nat.type().equals("library")) {
+                // We only need to extract libraries
+                continue;
+            }
+
             try (InputStream in = nat.bundledLocation().toURL().openStream()) {
                 if (useSymlinks) {
                     // Extract to a file named after the hash
@@ -131,7 +136,10 @@ public class UJRJniPlatformProvider implements PlatformEnvironmentProvider {
         if (interfaceClass == UlPlatformProvider.class) {
             return interfaceClass.cast(new JNIUlPlatformProvider());
         } else if (interfaceClass == UlResourceProvider.class) {
-            return interfaceClass.cast(new JNIUlResourceProvider());
+            return interfaceClass.cast(new JNIUlResourceProvider(
+                    this.commonPlatformOptions.platformIdentification(),
+                    bundledResources
+            ));
         } else if (interfaceClass == UlKeyboard.class) {
             return interfaceClass.cast(new JNIUlKeyboard());
         } else if (interfaceClass == UlBitmapSurfaceFactoryProvider.class) {
