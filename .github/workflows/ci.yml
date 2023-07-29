@@ -56,10 +56,9 @@ jobs:
         run: |
           ./gradlew \
             '-Pujr.prebuiltNativesDir=${{ runner.temp }}/prebuilt-natives' \
-            -Pujr.jarPlatformClassifier=true \
             -Pujr.nativeReleaseBuild=true \
             -Pujr.version=${{ env.UJR_VERSION }} \
-            :modules:ultralight-java-reborn-platform-jni:exportPrebuiltJars
+            :modules:ultralight-java-reborn-platform-jni:exportPrebuiltNatives
         shell: bash
 
       - name: Upload prebuilt libraries
@@ -103,13 +102,14 @@ jobs:
           java-version: 17 # Even though we target Java 8, we need Java 17 to build
           distribution: temurin
 
-      - name: Build Core
+      - name: Build libraries
         run: |
           ./gradlew \
             '-Pujr.prebuiltNativesDir=${{ runner.temp }}/prebuilt-natives' \
             -Pujr.importPrebuiltNatives=true \
             -Pujr.version=${{ env.UJR_VERSION }} \
-            :modules:ultralight-java-reborn-core:build
+            :modules:ultralight-java-reborn-core:build \
+            :modules:ultralight-java-reborn-platform-jni:build
         shell: bash
 
       - name: Upload built libraries
@@ -118,7 +118,7 @@ jobs:
           name: ultralight-java-reborn-core
           path: |
             modules/core/build/libs/*.jar
-            ${{ runner.temp }}/prebuilt-natives/*.jar
+            modules/platform-jni/build/libs/*.jar
 
       - name: Publish libraries
         run: |
