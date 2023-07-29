@@ -75,6 +75,24 @@ publishing {
     }
 }
 
+configurations {
+    val nativesElements = create("nativesElements") {
+        isCanBeResolved = false
+        isCanBeConsumed = true
+        isVisible = false
+
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
+        }
+    }
+
+    named("runtimeOnly") {
+        extendsFrom(nativesElements)
+    }
+}
+
 tasks.named<JavaCompile>("compileJava") {
     val minCompilerVersion = JavaVersion.VERSION_11
 
@@ -233,6 +251,31 @@ if (!importPrebuiltNatives) {
 
             dependsOn(compactNativeTask)
             from(compactedDir)
+        }
+    }
+} else {
+    val javaComponent = project.components["java"] as AdhocComponentWithVariants
+
+    // Add the jar to the runtime classpath
+    javaComponent.addVariantsFromConfiguration(configurations["nativesElements"]) {
+        mapToMavenScope("runtime")
+    }
+
+    Files.list(prebuiltNativesDir.toPath()).forEach {
+        // The directory name is the system identifier
+        val systemIdent = it.fileName.toString()
+
+        // Create a jar from all the files in the directory
+        val jarTaskForSystem = tasks.register<Jar>("jar-$systemIdent") {
+            from(it) {
+                into("META-INF/resources/net.janrupf.ujr")
+            }
+
+            archiveClassifier.set(systemIdent)
+        }
+
+        artifacts {
+            add("nativesElements", jarTaskForSystem)
         }
     }
 }
