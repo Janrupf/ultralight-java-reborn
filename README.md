@@ -44,8 +44,12 @@ repositories {
 Add the dependencies:
 ```kotlin
 dependencies {
-    implementation("net.janrupf.ultralight:ultralight-java-reborn-core:0.0.1-SNAPSHOT")
-    implementation("net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.1-SNAPSHOT:linux-x64")
+    // Java libraries, these are needed for compilation and runtime
+    implementation("net.janrupf.ultralight:ultralight-java-reborn-core:0.0.2-SNAPSHOT")
+    implementation("net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT")
+
+    // The native libraries, these are needed for runtime only (they contain no Java code)
+    runtimeOnly("net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:linux-x64")
     // or win-x64, mac-x64, or just add all 3 as dependencies
 }
 ```
@@ -66,15 +70,24 @@ Add the dependencies:
 ```xml
 <dependencies>
     <dependency>
+        <!-- Core library -->
         <groupId>net.janrupf.ultralight</groupId>
         <artifactId>ultralight-java-reborn-core</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
+        <!-- Platform JNI library -->
         <groupId>net.janrupf.ultralight</groupId>
         <artifactId>ultralight-java-reborn-platform-jni</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <!-- Platform JNI natives -->
+        <groupId>net.janrupf.ultralight</groupId>
+        <artifactId>ultralight-java-reborn-platform-jni</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
         <classifier>linux-x64</classifier>
+        <scope>runtime</scope> <!-- Only required at runtime, contains no Java code -->
         <!-- or win-x64, mac-x64, or just add all 3 as dependencies -->
     </dependency>
 </dependencies>
