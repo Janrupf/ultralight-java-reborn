@@ -46,7 +46,7 @@ Add the dependencies:
 dependencies {
     implementation("net.janrupf.ultralight:ultralight-java-reborn-core:0.0.1-SNAPSHOT")
     implementation("net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.1-SNAPSHOT:linux-x64")
-    // or windows-x64, macos-x64, or just add all 3 as dependencies
+    // or win-x64, mac-x64, or just add all 3 as dependencies
 }
 ```
 
@@ -75,7 +75,7 @@ Add the dependencies:
         <artifactId>ultralight-java-reborn-platform-jni</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <classifier>linux-x64</classifier>
-        <!-- or windows-x64, macos-x64, or just add all 3 as dependencies -->
+        <!-- or win-x64, mac-x64, or just add all 3 as dependencies -->
     </dependency>
 </dependencies>
 ```
