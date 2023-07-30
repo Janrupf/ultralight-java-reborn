@@ -273,6 +273,10 @@ if (!importPrebuiltNatives) {
 
             archiveClassifier.set(systemIdent)
         }
+        
+        tasks.named("assemble") {
+            dependsOn(jarTaskForSystem)
+        }
 
         artifacts {
             add("nativesElements", jarTaskForSystem)
